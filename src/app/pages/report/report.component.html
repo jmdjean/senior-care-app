@@ -1,0 +1,44 @@
+﻿<section class="page-header">
+  <div class="page-header-title">
+    <h5>Relatórios</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">Relatórios</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-6 col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5>Gerar relatório</h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label" for="patientSelect">Paciente</label>
+          <select
+            id="patientSelect"
+            class="form-select"
+            [(ngModel)]="selectedPatientId"
+            name="patientId"
+          >
+            <option value="">Selecione um paciente</option>
+            @for (patient of patients; track patient.id ?? $index) {
+              <option [value]="patient.id">
+                {{ patient.name || 'Paciente sem nome' }}
+              </option>
+            }
+          </select>
+        </div>
+        <button type="button" class="btn btn-primary" (click)="onSubmit()">
+          Gerar relatório
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

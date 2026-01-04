@@ -1,0 +1,35 @@
+﻿<main class="home">
+  <header class="home-header">
+    <h1>Resumo dos pacientes</h1>
+    <p>Visão geral rápida dos cadastros e planos ativos.</p>
+  </header>
+
+  <section class="stats">
+    <article class="stat-card">
+      <div class="stat-header">
+        <span>Total de pacientes</span>
+        <i class="feather icon-users stat-icon" aria-hidden="true"></i>
+      </div>
+      <div class="stat-value">{{ totalPatients }}</div>
+      <div class="stat-foot">Pacientes cadastrados</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-header">
+        <span>Plano Average</span>
+        <i class="feather icon-bar-chart-2 stat-icon" aria-hidden="true"></i>
+      </div>
+      <div class="stat-value">{{ averagePlanPatients }}</div>
+      <div class="stat-foot">Pacientes no plano Average</div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-header">
+        <span>Plano Gold</span>
+        <i class="feather icon-award stat-icon" aria-hidden="true"></i>
+      </div>
+      <div class="stat-value">{{ goldPlanPatients }}</div>
+      <div class="stat-foot">Pacientes no plano Gold</div>
+    </article>
+  </section>
+</main>

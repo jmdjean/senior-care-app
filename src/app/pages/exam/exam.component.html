@@ -1,0 +1,53 @@
+﻿<section class="page-header">
+  <div class="page-header-title">
+    <h5>Exames</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">Exames</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-6 col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5>Importar exame</h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label" for="patientSelect">Paciente</label>
+          <select
+            id="patientSelect"
+            class="form-control"
+            [(ngModel)]="selectedPatientId"
+            name="patientId"
+          >
+            <option value="">Selecione um paciente</option>
+            @for (patient of patients; track patient.id) {
+              <option [value]="patient.id">{{ patient.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="examFile">Arquivo do exame</label>
+          <input
+            id="examFile"
+            class="form-control"
+            type="file"
+            accept=".pdf,.txt,.doc,.docx"
+            (change)="onFileSelected($event)"
+          />
+          <small class="text-muted">Formatos aceitos: PDF, TXT, DOC, DOCX.</small>
+        </div>
+        <button type="button" class="btn btn-primary" (click)="onSubmit()">
+          Enviar exame
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

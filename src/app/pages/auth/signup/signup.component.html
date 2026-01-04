@@ -1,0 +1,128 @@
+﻿<div class="auth-wrapper">
+  <div class="auth-content">
+    <div class="auth-bg">
+      <span class="r"></span>
+      <span class="r s"></span>
+      <span class="r s"></span>
+      <span class="r"></span>
+    </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <form (ngSubmit)="onSubmit($event)">
+          <div class="mb-4">
+            <i class="feather icon-user-plus auth-icon"></i>
+          </div>
+          <h3 class="mb-4">Criar conta</h3>
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="signupName"
+              [class.is-invalid]="submitted() && signupForm.name().invalid()"
+              placeholder="Nome"
+              [field]="signupForm.name"
+            />
+            @if (submitted() && signupForm.name().invalid()) {
+              <div class="invalid-feedback">
+                @for (error of signupForm.name().errors(); track error.kind) {
+                  <div>{{ error.message }}</div>
+                }
+              </div>
+            }
+          </div>
+          <div class="input-group mb-3">
+            <input
+              type="email"
+              class="form-control"
+              id="signupEmail"
+              [class.is-invalid]="submitted() && signupForm.email().invalid()"
+              placeholder="Endereço de e-mail"
+              [field]="signupForm.email"
+            />
+            @if (submitted() && signupForm.email().invalid()) {
+              <div class="invalid-feedback">
+                @for (error of signupForm.email().errors(); track error.kind) {
+                  <div>{{ error.message }}</div>
+                }
+              </div>
+            }
+          </div>
+          <div class="input-group mb-3">
+            @if (!showPassword()) {
+              <input
+                type="password"
+                id="signupPassword"
+                class="form-control"
+                [field]="signupForm.password"
+                [class.is-invalid]="submitted() && signupForm.password().errors().length > 0"
+                placeholder="Senha (mín. 8 caracteres)"
+              />
+            } @else {
+              <input
+                type="text"
+                id="signupPassword"
+                class="form-control"
+                [field]="signupForm.password"
+                [class.is-invalid]="submitted() && signupForm.password().errors().length > 0"
+                placeholder="Senha (mín. 8 caracteres)"
+              />
+            }
+            <i
+              [ngClass]="showPassword() ? 'feather icon-eye' : 'feather icon-eye-off'"
+              id="togglePassword"
+              (click)="togglePasswordVisibility()"
+            ></i>
+            @if (submitted() && signupForm.password().errors().length > 0) {
+              <div class="invalid-feedback">
+                @for (error of signupForm.password().errors(); track error.kind) {
+                  <div>{{ error.message }}</div>
+                }
+              </div>
+            }
+          </div>
+          <div class="input-group mb-4">
+            @if (!showConfirmPassword()) {
+              <input
+                type="password"
+                id="signupConfirmPassword"
+                class="form-control"
+                [field]="signupForm.confirmPassword"
+                [class.is-invalid]="submitted() && signupForm.confirmPassword().errors().length > 0"
+                placeholder="Confirmar senha"
+              />
+            } @else {
+              <input
+                type="text"
+                id="signupConfirmPassword"
+                class="form-control"
+                [field]="signupForm.confirmPassword"
+                [class.is-invalid]="submitted() && signupForm.confirmPassword().errors().length > 0"
+                placeholder="Confirmar senha"
+              />
+            }
+            <i
+              [ngClass]="showConfirmPassword() ? 'feather icon-eye' : 'feather icon-eye-off'"
+              id="toggleConfirmPassword"
+              (click)="toggleConfirmPasswordVisibility()"
+            ></i>
+            @if (submitted() && signupForm.confirmPassword().errors().length > 0) {
+              <div class="invalid-feedback">
+                @for (error of signupForm.confirmPassword().errors(); track error.kind) {
+                  <div>{{ error.message }}</div>
+                }
+              </div>
+            }
+          </div>
+          @if (error()) {
+            <div class="text-danger mb-3">{{ error() }}</div>
+          }
+          <button type="submit" class="btn btn-primary mb-4">Cadastrar</button>
+          <p class="mb-0 text-muted">
+            Já tem uma conta?
+            <a [routerLink]="['/login']">Entrar</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

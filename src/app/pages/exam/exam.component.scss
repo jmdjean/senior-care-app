@@ -1,0 +1,46 @@
+﻿:host {
+  display: block;
+}
+
+.stats {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 12px 30px rgba(30, 32, 37, 0.12);
+  display: grid;
+  gap: 0.5rem;
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.stat-icon {
+  font-size: 1.35rem;
+  color: #04a9f5;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.stat-foot {
+  color: #666;
+  font-size: 0.9rem;
+}

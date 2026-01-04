@@ -1,0 +1,26 @@
+﻿<header>
+  <div class="m-header">
+    <a class="mobile-menu" id="mobile-collapse1" href="javascript:void(0)"><span></span></a>
+    <a routerLink="/home" class="b-brand">
+      <div class="b-bg">
+        <i class="feather icon-heart"></i>
+      </div>
+      <span class="b-title">Senior Care</span>
+    </a>
+  </div>
+  <div class="collapse navbar-collapse px-4">
+    <ul class="navbar-nav me-auto">
+      <li class="nav-item">
+        <span class="nav-link">Painel</span>
+      </li>
+    </ul>
+    <ul class="navbar-nav ms-auto align-items-center">
+      <li class="nav-item">
+        <button type="button" class="nav-link btn btn-link" (click)="onLogout()">
+          <i class="feather icon-log-out"></i>
+          <span class="ms-2">Sair</span>
+        </button>
+      </li>
+    </ul>
+  </div>
+</header>

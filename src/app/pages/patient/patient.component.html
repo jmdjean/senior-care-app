@@ -1,0 +1,56 @@
+﻿<section class="page-header">
+  <div class="page-header-title">
+    <h5>Pacientes</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">Pacientes</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card table-card table-border-style">
+      <div class="card-header">
+        <h5>Lista de pacientes</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Idade</th>
+                <th>Sexo</th>
+                <th>Contato</th>
+                <th>Data de criação</th>
+                <th>Plano</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (patient of patients; track patient.id) {
+                <tr>
+                  <td>{{ patient.name }}</td>
+                  <td>{{ patient.birthday | age }}</td>
+                  <td>{{ formatSex(patient.sex) }}</td>
+                  <td>{{ patient.closerContact | phoneMask }}</td>
+                  <td>{{ patient.createdAt | date: 'dd/MM/yyyy' }}</td>
+                  <td>{{ patient.planName }}</td>
+                </tr>
+              }
+              @if (patients.length === 0) {
+                <tr>
+                  <td colspan="6" class="text-muted">Nenhum paciente encontrado.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
