@@ -38,11 +38,6 @@ export class AuthenticationComponent {
   onSubmit(event: Event): void {
     event.preventDefault();
 
-    if (isDevMode()) {
-      this.router.navigate(['/home']);
-      return;
-    }
-
     this.submitted.set(true);
     this.error.set('');
 

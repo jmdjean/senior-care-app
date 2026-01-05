@@ -4,6 +4,11 @@ import { Observable, tap } from 'rxjs';
 import { apiUrls } from '../urls';
 import { NotificationHelperService } from './notification-helper.service';
 
+type LoginResponse = {
+  userId?: number | string;
+  id?: number | string;
+};
+
 export type SignupPayload = {
   name: string;
   email: string;
@@ -15,17 +20,25 @@ export type SignupPayload = {
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly userIdKey = 'userId';
+
   constructor(
     private http: HttpClient,
     private notificationHelper: NotificationHelperService
   ) {}
 
-  login(email: string, password: string): Observable<void> {
+  login(email: string, password: string): Observable<LoginResponse> {
     return this.http
-      .post<void>(apiUrls.login, { email, password })
+      .post<LoginResponse>(apiUrls.login, { email, password })
       .pipe(
         tap({
-          next: () => this.notificationHelper.showSuccess('Login realizado com sucesso.'),
+          next: (response) => {
+            const userId = response?.userId ?? response?.id;
+            if (userId !== undefined && userId !== null) {
+              this.setUserId(String(userId));
+            }
+            this.notificationHelper.showSuccess('Login realizado com sucesso.');
+          },
           error: () => this.notificationHelper.showError('E-mail ou senha inválidos.')
         })
       );
@@ -40,7 +53,24 @@ export class AuthService {
     );
   }
 
+  getUserId(): string | null {
+    return sessionStorage.getItem(this.userIdKey);
+  }
+
+  setUserId(userId: string): void {
+    sessionStorage.setItem(this.userIdKey, userId);
+  }
+
+  clearUserId(): void {
+    sessionStorage.removeItem(this.userIdKey);
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.getUserId();
+  }
+
   logout(): void {
+    this.clearUserId();
     localStorage.clear();
     sessionStorage.clear();
 

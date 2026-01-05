@@ -1,5 +1,6 @@
 ﻿import { Routes } from '@angular/router';
 import { LayoutComponent } from './shared/components/layout/layout.component';
+import { authGuard } from './shared/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -10,11 +11,17 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
+    canActivateChild: [authGuard],
     children: [
       {
         path: 'home',
         loadComponent: () =>
           import('./pages/home/home.component').then((m) => m.HomeComponent)
+      },
+      {
+        path: 'patients/new',
+        loadComponent: () =>
+          import('./pages/patient-form/patient-form.component').then((m) => m.PatientFormComponent)
       },
       {
         path: 'patients',

@@ -1,4 +1,4 @@
-﻿import { DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AgePipe } from '../../shared/pipes/age.pipe';
@@ -31,7 +31,7 @@ export class PatientComponent implements OnInit {
         this.patients = patients;
       },
       error: () => {
-        this.notificationHelper.showError('Não foi possível carregar os pacientes.');
+        this.notificationHelper.showError('Nao foi possivel carregar os pacientes.');
       }
     });
   }

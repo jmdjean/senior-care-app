@@ -8,7 +8,7 @@
     </div>
     <div class="card">
       <div class="card-body text-center">
-        <form (ngSubmit)="onSubmit($event)">
+        <form (submit)="onSubmit($event)" autocomplete="off">
           <div class="mb-4">
             <i class="feather icon-user-plus auth-icon"></i>
           </div>
@@ -18,6 +18,7 @@
               type="text"
               class="form-control"
               id="signupName"
+              autocomplete="off"
               [class.is-invalid]="submitted() && signupForm.name().invalid()"
               placeholder="Nome"
               [field]="signupForm.name"
@@ -35,6 +36,7 @@
               type="email"
               class="form-control"
               id="signupEmail"
+              autocomplete="off"
               [class.is-invalid]="submitted() && signupForm.email().invalid()"
               placeholder="Endereço de e-mail"
               [field]="signupForm.email"
@@ -53,6 +55,7 @@
                 type="password"
                 id="signupPassword"
                 class="form-control"
+                autocomplete="new-password"
                 [field]="signupForm.password"
                 [class.is-invalid]="submitted() && signupForm.password().errors().length > 0"
                 placeholder="Senha (mín. 8 caracteres)"
@@ -62,6 +65,7 @@
                 type="text"
                 id="signupPassword"
                 class="form-control"
+                autocomplete="new-password"
                 [field]="signupForm.password"
                 [class.is-invalid]="submitted() && signupForm.password().errors().length > 0"
                 placeholder="Senha (mín. 8 caracteres)"
@@ -86,6 +90,7 @@
                 type="password"
                 id="signupConfirmPassword"
                 class="form-control"
+                autocomplete="new-password"
                 [field]="signupForm.confirmPassword"
                 [class.is-invalid]="submitted() && signupForm.confirmPassword().errors().length > 0"
                 placeholder="Confirmar senha"
@@ -95,6 +100,7 @@
                 type="text"
                 id="signupConfirmPassword"
                 class="form-control"
+                autocomplete="new-password"
                 [field]="signupForm.confirmPassword"
                 [class.is-invalid]="submitted() && signupForm.confirmPassword().errors().length > 0"
                 placeholder="Confirmar senha"
