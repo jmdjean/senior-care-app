@@ -28,7 +28,6 @@ export class PatientComponent implements OnInit {
 
   patients = signal<Patient[]>([]);
   openMenuId = signal<number | null>(null);
-  menuPosition = signal<{ top: number; left: number }>({ top: 0, left: 0 });
 
   ngOnInit(): void {
     this.loadPatients();
@@ -79,13 +78,6 @@ export class PatientComponent implements OnInit {
     if (this.openMenuId() === patientId) {
       this.openMenuId.set(null);
     } else {
-      const button = event.currentTarget as HTMLElement;
-      const rect = button.getBoundingClientRect();
-      // Calculate position relative to viewport for fixed positioning
-      this.menuPosition.set({
-        top: rect.bottom + 4,
-        left: rect.left
-      });
       this.openMenuId.set(patientId);
     }
   }

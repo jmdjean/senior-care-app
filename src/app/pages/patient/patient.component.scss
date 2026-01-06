@@ -40,6 +40,15 @@
   overflow: visible;
 }
 
+.table {
+  overflow: visible;
+}
+
+.table tbody tr td.action-cell {
+  overflow: visible;
+  position: relative;
+}
+
 .table tbody tr td {
   vertical-align: middle;
 }
@@ -96,9 +105,12 @@
 }
 
 .action-dropdown {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 0;
   z-index: 1050;
   min-width: 200px;
+  margin-top: 4px;
   padding: 0.5rem 0;
   background: #fff;
   border-radius: 10px;
