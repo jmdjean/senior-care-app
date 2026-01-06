@@ -15,6 +15,10 @@ export class NotificationHelperService {
     this.open(message, 'error');
   }
 
+  showBackendError(error: unknown, fallback: string): void {
+    this.open(this.getBackendErrorMessage(error, fallback), 'error');
+  }
+
   showSuccess(message: string): void {
     this.open(message, 'success');
   }
@@ -30,5 +34,15 @@ export class NotificationHelperService {
       verticalPosition: 'top',
       horizontalPosition: 'center'
     });
+  }
+
+  private getBackendErrorMessage(error: unknown, fallback: string): string {
+    if (typeof (error as { error?: string } | null)?.error === 'string') {
+      return (error as { error: string }).error.trim() || fallback;
+    }
+    if (typeof (error as { error?: { error?: string } } | null)?.error?.error === 'string') {
+      return (error as { error: { error: string } }).error.error.trim() || fallback;
+    }
+    return fallback;
   }
 }

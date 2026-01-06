@@ -1,15 +1,19 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+﻿import { DatePipe } from '@angular/common';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Field, form, required } from '@angular/forms/signals';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { PhoneMaskPipe } from '../../shared/pipes/phone-mask.pipe';
+import { Disease, DiseaseService } from '../../shared/services/disease.service';
 import { LoadingService } from '../../shared/services/loading.service';
 import { NotificationHelperService } from '../../shared/services/notification-helper.service';
+import { Patient, PatientCreatePayload, PatientService } from '../../shared/services/patient.service';
 import { Plan, PlansService } from '../../shared/services/plans.service';
-import { Disease, DiseaseService } from '../../shared/services/disease.service';
-import { Patient, PatientService } from '../../shared/services/patient.service';
 
 type PatientFormModel = Omit<Patient, 'diseases' | 'id' | 'planId' | 'createdAt'> & {
   planId: string;
-  diseases: string[];
+  diseases: number[];
 };
 
 const emptyPatientModel: PatientFormModel = {
@@ -26,7 +30,7 @@ const emptyPatientModel: PatientFormModel = {
 
 @Component({
   selector: 'app-patient-form',
-  imports: [RouterLink, Field],
+  imports: [RouterLink, Field, MatFormFieldModule, MatSelectModule, DatePipe, PhoneMaskPipe],
   templateUrl: './patient-form.component.html',
   styleUrl: './patient-form.component.scss',
   standalone: true
@@ -37,33 +41,75 @@ export class PatientFormComponent implements OnInit {
   private patientService = inject(PatientService);
   private diseaseService = inject(DiseaseService);
   private plansService = inject(PlansService);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
+
+  private editingPatientId: number | null = null;
+  private pendingDiseaseNames: string[] | null = null;
 
   submitted = signal(false);
   diseases = signal<Disease[]>([]);
   plans = signal<Plan[]>([]);
   patientModel = signal<PatientFormModel>({ ...emptyPatientModel });
+  isEdit = signal(false);
+  isViewMode = signal(false);
+  formTitle = computed(() => {
+    if (this.isViewMode()) {
+      return 'Visualizar paciente';
+    }
+    return this.isEdit() ? 'Paciente' : 'Novo paciente';
+  });
 
   patientForm = form(this.patientModel, (schemaPath) => {
-    required(schemaPath.name, { message: 'Nome e obrigatorio' });
-    required(schemaPath.birthday, { message: 'Data de nascimento e obrigatoria' });
-    required(schemaPath.closerContact, { message: 'Contato e obrigatorio' });
-    required(schemaPath.sex, { message: 'Sexo e obrigatorio' });
-    required(schemaPath.planId, { message: 'Plano e obrigatorio' });
+    required(schemaPath.name, { message: 'Nome é obrigatório' });
+    required(schemaPath.birthday, { message: 'Data de nascimento é obrigatória' });
+    required(schemaPath.closerContact, { message: 'Contato é obrigatório' });
+    required(schemaPath.sex, { message: 'Sexo é obrigatório' });
+    required(schemaPath.planId, { message: 'Plano é obrigatório' });
   });
 
   ngOnInit(): void {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const viewParam = this.route.snapshot.queryParamMap.get('view');
+    
+    if (viewParam === 'true') {
+      this.isViewMode.set(true);
+    }
+    
+    if (idParam) {
+      const parsedId = Number(idParam);
+      if (!Number.isNaN(parsedId)) {
+        this.editingPatientId = parsedId;
+        this.isEdit.set(true);
+      }
+    }
+
     this.loadDiseases();
     this.loadPlans();
+
+    if (this.editingPatientId !== null) {
+      this.loadPatient(this.editingPatientId);
+    }
   }
 
   private loadDiseases(): void {
     this.loadingService.track(this.diseaseService.getAll()).subscribe({
       next: (diseases) => {
-        this.diseases.set(diseases ?? []);
+        const safeDiseases = Array.isArray(diseases)
+          ? diseases
+          : Array.isArray((diseases as { diseases?: Disease[] } | null)?.diseases)
+            ? (diseases as { diseases: Disease[] }).diseases
+            : [];
+        this.diseases.set(safeDiseases);
+
+        if (this.pendingDiseaseNames && this.pendingDiseaseNames.length > 0) {
+          const mappedIds = this.mapDiseaseNamesToIds(this.pendingDiseaseNames);
+          this.patientModel.update((model) => ({ ...model, diseases: mappedIds }));
+          this.pendingDiseaseNames = null;
+        }
       },
       error: () => {
-        this.notificationHelper.showError('Nao foi possivel carregar as doencas.');
+        this.notificationHelper.showError('Não foi possível carregar as doenças.');
       }
     });
   }
@@ -71,12 +117,64 @@ export class PatientFormComponent implements OnInit {
   private loadPlans(): void {
     this.loadingService.track(this.plansService.getAll()).subscribe({
       next: (plans) => {
-        this.plans.set(plans ?? []);
+        const safePlans = Array.isArray(plans)
+          ? plans
+          : Array.isArray((plans as { plans?: Plan[] } | null)?.plans)
+            ? (plans as { plans: Plan[] }).plans
+            : [];
+        this.plans.set(safePlans);
       },
       error: () => {
-        this.notificationHelper.showError('Nao foi possivel carregar os planos.');
+        this.notificationHelper.showError('Não foi possível carregar os planos.');
       }
     });
+  }
+
+  private loadPatient(patientId: number): void {
+    this.loadingService.track(this.patientService.getById(patientId)).subscribe({
+      next: (patient) => {
+        const diseaseIds = Array.isArray(patient.diseaseIds)
+          ? patient.diseaseIds
+          : this.mapDiseaseNamesToIds(patient.diseases ?? []);
+
+        if (!Array.isArray(patient.diseaseIds) && (patient.diseases ?? []).length > 0) {
+          this.pendingDiseaseNames = patient.diseases ?? [];
+        }
+
+        const heightValue = patient.height ?? patient.heightCm ?? '';
+        const weightValue = patient.weight ?? patient.weightKg ?? '';
+
+        this.patientModel.set({
+          ...emptyPatientModel,
+          name: patient.name ?? '',
+          birthday: patient.birthday ?? '',
+          closerContact: patient.closerContact ?? '',
+          sex: patient.sex ?? '',
+          heightCm: heightValue === null ? '' : String(heightValue),
+          weightKg: weightValue === null ? '' : String(weightValue),
+          planId: patient.planId ? String(patient.planId) : '',
+          planName: patient.planName ?? '',
+          diseases: diseaseIds
+        });
+      },
+      error: (error) => {
+        this.notificationHelper.showBackendError(error, 'Não foi possível carregar o paciente.');
+      }
+    });
+  }
+
+  private mapDiseaseNamesToIds(diseaseNames: string[]): number[] {
+    if (!Array.isArray(diseaseNames) || diseaseNames.length === 0) {
+      return [];
+    }
+
+    const diseaseMap = new Map(
+      this.diseases().map((disease) => [disease.name.toLowerCase(), disease.id])
+    );
+
+    return diseaseNames
+      .map((name) => diseaseMap.get(name.toLowerCase()))
+      .filter((value): value is number => typeof value === 'number');
   }
 
   onContactInput(event: Event): void {
@@ -113,31 +211,55 @@ export class PatientFormComponent implements OnInit {
     }
 
     const model = this.patientModel();
-    const selectedPlan = this.plans().find((plan) => String(plan.id) === model.planId);
-    const payload: Patient = {
-      ...model,
-      id: 0,
-      createdAt: '',
+    const payload: PatientCreatePayload = {
+      name: model.name,
+      birthday: model.birthday,
+      closerContact: model.closerContact,
+      sex: model.sex,
+      height: Number(model.heightCm) || 0,
+      weight: Number(model.weightKg) || 0,
       planId: Number(model.planId) || 0,
-      planName: selectedPlan?.name ?? model.planName,
-      diseases: model.diseases
+      diseaseIds: model.diseases
     };
 
-    this.loadingService.track(this.patientService.create(payload)).subscribe({
+    const request$ =
+      this.editingPatientId !== null
+        ? this.patientService.update(this.editingPatientId, payload)
+        : this.patientService.create(payload);
+    const successMessage =
+      this.editingPatientId !== null
+        ? 'Paciente atualizado com sucesso.'
+        : 'Paciente cadastrado com sucesso.';
+    const errorMessage =
+      this.editingPatientId !== null
+        ? 'Não foi possível atualizar o paciente.'
+        : 'Não foi possível cadastrar o paciente.';
+
+    this.loadingService.track(request$).subscribe({
       next: () => {
-        this.notificationHelper.showSuccess('Paciente cadastrado com sucesso.');
+        this.notificationHelper.showSuccess(successMessage);
         this.router.navigate(['/patients']);
       },
-      error: () => {
-        this.notificationHelper.showError('Nao foi possivel cadastrar o paciente.');
+      error: (error) => {
+        this.notificationHelper.showBackendError(error, errorMessage);
       }
     });
   }
 
-  onDiseasesChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    const selected = Array.from(target.selectedOptions).map((option) => option.value);
-    this.patientModel.update((model) => ({ ...model, diseases: selected }));
+  onDiseasesChange(selected: number[]): void {
+    this.patientModel.update((model) => ({ ...model, diseases: selected ?? [] }));
+  }
+
+  getDiseasesNames(): string {
+    const diseasesIds = this.patientModel().diseases;
+    if (!diseasesIds || diseasesIds.length === 0) {
+      return '';
+    }
+    const allDiseases = this.diseases();
+    return diseasesIds
+      .map(id => allDiseases.find(d => d.id === id)?.name)
+      .filter((name): name is string => !!name)
+      .join(', ');
   }
 
   cancel(): void {

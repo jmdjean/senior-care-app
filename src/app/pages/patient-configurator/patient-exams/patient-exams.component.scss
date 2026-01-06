@@ -1,0 +1,21 @@
+@use '../../../../scss/variables' as *;
+
+:host {
+  display: block;
+}
+
+.card-header h5 {
+  display: flex;
+  align-items: center;
+  margin: 0;
+
+  i {
+    color: $primary-color;
+  }
+}
+
+.card-footer {
+  background: transparent;
+  border-top: 1px solid #f0f0f0;
+  padding: 1rem 1.25rem;
+}

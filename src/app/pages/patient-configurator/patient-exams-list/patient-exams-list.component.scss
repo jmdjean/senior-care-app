@@ -1,0 +1,42 @@
+@use '../../../../scss/variables' as *;
+
+:host {
+  display: block;
+}
+
+.exams-container {
+  margin-top: 1.5rem;
+}
+
+.exam-type-badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: rgba($primary-color, 0.1);
+  color: $primary-color;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  text-align: center;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  color: #ccc;
+  margin-bottom: 0.75rem;
+}
+
+.empty-text {
+  font-size: 0.95rem;
+  color: #999;
+  margin: 0;
+}

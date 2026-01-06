@@ -1,0 +1,72 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Relatório do paciente</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/patient-configurator">Configurador</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/patient-configurator/report">Relatório</a>
+      </li>
+      <li class="breadcrumb-item">Resultado</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-12">
+    @if (report()) {
+      <div class="report-container">
+        @for (section of sections(); track section.title) {
+          <div class="card report-section">
+            <div class="card-header">
+              <h5>
+                <i [class]="section.icon" aria-hidden="true"></i>
+                {{ section.title }}
+              </h5>
+            </div>
+            <div class="card-body">
+              @if (hasContent(section.items)) {
+                <ul class="report-list">
+                  @for (item of section.items; track $index) {
+                    <li class="report-item">
+                      <span class="item-bullet" aria-hidden="true">•</span>
+                      {{ item }}
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="no-content">Nenhuma informação disponível.</p>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="actions">
+          <a routerLink="/patient-configurator/report" class="btn btn-outline-secondary">
+            <i class="feather icon-arrow-left" aria-hidden="true"></i>
+            Voltar
+          </a>
+          <button type="button" class="btn btn-primary" onclick="window.print()">
+            <i class="feather icon-printer" aria-hidden="true"></i>
+            Imprimir
+          </button>
+        </div>
+      </div>
+    } @else {
+      <div class="card">
+        <div class="card-body text-center">
+          <p>Nenhum relatório encontrado.</p>
+          <a routerLink="/patient-configurator/report" class="btn btn-primary">
+            Voltar para gerar relatório
+          </a>
+        </div>
+      </div>
+    }
+  </div>
+</div>

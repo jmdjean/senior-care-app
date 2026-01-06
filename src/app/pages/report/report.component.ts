@@ -1,17 +1,18 @@
-﻿import { Component, OnInit, inject } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { LoadingService } from '../../shared/services/loading.service';
+import { NotificationHelperService } from '../../shared/services/notification-helper.service';
 import { Patient, PatientService } from '../../shared/services/patient.service';
 import { ReportService } from '../../shared/services/report.service';
-import { NotificationHelperService } from '../../shared/services/notification-helper.service';
 
 @Component({
   selector: 'app-report',
   imports: [RouterLink, FormsModule],
   templateUrl: './report.component.html',
   styleUrl: './report.component.scss',
-  standalone: true
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReportComponent implements OnInit {
   private loadingService = inject(LoadingService);
@@ -20,20 +21,20 @@ export class ReportComponent implements OnInit {
   private notificationHelper = inject(NotificationHelperService);
   private router = inject(Router);
 
-  patients: Patient[] = [];
-  selectedPatientId = '';
+  patients = signal<Patient[]>([]);
+  selectedPatientId = signal('');
 
   ngOnInit(): void {
     this.loadPatients();
   }
 
   onSubmit(): void {
-    if (!this.selectedPatientId) {
+    if (!this.selectedPatientId()) {
       this.notificationHelper.showWarning('Selecione um paciente para gerar o relatório.');
       return;
     }
 
-    const patientId = Number(this.selectedPatientId);
+    const patientId = Number(this.selectedPatientId());
     if (Number.isNaN(patientId)) {
       this.notificationHelper.showWarning('Selecione um paciente válido.');
       return;
@@ -44,8 +45,11 @@ export class ReportComponent implements OnInit {
         this.notificationHelper.showSuccess('Relatório gerado com sucesso.');
         this.router.navigate(['/home']);
       },
-      error: () => {
-        this.notificationHelper.showError('Não foi possível gerar o relatório.');
+      error: (error) => {
+        this.notificationHelper.showBackendError(
+          error,
+          'Não foi possível gerar o relatório.'
+        );
       }
     });
   }
@@ -53,7 +57,7 @@ export class ReportComponent implements OnInit {
   private loadPatients(): void {
     this.loadingService.track(this.patientService.getAll()).subscribe({
       next: (patients) => {
-        this.patients = patients;
+        this.patients.set(patients);
       },
       error: () => {
         this.notificationHelper.showError('Não foi possível carregar os pacientes.');

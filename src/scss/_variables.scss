@@ -24,6 +24,15 @@ $inverse-color: $dark-color;
 $theme-border: #eaeaea;
 $white: #fff;
 
+// Professional additions for better accessibility and design
+$card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+$card-border-radius: 8px;
+$font-size-large: 1.25rem; // For better readability
+$font-size-xl: 1.5rem;
+$spacing-unit: 1rem;
+$contrast-text: #333; // High contrast text
+$background-light: #fafafa;
+
 // header
 $brand-background: #3f4d67;
 $header-dark-background: #3f4d67;
@@ -83,7 +92,7 @@ $theme-colors: map-merge(
     'warning': $warning-color,
     'danger': $danger-color,
     'light': $light-color,
-    'dark': $dark-color
+    'dark': $dark-color,
   ),
   $theme-colors
 ); // Color contrast

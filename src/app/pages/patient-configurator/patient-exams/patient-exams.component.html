@@ -1,0 +1,43 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Exames do paciente</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/patient-configurator">Configurador</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/patient-configurator/patients">Pacientes</a>
+      </li>
+      <li class="breadcrumb-item">Exames</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-10 col-lg-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>
+          <i class="feather icon-activity me-2" aria-hidden="true"></i>
+          Exames realizados
+        </h5>
+      </div>
+      <div class="card-body">
+        @if (showResults()) {
+          <app-patient-exams-list [exams]="exams()" />
+        }
+      </div>
+      <div class="card-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="goBack()">
+          <i class="feather icon-arrow-left me-1" aria-hidden="true"></i>
+          Voltar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,6 @@
-﻿<section class="page-header">
+<section class="page-header">
   <div class="page-header-title">
-    <h5>Importar exames</h5>
+    <h5>Importar prescrição médica</h5>
   </div>
   <div class="page-header-breadcrumb">
     <ul class="breadcrumb">
@@ -10,7 +10,7 @@
       <li class="breadcrumb-item">
         <a routerLink="/patient-configurator">Configurador</a>
       </li>
-      <li class="breadcrumb-item">Importar exames</li>
+      <li class="breadcrumb-item">Importar prescrição médica</li>
     </ul>
   </div>
 </section>
@@ -19,7 +19,7 @@
   <div class="col-xl-6 col-md-8">
     <div class="card">
       <div class="card-header">
-        <h5>Importar exame</h5>
+        <h5>Importar prescrição médica</h5>
       </div>
       <div class="card-body">
         <div class="mb-3">
@@ -39,10 +39,11 @@
             </mat-select>
           </mat-form-field>
         </div>
+
         <div class="mb-3">
-          <label class="form-label" for="examFile">Arquivo do exame</label>
+          <label class="form-label" for="prescriptionFile">Prescrição médica</label>
           <input
-            id="examFile"
+            id="prescriptionFile"
             class="form-control"
             type="file"
             accept=".pdf,.txt,.doc,.docx"
@@ -50,8 +51,24 @@
           />
           <small class="text-muted">Formatos aceitos: PDF, TXT, DOC, DOCX.</small>
         </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="observation">Prescrição descrita - Observação</label>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Observação</mat-label>
+            <textarea
+              matInput
+              [(ngModel)]="observation"
+              name="observation"
+              rows="4"
+              placeholder="Digite a observação da prescrição médica"
+            ></textarea>
+          </mat-form-field>
+          <small class="text-muted">Obrigatório caso nenhum arquivo seja anexado.</small>
+        </div>
+
         <button type="button" class="btn btn-primary" (click)="onSubmit()">
-          Enviar exame
+          Enviar prescrição
         </button>
       </div>
     </div>

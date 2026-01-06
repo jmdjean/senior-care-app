@@ -39,7 +39,8 @@ export class AuthService {
             }
             this.notificationHelper.showSuccess('Login realizado com sucesso.');
           },
-          error: () => this.notificationHelper.showError('E-mail ou senha inválidos.')
+          error: (error) =>
+            this.notificationHelper.showBackendError(error, 'E-mail ou senha inválidos.')
         })
       );
   }
@@ -48,7 +49,8 @@ export class AuthService {
     return this.http.post<void>(apiUrls.user, payload).pipe(
       tap({
         next: () => this.notificationHelper.showSuccess('Conta criada com sucesso.'),
-        error: () => this.notificationHelper.showError('Não foi possível criar a conta.')
+        error: (error) =>
+          this.notificationHelper.showBackendError(error, 'Não foi possível criar a conta.')
       })
     );
   }

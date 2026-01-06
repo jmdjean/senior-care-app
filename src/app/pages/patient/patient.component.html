@@ -1,4 +1,4 @@
-<section class="page-header">
+﻿<section class="page-header">
   <div class="page-header-title">
     <h5>Pacientes</h5>
   </div>
@@ -6,6 +6,9 @@
     <ul class="breadcrumb">
       <li class="breadcrumb-item">
         <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/patient-configurator">Configurador</a>
       </li>
       <li class="breadcrumb-item">Pacientes</li>
     </ul>
@@ -17,7 +20,7 @@
     <div class="card table-card table-border-style">
       <div class="card-header d-flex align-items-center justify-content-between">
         <h5>Lista de pacientes</h5>
-        <button type="button" class="btn btn-primary btn-sm" routerLink="/patients/new">
+        <button type="button" class="btn btn-primary btn-sm" routerLink="/patient-configurator/patients/new">
           Cadastrar
         </button>
       </div>
@@ -26,28 +29,109 @@
           <table class="table table-striped">
             <thead>
               <tr>
+                <th>Ações</th>
+                <th>Plano</th>
                 <th>Nome</th>
                 <th>Idade</th>
                 <th>Sexo</th>
                 <th>Contato</th>
-                <th>Data de criacao</th>
-                <th>Plano</th>
+                <th>Data de criação</th>
               </tr>
             </thead>
             <tbody>
-              @for (patient of patients; track patient.id) {
+              @for (patient of patients(); track patient.id) {
                 <tr>
+                  <td class="action-cell">
+                    <div class="action-menu-container">
+                      <button
+                        type="button"
+                        class="btn btn-action-menu"
+                        (click)="toggleMenu(patient.id, $event)"
+                        [attr.aria-expanded]="openMenuId() === patient.id"
+                        aria-haspopup="true"
+                        [attr.aria-label]="'Abrir menu de ações para ' + patient.name"
+                      >
+                        <i class="feather icon-more-horizontal" aria-hidden="true"></i>
+                      </button>
+                      @if (openMenuId() === patient.id) {
+                        <div class="action-dropdown" role="menu">
+                          <button
+                            type="button"
+                            class="dropdown-item"
+                            role="menuitem"
+                            (click)="editPatient(patient)"
+                          >
+                            <i class="feather icon-edit-2" aria-hidden="true"></i>
+                            Alterar
+                          </button>
+                          <button
+                            type="button"
+                            class="dropdown-item"
+                            role="menuitem"
+                            (click)="viewPatient(patient)"
+                          >
+                            <i class="feather icon-eye" aria-hidden="true"></i>
+                            Visualizar
+                          </button>
+                          <button
+                            type="button"
+                            class="dropdown-item"
+                            role="menuitem"
+                            (click)="openMedicines(patient)"
+                          >
+                            <i class="feather icon-clipboard" aria-hidden="true"></i>
+                            Prescrição médica
+                          </button>
+                          <button
+                            type="button"
+                            class="dropdown-item"
+                            role="menuitem"
+                            (click)="openExams(patient)"
+                          >
+                            <i class="feather icon-activity" aria-hidden="true"></i>
+                            Exames
+                          </button>
+                          <button
+                            type="button"
+                            class="dropdown-item"
+                            role="menuitem"
+                            (click)="openReport(patient)"
+                          >
+                            <i class="feather icon-file-text" aria-hidden="true"></i>
+                            Relatório do paciente
+                          </button>
+                          <div class="dropdown-divider"></div>
+                          <button
+                            type="button"
+                            class="dropdown-item text-danger"
+                            role="menuitem"
+                            (click)="confirmDelete(patient)"
+                          >
+                            <i class="feather icon-trash-2" aria-hidden="true"></i>
+                            Excluir
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  </td>
+                  <td>
+                    <span
+                      class="badge plan-badge"
+                      [ngClass]="getPlanBadgeClass(patient.planName)"
+                    >
+                      {{ patient.planName || '-' }}
+                    </span>
+                  </td>
                   <td>{{ patient.name }}</td>
                   <td>{{ patient.birthday | age }}</td>
                   <td>{{ formatSex(patient.sex) }}</td>
                   <td>{{ patient.closerContact | phoneMask }}</td>
                   <td>{{ patient.createdAt | date: 'dd/MM/yyyy' }}</td>
-                  <td>{{ patient.planName }}</td>
                 </tr>
               }
-              @if (patients.length === 0) {
+              @if (patients().length === 0) {
                 <tr>
-                  <td colspan="6" class="text-muted">Nenhum paciente encontrado.</td>
+                  <td colspan="7" class="text-muted">Nenhum paciente encontrado.</td>
                 </tr>
               }
             </tbody>
@@ -57,3 +141,82 @@
     </div>
   </div>
 </div>
+
+@if (openMenuId() !== null) {
+  <!-- Backdrop to close menu when clicking outside -->
+  <button
+    type="button"
+    class="action-menu-backdrop"
+    (click)="closeMenu()"
+    (keydown.escape)="closeMenu()"
+    aria-label="Fechar menu"
+  ></button>
+
+  <!-- Dropdown menu rendered outside table with fixed position -->
+  @for (patient of patients(); track patient.id) {
+    @if (openMenuId() === patient.id) {
+      <div
+        class="action-dropdown"
+        role="menu"
+        [style.top.px]="menuPosition().top"
+        [style.left.px]="menuPosition().left"
+      >
+        <button
+          type="button"
+          class="dropdown-item"
+          role="menuitem"
+          (click)="editPatient(patient)"
+        >
+          <i class="feather icon-edit-2" aria-hidden="true"></i>
+          Alterar
+        </button>
+        <button
+          type="button"
+          class="dropdown-item"
+          role="menuitem"
+          (click)="viewPatient(patient)"
+        >
+          <i class="feather icon-eye" aria-hidden="true"></i>
+          Visualizar
+        </button>
+        <button
+          type="button"
+          class="dropdown-item"
+          role="menuitem"
+          (click)="openMedicines(patient)"
+        >
+          <i class="feather icon-clipboard" aria-hidden="true"></i>
+          Prescrição médica
+        </button>
+        <button
+          type="button"
+          class="dropdown-item"
+          role="menuitem"
+          (click)="openExams(patient)"
+        >
+          <i class="feather icon-activity" aria-hidden="true"></i>
+          Exames
+        </button>
+        <button
+          type="button"
+          class="dropdown-item"
+          role="menuitem"
+          (click)="openReport(patient)"
+        >
+          <i class="feather icon-file-text" aria-hidden="true"></i>
+          Relatório do paciente
+        </button>
+        <div class="dropdown-divider"></div>
+        <button
+          type="button"
+          class="dropdown-item text-danger"
+          role="menuitem"
+          (click)="confirmDelete(patient)"
+        >
+          <i class="feather icon-trash-2" aria-hidden="true"></i>
+          Excluir
+        </button>
+      </div>
+    }
+  }
+}

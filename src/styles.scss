@@ -21,3 +21,6 @@
 @use 'scss/plugins/plugins' as *;
 
 @use 'scss/custom' as *;
+@use 'sass:meta';
+
+@include meta.load-css('@angular/material/prebuilt-themes/indigo-pink.css');

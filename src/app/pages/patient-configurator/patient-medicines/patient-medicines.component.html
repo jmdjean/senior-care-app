@@ -1,0 +1,57 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Prescrições médicas</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/patient-configurator">Configurador</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/patient-configurator/patients">Pacientes</a>
+      </li>
+      <li class="breadcrumb-item">Prescrições médicas</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-8 col-lg-10">
+    <div class="card">
+      <div class="card-header">
+        <h5>
+          <i class="feather icon-clipboard me-2" aria-hidden="true"></i>
+          Remédios prescritos
+        </h5>
+      </div>
+      <div class="card-body">
+        @if (medicines().length > 0) {
+          <ul class="medicines-list">
+            @for (medicine of medicines(); track $index) {
+              <li class="medicine-item">
+                <span class="medicine-icon" aria-hidden="true">
+                  <i class="feather icon-check-circle"></i>
+                </span>
+                <span class="medicine-name">{{ medicine }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <div class="empty-state">
+            <i class="feather icon-inbox empty-icon" aria-hidden="true"></i>
+            <p class="empty-text">Nenhuma prescrição médica encontrada para este paciente.</p>
+          </div>
+        }
+      </div>
+      <div class="card-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="goBack()">
+          <i class="feather icon-arrow-left me-1" aria-hidden="true"></i>
+          Voltar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

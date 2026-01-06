@@ -1,7 +1,7 @@
-﻿import { ChangeDetectorRef, Component, inject, isDevMode, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+﻿import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
 import { email, Field, form, minLength, required } from '@angular/forms/signals';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../shared/services/auth.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
@@ -24,8 +24,8 @@ export class AuthenticationComponent {
   showPassword = signal(false);
 
   loginModel = signal<{ email: string; password: string }>({
-    email: '',
-    password: ''
+    email: 'jay@email.com',
+    password: '12341234'
   });
 
   loginForm = form(this.loginModel, (schemaPath) => {

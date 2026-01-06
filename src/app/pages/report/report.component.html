@@ -28,7 +28,7 @@
             name="patientId"
           >
             <option value="">Selecione um paciente</option>
-            @for (patient of patients; track patient.id ?? $index) {
+            @for (patient of patients(); track patient.id ?? $index) {
               <option [value]="patient.id">
                 {{ patient.name || 'Paciente sem nome' }}
               </option>

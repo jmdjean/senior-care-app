@@ -1,0 +1,29 @@
+<div class="exams-container">
+  @if (exams().length > 0) {
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Nome do paciente</th>
+            <th>Tipo de exame</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (exam of exams(); track $index) {
+            <tr>
+              <td>{{ exam.patientName }}</td>
+              <td>
+                <span class="exam-type-badge">{{ exam.examType || '-' }}</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <i class="feather icon-file-text empty-icon" aria-hidden="true"></i>
+      <p class="empty-text">Nenhum exame encontrado para este paciente.</p>
+    </div>
+  }
+</div>

@@ -6,6 +6,7 @@ import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loa
   selector: 'app-root',
   imports: [RouterOutlet, LoadingSpinnerComponent],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
+  standalone: true
 })
 export class App {}

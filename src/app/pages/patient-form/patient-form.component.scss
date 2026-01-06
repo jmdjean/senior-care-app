@@ -8,4 +8,51 @@
 
 .card-body {
   padding-top: 1.5rem;
+  padding-bottom: 12rem;
+}
+
+.diseases-field {
+  width: 100%;
+}
+
+:host ::ng-deep .diseases-panel {
+  max-height: 260px;
+}
+
+:host ::ng-deep .diseases-field .mdc-text-field--outlined {
+  --mdc-outlined-text-field-container-shape: 0.375rem;
+  --mdc-outlined-text-field-outline-color: #dee2e6;
+  --mdc-outlined-text-field-hover-outline-color: #ced4da;
+  --mdc-outlined-text-field-focus-outline-color: #86b7fe;
+}
+
+:host ::ng-deep .diseases-field .mdc-text-field {
+  height: 38px;
+}
+
+:host ::ng-deep .diseases-field .mat-mdc-form-field-infix {
+  padding: 0.375rem 0;
+  min-height: 0;
+}
+
+:host ::ng-deep .diseases-field .mat-mdc-select-trigger {
+  height: 100%;
+  align-items: center;
+}
+
+// Readonly styles for view mode
+.readonly-field {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+:host ::ng-deep .readonly-mode .mdc-text-field--outlined {
+  --mdc-outlined-text-field-container-shape: 0.375rem;
+  --mdc-outlined-text-field-outline-color: #dee2e6;
+  background-color: #e9ecef;
+}
+
+:host ::ng-deep .readonly-mode .mat-mdc-select-arrow-wrapper {
+  display: none;
 }

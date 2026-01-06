@@ -1,52 +1,64 @@
+@use '../../../scss/variables' as *;
+
 .home {
+  padding: $spacing-unit * 2;
+  background-color: $background-light;
   min-height: 100vh;
-  padding: 3rem 1.5rem;
-  background: #f4f7fa;
-  color: #222;
 }
 
 .home-header {
-  max-width: 900px;
-  margin: 0 auto 2rem;
-}
+  text-align: center;
+  margin-bottom: $spacing-unit * 3;
 
-.home-header h1 {
-  font-size: 2rem;
-  margin: 0 0 0.5rem;
-}
+  h1 {
+    font-size: $font-size-xl;
+    color: $contrast-text;
+    margin-bottom: $spacing-unit;
+  }
 
-.home-header p {
-  margin: 0;
-  color: #555;
+  p {
+    font-size: $font-size-large;
+    color: $secondary-color;
+  }
 }
 
 .stats {
   display: grid;
-  gap: 1.5rem;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-@media (min-width: 768px) {
-  .stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: $spacing-unit * 2;
 }
 
 .stat-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 12px 30px rgba(30, 32, 37, 0.12);
-  display: grid;
-  gap: 0.5rem;
-}
+  box-shadow: $card-shadow;
+  border-radius: $card-border-radius;
+  transition: transform 0.2s ease;
 
-.stat-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-weight: 600;
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  mat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .stat-icon {
+    color: $primary-color;
+    font-size: 1.5rem;
+  }
+
+  .stat-value {
+    font-size: $font-size-xl;
+    font-weight: bold;
+    color: $primary-color;
+    margin: $spacing-unit 0;
+  }
+
+  .stat-foot {
+    font-size: 0.9rem;
+    color: $secondary-color;
+  }
 }
 
 .stat-icon {

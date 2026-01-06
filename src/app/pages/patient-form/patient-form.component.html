@@ -8,7 +8,10 @@
         <a routerLink="/home"><i class="feather icon-home"></i></a>
       </li>
       <li class="breadcrumb-item">
-        <a routerLink="/patients">Pacientes</a>
+        <a routerLink="/patient-configurator">Configurador</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/patient-configurator/patients">Pacientes</a>
       </li>
       <li class="breadcrumb-item">Cadastro</li>
     </ul>
@@ -19,154 +22,226 @@
   <div class="col-xl-12">
     <div class="card">
       <div class="card-header">
-        <h5>Novo paciente</h5>
+        <h5>{{ formTitle() }}</h5>
       </div>
       <div class="card-body">
-        <form (ngSubmit)="onSubmit($event)" autocomplete="off">
+        <form (submit)="onSubmit($event)" autocomplete="off" method="post">
           <div class="row">
-            <div class="col-md-12 mb-3">
+            <div class="col-md-6 mb-3">
               <label class="form-label" for="patient-name">Nome</label>
-              <input
-                id="patient-name"
-                type="text"
-                class="form-control"
-                autocomplete="off"
-                [field]="patientForm.name"
-                [class.is-invalid]="submitted() && patientForm.name().invalid()"
-                placeholder="Nome completo"
-              />
-              @if (submitted() && patientForm.name().invalid()) {
-                <div class="invalid-feedback">
-                  @for (error of patientForm.name().errors(); track error.kind) {
-                    <div>{{ error.message }}</div>
-                  }
-                </div>
+              @if (isViewMode()) {
+                <input
+                  type="text"
+                  class="form-control readonly-field"
+                  [value]="patientModel().name"
+                  readonly
+                />
+              } @else {
+                <input
+                  id="patient-name"
+                  type="text"
+                  class="form-control"
+                  autocomplete="off"
+                  [field]="patientForm.name"
+                  [class.is-invalid]="submitted() && patientForm.name().invalid()"
+                  placeholder="Nome completo"
+                />
+                @if (submitted() && patientForm.name().invalid()) {
+                  <div class="invalid-feedback">
+                    @for (error of patientForm.name().errors(); track error.kind) {
+                      <div>{{ error.message }}</div>
+                    }
+                  </div>
+                }
               }
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" for="patient-birthday">Data de nascimento</label>
-              <input
-                id="patient-birthday"
-                type="date"
-                class="form-control"
-                [field]="patientForm.birthday"
-                [class.is-invalid]="submitted() && patientForm.birthday().invalid()"
-              />
-              @if (submitted() && patientForm.birthday().invalid()) {
-                <div class="invalid-feedback">
-                  @for (error of patientForm.birthday().errors(); track error.kind) {
-                    <div>{{ error.message }}</div>
-                  }
-                </div>
+              @if (isViewMode()) {
+                <input
+                  type="text"
+                  class="form-control readonly-field"
+                  [value]="patientModel().birthday | date:'dd/MM/yyyy'"
+                  readonly
+                />
+              } @else {
+                <input
+                  id="patient-birthday"
+                  type="date"
+                  class="form-control"
+                  [field]="patientForm.birthday"
+                  [class.is-invalid]="submitted() && patientForm.birthday().invalid()"
+                />
+                @if (submitted() && patientForm.birthday().invalid()) {
+                  <div class="invalid-feedback">
+                    @for (error of patientForm.birthday().errors(); track error.kind) {
+                      <div>{{ error.message }}</div>
+                    }
+                  </div>
+                }
               }
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" for="patient-contact">Contato</label>
-              <input
-                id="patient-contact"
-                type="tel"
-                class="form-control"
-                autocomplete="off"
-                [field]="patientForm.closerContact"
-                (input)="onContactInput($event)"
-                [class.is-invalid]="submitted() && patientForm.closerContact().invalid()"
-                placeholder="Telefone"
-              />
-              @if (submitted() && patientForm.closerContact().invalid()) {
-                <div class="invalid-feedback">
-                  @for (error of patientForm.closerContact().errors(); track error.kind) {
-                    <div>{{ error.message }}</div>
-                  }
-                </div>
+              @if (isViewMode()) {
+                <input
+                  type="text"
+                  class="form-control readonly-field"
+                  [value]="patientModel().closerContact | phoneMask"
+                  readonly
+                />
+              } @else {
+                <input
+                  id="patient-contact"
+                  type="tel"
+                  class="form-control"
+                  autocomplete="off"
+                  [field]="patientForm.closerContact"
+                  (input)="onContactInput($event)"
+                  [class.is-invalid]="submitted() && patientForm.closerContact().invalid()"
+                  placeholder="Telefone"
+                />
+                @if (submitted() && patientForm.closerContact().invalid()) {
+                  <div class="invalid-feedback">
+                    @for (error of patientForm.closerContact().errors(); track error.kind) {
+                      <div>{{ error.message }}</div>
+                    }
+                  </div>
+                }
               }
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" for="patient-sex">Sexo</label>
-              <select
-                id="patient-sex"
-                class="form-select"
-                [field]="patientForm.sex"
-                [class.is-invalid]="submitted() && patientForm.sex().invalid()"
-              >
-                <option value="">Selecione</option>
-                <option value="masculino">Masculino</option>
-                <option value="feminino">Feminino</option>
-              </select>
-              @if (submitted() && patientForm.sex().invalid()) {
-                <div class="invalid-feedback">
-                  @for (error of patientForm.sex().errors(); track error.kind) {
-                    <div>{{ error.message }}</div>
-                  }
-                </div>
+              @if (isViewMode()) {
+                <input
+                  type="text"
+                  class="form-control readonly-field"
+                  [value]="patientModel().sex === 'masculino' ? 'Masculino' : patientModel().sex === 'feminino' ? 'Feminino' : ''"
+                  readonly
+                />
+              } @else {
+                <select
+                  id="patient-sex"
+                  class="form-select"
+                  [field]="patientForm.sex"
+                  [class.is-invalid]="submitted() && patientForm.sex().invalid()"
+                >
+                  <option value="">Selecione</option>
+                  <option value="masculino">Masculino</option>
+                  <option value="feminino">Feminino</option>
+                </select>
+                @if (submitted() && patientForm.sex().invalid()) {
+                  <div class="invalid-feedback">
+                    @for (error of patientForm.sex().errors(); track error.kind) {
+                      <div>{{ error.message }}</div>
+                    }
+                  </div>
+                }
               }
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" for="patient-plan-id">Plano</label>
-              <select
-                id="patient-plan-id"
-                class="form-select"
-                [field]="patientForm.planId"
-                [class.is-invalid]="submitted() && patientForm.planId().invalid()"
-              >
-                <option value="">Selecione</option>
-                @for (plan of plans(); track plan.id) {
-                  <option [value]="plan.id">{{ plan.name }}</option>
-                }
-              </select>
-              @if (submitted() && patientForm.planId().invalid()) {
-                <div class="invalid-feedback">
-                  @for (error of patientForm.planId().errors(); track error.kind) {
-                    <div>{{ error.message }}</div>
+              @if (isViewMode()) {
+                <input
+                  type="text"
+                  class="form-control readonly-field"
+                  [value]="patientModel().planName"
+                  readonly
+                />
+              } @else {
+                <select
+                  id="patient-plan-id"
+                  class="form-select"
+                  [field]="patientForm.planId"
+                  [class.is-invalid]="submitted() && patientForm.planId().invalid()"
+                >
+                  <option value="">Selecione</option>
+                  @for (plan of plans(); track plan.id) {
+                    <option [value]="plan.id">{{ plan.name }}</option>
                   }
-                </div>
+                </select>
+                @if (submitted() && patientForm.planId().invalid()) {
+                  <div class="invalid-feedback">
+                    @for (error of patientForm.planId().errors(); track error.kind) {
+                      <div>{{ error.message }}</div>
+                    }
+                  </div>
+                }
               }
             </div>
             <div class="col-md-3 mb-3">
               <label class="form-label" for="patient-height">Altura (cm)</label>
-              <input
-                id="patient-height"
-                type="text"
-                class="form-control"
-                autocomplete="off"
-                [field]="patientForm.heightCm"
-                placeholder="Ex: 170"
-              />
+              @if (isViewMode()) {
+                <input
+                  type="text"
+                  class="form-control readonly-field"
+                  [value]="patientModel().heightCm"
+                  readonly
+                />
+              } @else {
+                <input
+                  id="patient-height"
+                  type="text"
+                  class="form-control"
+                  autocomplete="off"
+                  [field]="patientForm.heightCm"
+                  placeholder="Ex: 170"
+                />
+              }
             </div>
             <div class="col-md-3 mb-3">
               <label class="form-label" for="patient-weight">Peso (kg)</label>
-              <input
-                id="patient-weight"
-                type="text"
-                class="form-control"
-                autocomplete="off"
-                [field]="patientForm.weightKg"
-                placeholder="Ex: 70"
-              />
+              @if (isViewMode()) {
+                <input
+                  type="text"
+                  class="form-control readonly-field"
+                  [value]="patientModel().weightKg"
+                  readonly
+                />
+              } @else {
+                <input
+                  id="patient-weight"
+                  type="text"
+                  class="form-control"
+                  autocomplete="off"
+                  [field]="patientForm.weightKg"
+                  placeholder="Ex: 70"
+                />
+              }
             </div>
-            <div class="col-md-12 mb-3">
-              <label class="form-label" for="patient-diseases">Doen&ccedil;as</label>
-              <select
-                id="patient-diseases"
-                class="form-select"
-                multiple
-                (change)="onDiseasesChange($event)"
-              >
-                @for (disease of diseases(); track disease.id) {
-                  <option
-                    [value]="disease.name"
-                    [selected]="patientModel().diseases.includes(disease.name)"
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="patient-diseases">Doenças</label>
+              @if (isViewMode()) {
+                <input
+                  type="text"
+                  class="form-control readonly-field"
+                  [value]="getDiseasesNames()"
+                  readonly
+                />
+              } @else {
+                <mat-form-field class="diseases-field" appearance="outline">
+                  <mat-select
+                    id="patient-diseases"
+                    multiple
+                    [value]="patientModel().diseases"
+                    (selectionChange)="onDiseasesChange($event.value)"
+                    panelClass="diseases-panel"
                   >
-                    {{ disease.name }}
-                  </option>
-                }
-              </select>
+                    @for (disease of diseases(); track disease.id) {
+                      <mat-option [value]="disease.id">{{ disease.name }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
             </div>
           </div>
           <div class="d-flex justify-content-end gap-2">
             <button type="button" class="btn btn-outline-secondary" (click)="cancel()">
-              Cancelar
+              {{ isViewMode() ? 'Voltar' : 'Cancelar' }}
             </button>
-            <button type="submit" class="btn btn-primary">Salvar</button>
+            @if (!isViewMode()) {
+              <button type="submit" class="btn btn-primary">Salvar</button>
+            }
           </div>
         </form>
       </div>

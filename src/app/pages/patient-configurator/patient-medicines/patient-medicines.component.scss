@@ -1,0 +1,92 @@
+@use '../../../../scss/variables' as *;
+
+:host {
+  display: block;
+}
+
+.card-header h5 {
+  display: flex;
+  align-items: center;
+  margin: 0;
+
+  i {
+    color: $primary-color;
+  }
+}
+
+.medicines-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.medicine-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+  border-radius: 10px;
+  border-left: 4px solid $primary-color;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.medicine-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba($primary-color, 0.1);
+  flex-shrink: 0;
+
+  i {
+    color: $primary-color;
+    font-size: 1.1rem;
+  }
+}
+
+.medicine-name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  color: #ccc;
+  margin-bottom: 1rem;
+}
+
+.empty-text {
+  font-size: 1rem;
+  color: #999;
+  margin: 0;
+}
+
+.card-footer {
+  background: transparent;
+  border-top: 1px solid #f0f0f0;
+  padding: 1rem 1.25rem;
+}

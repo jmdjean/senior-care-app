@@ -5,31 +5,37 @@
   </header>
 
   <section class="stats">
-    <article class="stat-card">
-      <div class="stat-header">
-        <span>Total de pacientes</span>
-        <i class="feather icon-users stat-icon" aria-hidden="true"></i>
-      </div>
-      <div class="stat-value">{{ totalPatients }}</div>
-      <div class="stat-foot">Pacientes cadastrados</div>
-    </article>
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-card-title>Total de pacientes</mat-card-title>
+        <mat-icon class="stat-icon">people</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ totalPatients() }}</div>
+        <div class="stat-foot">Pacientes cadastrados</div>
+      </mat-card-content>
+    </mat-card>
 
-    <article class="stat-card">
-      <div class="stat-header">
-        <span>Plano Average</span>
-        <i class="feather icon-bar-chart-2 stat-icon" aria-hidden="true"></i>
-      </div>
-      <div class="stat-value">{{ averagePlanPatients }}</div>
-      <div class="stat-foot">Pacientes no plano Average</div>
-    </article>
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-card-title>Plano Average</mat-card-title>
+        <mat-icon class="stat-icon">bar_chart</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ averagePlanPatients() }}</div>
+        <div class="stat-foot">Pacientes no plano Average</div>
+      </mat-card-content>
+    </mat-card>
 
-    <article class="stat-card">
-      <div class="stat-header">
-        <span>Plano Gold</span>
-        <i class="feather icon-award stat-icon" aria-hidden="true"></i>
-      </div>
-      <div class="stat-value">{{ goldPlanPatients }}</div>
-      <div class="stat-foot">Pacientes no plano Gold</div>
-    </article>
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-card-title>Plano Gold</mat-card-title>
+        <mat-icon class="stat-icon">grade</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ goldPlanPatients() }}</div>
+        <div class="stat-foot">Pacientes no plano Gold</div>
+      </mat-card-content>
+    </mat-card>
   </section>
 </main>

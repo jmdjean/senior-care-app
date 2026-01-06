@@ -1,4 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { HomeService } from '../../shared/services/home.service';
 import { LoadingService } from '../../shared/services/loading.service';
 
@@ -6,15 +9,17 @@ import { LoadingService } from '../../shared/services/loading.service';
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  standalone: true
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, MatCardModule, MatIconModule]
 })
 export class HomeComponent implements OnInit {
   private homeService = inject(HomeService);
   private loadingService = inject(LoadingService);
 
-  totalPatients = 0;
-  averagePlanPatients = 0;
-  goldPlanPatients = 0;
+  totalPatients = signal(0);
+  averagePlanPatients = signal(0);
+  goldPlanPatients = signal(0);
 
   ngOnInit(): void {
     this.loadTotalPatients();
@@ -24,19 +29,19 @@ export class HomeComponent implements OnInit {
 
   private loadTotalPatients(): void {
     this.loadingService.track(this.homeService.getTotalPatient()).subscribe((value) => {
-      this.totalPatients = value;
+      this.totalPatients.set(value.total);
     });
   }
 
   private loadAveragePlanPatients(): void {
     this.loadingService.track(this.homeService.getPatientPlanAverage()).subscribe((value) => {
-      this.averagePlanPatients = value;
+      this.averagePlanPatients.set(value.total);
     });
   }
 
   private loadGoldPlanPatients(): void {
     this.loadingService.track(this.homeService.getPatientPlanGold()).subscribe((value) => {
-      this.goldPlanPatients = value;
+      this.goldPlanPatients.set(value.total);
     });
   }
 }
