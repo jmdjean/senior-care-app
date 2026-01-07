@@ -4,16 +4,23 @@ import { Field, form, required } from '@angular/forms/signals';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { CpfMaskPipe } from '../../shared/pipes/cpf-mask.pipe';
+import { CurrencyBrlPipe } from '../../shared/pipes/currency-brl.pipe';
 import { PhoneMaskPipe } from '../../shared/pipes/phone-mask.pipe';
+import { RgMaskPipe } from '../../shared/pipes/rg-mask.pipe';
 import { Disease, DiseaseService } from '../../shared/services/disease.service';
 import { LoadingService } from '../../shared/services/loading.service';
 import { NotificationHelperService } from '../../shared/services/notification-helper.service';
 import { Patient, PatientCreatePayload, PatientService } from '../../shared/services/patient.service';
 import { Plan, PlansService } from '../../shared/services/plans.service';
 
-type PatientFormModel = Omit<Patient, 'diseases' | 'id' | 'planId' | 'createdAt'> & {
+type PatientFormModel = Omit<Patient, 'diseases' | 'id' | 'planId' | 'createdAt' | 'customValue' | 'observation' | 'cpf' | 'rg'> & {
   planId: string;
   diseases: number[];
+  cpf: string;
+  rg: string;
+  customValue: string;
+  observation: string;
 };
 
 const emptyPatientModel: PatientFormModel = {
@@ -25,15 +32,18 @@ const emptyPatientModel: PatientFormModel = {
   weightKg: '',
   planId: '',
   planName: '',
-  diseases: []
+  diseases: [],
+  cpf: '',
+  rg: '',
+  customValue: '',
+  observation: ''
 };
 
 @Component({
   selector: 'app-patient-form',
-  imports: [RouterLink, Field, MatFormFieldModule, MatSelectModule, DatePipe, PhoneMaskPipe],
+  imports: [RouterLink, Field, MatFormFieldModule, MatSelectModule, DatePipe, PhoneMaskPipe, CpfMaskPipe, RgMaskPipe, CurrencyBrlPipe],
   templateUrl: './patient-form.component.html',
-  styleUrl: './patient-form.component.scss',
-  standalone: true
+  styleUrl: './patient-form.component.scss'
 })
 export class PatientFormComponent implements OnInit {
   private loadingService = inject(LoadingService);
@@ -154,7 +164,11 @@ export class PatientFormComponent implements OnInit {
           weightKg: weightValue === null ? '' : String(weightValue),
           planId: patient.planId ? String(patient.planId) : '',
           planName: patient.planName ?? '',
-          diseases: diseaseIds
+          diseases: diseaseIds,
+          cpf: patient.cpf ?? '',
+          rg: patient.rg ?? '',
+          customValue: patient.customValue ? String(patient.customValue) : '',
+          observation: patient.observation ?? ''
         });
       },
       error: (error) => {
@@ -211,6 +225,21 @@ export class PatientFormComponent implements OnInit {
     }
 
     const model = this.patientModel();
+    
+    // Validação de CPF
+    const cpfDigits = model.cpf.replace(/\D/g, '');
+    if (cpfDigits && cpfDigits.length !== 11) {
+      this.notificationHelper.showWarning('CPF inválido. Deve conter 11 dígitos.');
+      return;
+    }
+    
+    // Validação de RG
+    const rgDigits = model.rg.replace(/\D/g, '');
+    if (rgDigits && (rgDigits.length < 8 || rgDigits.length > 9)) {
+      this.notificationHelper.showWarning('RG inválido. Deve conter 8 ou 9 dígitos.');
+      return;
+    }
+
     const payload: PatientCreatePayload = {
       name: model.name,
       birthday: model.birthday,
@@ -219,7 +248,11 @@ export class PatientFormComponent implements OnInit {
       height: Number(model.heightCm) || 0,
       weight: Number(model.weightKg) || 0,
       planId: Number(model.planId) || 0,
-      diseaseIds: model.diseases
+      diseaseIds: model.diseases,
+      cpf: cpfDigits || undefined,
+      rg: rgDigits || undefined,
+      customValue: model.customValue ? this.parseCurrency(model.customValue) : undefined,
+      observation: model.observation || undefined
     };
 
     const request$ =
@@ -260,6 +293,65 @@ export class PatientFormComponent implements OnInit {
       .map(id => allDiseases.find(d => d.id === id)?.name)
       .filter((name): name is string => !!name)
       .join(', ');
+  }
+
+  onCpfInput(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const digits = (target.value || '').replace(/\D/g, '').slice(0, 11);
+    let masked = digits;
+    
+    if (digits.length > 9) {
+      masked = `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+    } else if (digits.length > 6) {
+      masked = `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+    } else if (digits.length > 3) {
+      masked = `${digits.slice(0, 3)}.${digits.slice(3)}`;
+    }
+    
+    target.value = masked;
+    this.patientModel.update((model) => ({ ...model, cpf: masked }));
+  }
+
+  onRgInput(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const digits = (target.value || '').replace(/\D/g, '').slice(0, 9);
+    let masked = digits;
+    
+    if (digits.length > 6) {
+      masked = `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}${digits.length > 8 ? '-' + digits.slice(8) : ''}`;
+    } else if (digits.length > 5) {
+      masked = `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5)}`;
+    } else if (digits.length > 2) {
+      masked = `${digits.slice(0, 2)}.${digits.slice(2)}`;
+    }
+    
+    target.value = masked;
+    this.patientModel.update((model) => ({ ...model, rg: masked }));
+  }
+
+  onCurrencyInput(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const digits = (target.value || '').replace(/\D/g, '');
+    
+    if (!digits) {
+      target.value = '';
+      this.patientModel.update((model) => ({ ...model, customValue: '' }));
+      return;
+    }
+    
+    const value = parseInt(digits, 10) / 100;
+    const masked = value.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    });
+    
+    target.value = masked;
+    this.patientModel.update((model) => ({ ...model, customValue: masked }));
+  }
+
+  private parseCurrency(value: string): number {
+    const cleaned = value.replace(/[R$\s.]/g, '').replace(',', '.');
+    return parseFloat(cleaned) || 0;
   }
 
   cancel(): void {

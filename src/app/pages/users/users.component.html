@@ -1,0 +1,194 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Usuários</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">Usuários</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-4 col-lg-5">
+    <div class="card">
+      <div class="card-header">
+        <h5>{{ isEditing() ? 'Editar usuário' : 'Cadastro de usuário' }}</h5>
+      </div>
+      <div class="card-body">
+        <form (submit)="onSubmit($event)" autocomplete="off">
+          <div class="mb-3">
+            <label class="form-label" for="user-name">Nome <span class="text-danger">*</span></label>
+            <input
+              id="user-name"
+              type="text"
+              class="form-control"
+              autocomplete="off"
+              [value]="userModel().name"
+              (input)="updateField('name', $event)"
+              [class.is-invalid]="submitted() && !userModel().name"
+              placeholder="Nome completo"
+            />
+            @if (submitted() && !userModel().name) {
+              <div class="invalid-feedback">Nome é obrigatório</div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="user-email">E-mail <span class="text-danger">*</span></label>
+            <input
+              id="user-email"
+              type="email"
+              class="form-control"
+              autocomplete="off"
+              [value]="userModel().email"
+              (input)="updateField('email', $event)"
+              [class.is-invalid]="submitted() && !userModel().email"
+              placeholder="email@exemplo.com"
+            />
+            @if (submitted() && !userModel().email) {
+              <div class="invalid-feedback">E-mail é obrigatório</div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="user-role">Perfil de acesso <span class="text-danger">*</span></label>
+            <select
+              id="user-role"
+              class="form-select"
+              [value]="userModel().role"
+              (change)="updateField('role', $event)"
+              [class.is-invalid]="submitted() && !userModel().role"
+            >
+              @for (role of roles; track role.value) {
+                <option [value]="role.value">{{ role.label }}</option>
+              }
+            </select>
+            @if (submitted() && !userModel().role) {
+              <div class="invalid-feedback">Perfil é obrigatório</div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="user-password">
+              Senha
+              @if (!isEditing()) {
+                <span class="text-danger">*</span>
+              }
+            </label>
+            <input
+              id="user-password"
+              type="password"
+              class="form-control"
+              autocomplete="new-password"
+              [value]="userModel().password"
+              (input)="updateField('password', $event)"
+              [class.is-invalid]="submitted() && !isEditing() && !userModel().password"
+              [placeholder]="isEditing() ? 'Deixe em branco para manter a atual' : 'Senha'"
+            />
+            @if (submitted() && !isEditing() && !userModel().password) {
+              <div class="invalid-feedback">Senha é obrigatória</div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="user-confirm-password">
+              Confirmar senha
+              @if (!isEditing()) {
+                <span class="text-danger">*</span>
+              }
+            </label>
+            <input
+              id="user-confirm-password"
+              type="password"
+              class="form-control"
+              autocomplete="new-password"
+              [value]="userModel().confirmPassword"
+              (input)="updateField('confirmPassword', $event)"
+              [class.is-invalid]="submitted() && !isEditing() && !userModel().confirmPassword"
+              [placeholder]="isEditing() ? 'Deixe em branco para manter a atual' : 'Confirme a senha'"
+            />
+            @if (submitted() && !isEditing() && !userModel().confirmPassword) {
+              <div class="invalid-feedback">Confirmação de senha é obrigatória</div>
+            }
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="feather icon-save" aria-hidden="true"></i>
+              {{ isEditing() ? 'Atualizar' : 'Cadastrar' }}
+            </button>
+            @if (isEditing()) {
+              <button type="button" class="btn btn-outline-secondary" (click)="resetForm()">
+                Cancelar
+              </button>
+            }
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-8 col-lg-7">
+    <div class="card table-card table-border-style">
+      <div class="card-header">
+        <h5>Lista de usuários</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Perfil</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of users(); track user.id) {
+                <tr>
+                  <td>{{ user.name }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>
+                    <span class="badge role-badge" [ngClass]="getRoleBadgeClass(user.role)">
+                      {{ getRoleLabel(user.role) }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="action-buttons">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-primary"
+                        (click)="editUser(user)"
+                        aria-label="Editar usuário"
+                      >
+                        <i class="feather icon-edit-2" aria-hidden="true"></i>
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="confirmDelete(user)"
+                        aria-label="Excluir usuário"
+                      >
+                        <i class="feather icon-trash-2" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+              @if (users().length === 0) {
+                <tr>
+                  <td colspan="4" class="text-muted">Nenhum usuário encontrado.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -5,6 +5,7 @@ const baseUrl = environment.servicesUrl.replace(/\/+$/, '');
 export const apiUrls = {
   login: `${baseUrl}/api/auth/login`,
   user: `${baseUrl}/api/users/register`,
+  users: `${baseUrl}/api/users`,
   patients: `${baseUrl}/api/patients`,
   patientNames: `${baseUrl}/api/patients/patient-names`,
   patientExams: (patientId: number | string) => `${baseUrl}/api/patients/${patientId}/exams`,

@@ -16,3 +16,15 @@ button.nav-link:hover {
   margin-left: auto;
   justify-content: flex-end;
 }
+
+.user-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #333;
+
+  i {
+    font-size: 1rem;
+  }
+}

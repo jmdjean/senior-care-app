@@ -22,6 +22,13 @@
   <div class="col-12">
     @if (report()) {
       <div class="report-container">
+        @if (createdAt()) {
+          <div class="report-date">
+            <i class="feather icon-calendar" aria-hidden="true"></i>
+            Gerado em: {{ createdAt() | date:'dd/MM/yyyy HH:mm' }}
+          </div>
+        }
+
         @for (section of sections(); track section.title) {
           <div class="card report-section">
             <div class="card-header">

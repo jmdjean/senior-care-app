@@ -1,13 +1,13 @@
 <section class="page-header">
   <div class="page-header-title">
-    <h5>Configurador</h5>
+    <h5>Usuários</h5>
   </div>
   <div class="page-header-breadcrumb">
     <ul class="breadcrumb">
       <li class="breadcrumb-item">
         <a routerLink="/home"><i class="feather icon-home"></i></a>
       </li>
-      <li class="breadcrumb-item">Configurador</li>
+      <li class="breadcrumb-item">Usuários</li>
     </ul>
   </div>
 </section>
@@ -15,7 +15,7 @@
 <div class="row">
   <div class="col-12">
     <div class="config-cards">
-      @for (card of cards(); track card.route) {
+      @for (card of cards; track card.route) {
         <a [routerLink]="card.route" class="config-card" [attr.aria-label]="'Acessar ' + card.title">
           <div class="card-icon">
             <i [class]="card.icon" aria-hidden="true"></i>

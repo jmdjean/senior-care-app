@@ -1,0 +1,107 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Usuários</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/users">Usuários</a>
+      </li>
+      <li class="breadcrumb-item">Lista</li>
+    </ul>
+  </div>
+</section>
+
+@if (openMenuId() !== null) {
+  <button
+    class="action-menu-backdrop"
+    (click)="closeMenu()"
+    aria-label="Fechar menu"
+  ></button>
+}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card table-card table-border-style">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5>Lista de usuários</h5>
+        <button type="button" class="btn btn-primary btn-sm" routerLink="/users/new">
+          <i class="feather icon-plus" aria-hidden="true"></i>
+          Cadastrar
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Ações</th>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Perfil</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of users(); track user.id) {
+                <tr>
+                  <td class="action-cell">
+                    <div class="action-menu-container">
+                      <button
+                        type="button"
+                        class="btn btn-action-menu"
+                        (click)="toggleMenu(user.id, $event)"
+                        [attr.aria-expanded]="openMenuId() === user.id"
+                        aria-haspopup="true"
+                        [attr.aria-label]="'Abrir menu de ações para ' + user.name"
+                      >
+                        <i class="feather icon-more-horizontal" aria-hidden="true"></i>
+                      </button>
+                      @if (openMenuId() === user.id) {
+                        <div class="action-dropdown" role="menu">
+                          <button
+                            type="button"
+                            class="dropdown-item"
+                            role="menuitem"
+                            (click)="editUser(user)"
+                          >
+                            <i class="feather icon-edit-2" aria-hidden="true"></i>
+                            Alterar
+                          </button>
+                          <div class="dropdown-divider"></div>
+                          <button
+                            type="button"
+                            class="dropdown-item text-danger"
+                            role="menuitem"
+                            (click)="confirmDelete(user)"
+                          >
+                            <i class="feather icon-trash-2" aria-hidden="true"></i>
+                            Excluir
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  </td>
+                  <td>{{ user.name }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>
+                    <span class="badge role-badge" [ngClass]="getRoleBadgeClass(user.role)">
+                      {{ getRoleLabel(user.role) }}
+                    </span>
+                  </td>
+                </tr>
+              }
+              @if (users().length === 0) {
+                <tr>
+                  <td colspan="4" class="text-muted">Nenhum usuário encontrado.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

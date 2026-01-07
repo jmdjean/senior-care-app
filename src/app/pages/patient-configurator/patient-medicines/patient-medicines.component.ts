@@ -1,14 +1,15 @@
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LoadingService } from '../../../shared/services/loading.service';
-import { MedicalPrescriptionService } from '../../../shared/services/medical-prescription.service';
+import { MedicalPrescriptionService, Prescription } from '../../../shared/services/medical-prescription.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
 
 @Component({
   selector: 'app-patient-medicines',
   templateUrl: './patient-medicines.component.html',
   styleUrl: './patient-medicines.component.scss',
-  imports: [RouterLink],
+  imports: [RouterLink, DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientMedicinesComponent implements OnInit {
@@ -18,7 +19,7 @@ export class PatientMedicinesComponent implements OnInit {
   private notificationHelper = inject(NotificationHelperService);
   private medicalPrescriptionService = inject(MedicalPrescriptionService);
 
-  medicines = signal<string[]>([]);
+  prescriptions = signal<Prescription[]>([]);
   patientId = signal<number | null>(null);
 
   ngOnInit(): void {
@@ -27,7 +28,7 @@ export class PatientMedicinesComponent implements OnInit {
       const parsedId = Number(idParam);
       if (!Number.isNaN(parsedId)) {
         this.patientId.set(parsedId);
-        this.loadMedicines(parsedId);
+        this.loadPrescriptions(parsedId);
       } else {
         this.router.navigate(['/patient-configurator/patients']);
       }
@@ -36,10 +37,10 @@ export class PatientMedicinesComponent implements OnInit {
     }
   }
 
-  private loadMedicines(patientId: number): void {
+  private loadPrescriptions(patientId: number): void {
     this.loadingService.track(this.medicalPrescriptionService.getByPatientId(patientId)).subscribe({
-      next: (response) => {
-        this.medicines.set(response.medicines ?? []);
+      next: (prescriptions) => {
+        this.prescriptions.set(prescriptions);
       },
       error: (error) => {
         this.notificationHelper.showBackendError(error, 'Não foi possível carregar as prescrições médicas.');

@@ -234,6 +234,92 @@
                 </mat-form-field>
               }
             </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="patient-cpf">CPF</label>
+              @if (isViewMode()) {
+                <input
+                  type="text"
+                  class="form-control readonly-field"
+                  [value]="patientModel().cpf | cpfMask"
+                  readonly
+                />
+              } @else {
+                <input
+                  id="patient-cpf"
+                  type="text"
+                  class="form-control"
+                  autocomplete="off"
+                  [value]="patientModel().cpf"
+                  (input)="onCpfInput($event)"
+                  placeholder="000.000.000-00"
+                  maxlength="14"
+                />
+              }
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="patient-rg">RG</label>
+              @if (isViewMode()) {
+                <input
+                  type="text"
+                  class="form-control readonly-field"
+                  [value]="patientModel().rg | rgMask"
+                  readonly
+                />
+              } @else {
+                <input
+                  id="patient-rg"
+                  type="text"
+                  class="form-control"
+                  autocomplete="off"
+                  [value]="patientModel().rg"
+                  (input)="onRgInput($event)"
+                  placeholder="00.000.000-0"
+                  maxlength="12"
+                />
+              }
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="patient-custom-value">Valor personalizado (R$)</label>
+              @if (isViewMode()) {
+                <input
+                  type="text"
+                  class="form-control readonly-field"
+                  [value]="patientModel().customValue | currencyBrl"
+                  readonly
+                />
+              } @else {
+                <input
+                  id="patient-custom-value"
+                  type="text"
+                  class="form-control"
+                  autocomplete="off"
+                  [value]="patientModel().customValue"
+                  (input)="onCurrencyInput($event)"
+                  placeholder="R$ 0,00"
+                />
+                <small class="form-text text-muted">Deixe vazio para usar o valor do plano</small>
+              }
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label" for="patient-observation">Observação</label>
+              @if (isViewMode()) {
+                <textarea
+                  class="form-control readonly-field"
+                  [value]="patientModel().observation"
+                  readonly
+                  rows="3"
+                ></textarea>
+              } @else {
+                <textarea
+                  id="patient-observation"
+                  class="form-control"
+                  autocomplete="off"
+                  [field]="patientForm.observation"
+                  placeholder="Informações adicionais sobre o paciente..."
+                  rows="3"
+                ></textarea>
+              }
+            </div>
           </div>
           <div class="d-flex justify-content-end gap-2">
             <button type="button" class="btn btn-outline-secondary" (click)="cancel()">

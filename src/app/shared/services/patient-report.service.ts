@@ -1,14 +1,24 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { apiUrls } from '../urls';
 
-export type PatientReportResponse = {
+export type PatientReportData = {
   generalInformation: string[];
   observations: string[];
   worries: string[];
   diseases: string[];
   medicationDosages: string[];
+};
+
+export type PatientReportResponse = {
+  report: PatientReportData;
+  createdAt: string;
+};
+
+type ApiResponse = {
+  report: PatientReportData;
+  createdAt: string;
 };
 
 @Injectable({
@@ -18,6 +28,11 @@ export class PatientReportService {
   private http = inject(HttpClient);
 
   generateReport(patientId: number): Observable<PatientReportResponse> {
-    return this.http.post<PatientReportResponse>(apiUrls.patientReport, { patientId });
+    return this.http.post<ApiResponse>(apiUrls.patientReport, { patientId }).pipe(
+      map((response) => ({
+        report: response.report,
+        createdAt: response.createdAt
+      }))
+    );
   }
 }

@@ -9,8 +9,21 @@ export type MedicalPrescriptionPayload = {
   medicalPrescription: File | null;
 };
 
-export type PatientMedicines = {
-  medicines: string[];
+export type Prescription = {
+  id: number;
+  patientId: number;
+  fileName: string;
+  fileType: string;
+  sentAt: string;
+  rawText: string;
+  observation: string | null;
+  aiPayload: {
+    medicalPrescription: string[];
+  };
+};
+
+export type PrescriptionsResponse = {
+  prescriptions: Prescription[];
 };
 
 @Injectable({
@@ -31,11 +44,21 @@ export class MedicalPrescriptionService {
     return this.http.post<void>(apiUrls.medicalPrescription, formData);
   }
 
-  getByPatientId(patientId: number): Observable<PatientMedicines> {
-    return this.http.get<PatientMedicines>(apiUrls.medicalPrescriptionByPatient(patientId)).pipe(
-      map((response) => ({
-        medicines: response.medicines ?? []
-      }))
+  getByPatientId(patientId: number): Observable<Prescription[]> {
+    return this.http.get<PrescriptionsResponse>(apiUrls.medicalPrescriptionByPatient(patientId)).pipe(
+      map((response) => {
+        const prescriptions = response.prescriptions ?? [];
+        return prescriptions.map((p: Record<string, unknown>) => ({
+          id: p['id'] as number,
+          patientId: p['patient_id'] as number,
+          fileName: p['file_name'] as string,
+          fileType: p['file_type'] as string,
+          sentAt: p['sent_at'] as string,
+          rawText: p['raw_text'] as string,
+          observation: p['observation'] as string | null,
+          aiPayload: p['ai_payload'] as { medicalPrescription: string[] }
+        }));
+      })
     );
   }
 }

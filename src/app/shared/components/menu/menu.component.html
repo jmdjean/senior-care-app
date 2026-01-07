@@ -12,7 +12,7 @@
       <div class="navbar-content">
         <ul class="nav pcoded-inner-navbar">
           <li class="nav-item pcoded-menu-caption">
-            <label>Navegação</label>
+            <span class="menu-caption-text">Navegação</span>
           </li>
           <li class="nav-item" routerLinkActive="active">
             <a class="nav-link" routerLink="/home">
@@ -30,6 +30,16 @@
               <span class="pcoded-mtext">Configurador</span>
             </a>
           </li>
+          @if (isAdmin()) {
+            <li class="nav-item" routerLinkActive="active">
+              <a class="nav-link" routerLink="/users">
+                <span class="pcoded-micon">
+                  <i class="feather icon-users"></i>
+                </span>
+                <span class="pcoded-mtext">Usuários</span>
+              </a>
+            </li>
+          }
         </ul>
       </div>
     </div>

@@ -1,6 +1,6 @@
 <section class="page-header">
   <div class="page-header-title">
-    <h5>Prescrições médicas</h5>
+    <h5>Prescrição médica</h5>
   </div>
   <div class="page-header-breadcrumb">
     <ul class="breadcrumb">
@@ -13,45 +13,57 @@
       <li class="breadcrumb-item">
         <a routerLink="/patient-configurator/patients">Pacientes</a>
       </li>
-      <li class="breadcrumb-item">Prescrições médicas</li>
+      <li class="breadcrumb-item">Prescrição médica</li>
     </ul>
   </div>
 </section>
 
-<div class="row">
-  <div class="col-xl-8 col-lg-10">
-    <div class="card">
-      <div class="card-header">
-        <h5>
-          <i class="feather icon-clipboard me-2" aria-hidden="true"></i>
-          Remédios prescritos
-        </h5>
-      </div>
-      <div class="card-body">
-        @if (medicines().length > 0) {
-          <ul class="medicines-list">
-            @for (medicine of medicines(); track $index) {
-              <li class="medicine-item">
-                <span class="medicine-icon" aria-hidden="true">
-                  <i class="feather icon-check-circle"></i>
-                </span>
-                <span class="medicine-name">{{ medicine }}</span>
+<div class="page-actions">
+  <button type="button" class="btn btn-outline-secondary" (click)="goBack()">
+    <i class="feather icon-arrow-left me-1" aria-hidden="true"></i>
+    Voltar para lista
+  </button>
+</div>
+
+<div class="prescriptions-container">
+  @if (prescriptions().length > 0) {
+    @for (prescription of prescriptions(); track prescription.id) {
+      <div class="card prescription-card">
+        <div class="card-header">
+          <div class="header-content">
+            <div class="header-icon">
+              <i class="feather icon-clipboard" aria-hidden="true"></i>
+            </div>
+            <div class="header-text">
+              <h5>Prescrição Médica - {{ prescription.sentAt | date:'dd/MM/yyyy HH:mm' }}</h5>
+              <span class="subtitle">{{ prescription.fileName }}</span>
+            </div>
+          </div>
+          <span class="badge badge-primary">{{ prescription.aiPayload.medicalPrescription.length }} itens</span>
+        </div>
+        <div class="card-body">
+          <ul class="prescription-list">
+            @for (item of prescription.aiPayload.medicalPrescription; track $index; let i = $index) {
+              <li class="prescription-item">
+                <span class="item-number">{{ i + 1 }}</span>
+                <span class="item-text">{{ item }}</span>
               </li>
             }
           </ul>
-        } @else {
-          <div class="empty-state">
-            <i class="feather icon-inbox empty-icon" aria-hidden="true"></i>
-            <p class="empty-text">Nenhuma prescrição médica encontrada para este paciente.</p>
-          </div>
-        }
+        </div>
       </div>
-      <div class="card-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="goBack()">
-          <i class="feather icon-arrow-left me-1" aria-hidden="true"></i>
-          Voltar
-        </button>
+    }
+  } @else {
+    <div class="card prescription-card">
+      <div class="card-body">
+        <div class="empty-state">
+          <div class="empty-icon-container">
+            <i class="feather icon-file-text" aria-hidden="true"></i>
+          </div>
+          <h6 class="empty-title">Nenhuma prescrição encontrada</h6>
+          <p class="empty-text">Este paciente não possui prescrições médicas registradas.</p>
+        </div>
       </div>
     </div>
-  </div>
+  }
 </div>

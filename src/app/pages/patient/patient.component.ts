@@ -9,13 +9,13 @@ import { LoadingService } from '../../shared/services/loading.service';
 import { NotificationHelperService } from '../../shared/services/notification-helper.service';
 import { PatientReportResponse, PatientReportService } from '../../shared/services/patient-report.service';
 import { Patient, PatientService } from '../../shared/services/patient.service';
+import { UserService } from '../../shared/services/user.service';
 
 @Component({
   selector: 'app-patient',
   imports: [RouterLink, DatePipe, NgClass, AgePipe, PhoneMaskPipe, MatDialogModule],
   templateUrl: './patient.component.html',
   styleUrl: './patient.component.scss',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientComponent implements OnInit {
@@ -24,10 +24,18 @@ export class PatientComponent implements OnInit {
   private patientService = inject(PatientService);
   private notificationHelper = inject(NotificationHelperService);
   private patientReportService = inject(PatientReportService);
+  private userService = inject(UserService);
   private router = inject(Router);
 
   patients = signal<Patient[]>([]);
   openMenuId = signal<number | null>(null);
+
+  readonly canManagePatients = this.userService.canManagePatients;
+  readonly canSendExams = this.userService.canSendExams;
+  readonly canSendPrescriptions = this.userService.canSendPrescriptions;
+  readonly canGenerateReport = this.userService.canGenerateReport;
+  readonly canViewExams = this.userService.canViewExams;
+  readonly canViewPrescriptions = this.userService.canViewPrescriptions;
 
   ngOnInit(): void {
     this.loadPatients();

@@ -4,89 +4,170 @@
   display: block;
 }
 
-.card-header h5 {
+.page-actions {
+  margin-bottom: 1.5rem;
+}
+
+.prescriptions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.prescription-card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.card-header {
   display: flex;
   align-items: center;
-  margin: 0;
+  justify-content: space-between;
+  background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+  padding: 1.25rem 1.5rem;
+  border: none;
 
-  i {
-    color: $primary-color;
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+
+    i {
+      font-size: 1.25rem;
+      color: #fff;
+    }
+  }
+
+  .header-text {
+    h5 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.75);
+      margin-top: 2px;
+    }
+  }
+
+  .badge-primary {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 0.4rem 0.875rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
   }
 }
 
-.medicines-list {
+.card-body {
+  padding: 1.5rem;
+}
+
+.prescription-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.medicine-item {
+.prescription-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
   padding: 1rem 1.25rem;
-  margin-bottom: 0.75rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+  background: #f8fafc;
   border-radius: 10px;
-  border-left: 4px solid $primary-color;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
+  border-left: 3px solid $primary-color;
+  transition: all 0.2s ease;
 
   &:hover {
+    background: #f1f5f9;
     transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 }
 
-.medicine-icon {
+.item-number {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  min-width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: rgba($primary-color, 0.1);
+  background: $primary-color;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
   flex-shrink: 0;
-
-  i {
-    color: $primary-color;
-    font-size: 1.1rem;
-  }
 }
 
-.medicine-name {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #333;
+.item-text {
+  flex: 1;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #334155;
+  word-break: break-word;
 }
 
+// Empty state
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1rem;
+  padding: 4rem 2rem;
   text-align: center;
 }
 
-.empty-icon {
-  font-size: 3rem;
-  color: #ccc;
-  margin-bottom: 1rem;
+.empty-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  margin-bottom: 1.5rem;
+
+  i {
+    font-size: 2rem;
+    color: #94a3b8;
+  }
+}
+
+.empty-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #475569;
 }
 
 .empty-text {
-  font-size: 1rem;
-  color: #999;
   margin: 0;
+  font-size: 0.9375rem;
+  color: #94a3b8;
+  max-width: 300px;
 }
-
 .card-footer {
-  background: transparent;
+  background: #fafafa;
   border-top: 1px solid #f0f0f0;
-  padding: 1rem 1.25rem;
+  padding: 1rem 1.5rem;
 }

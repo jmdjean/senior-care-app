@@ -19,6 +19,28 @@ export const routes: Routes = [
           import('./pages/home/home.component').then((m) => m.HomeComponent)
       },
       {
+        path: 'users',
+        loadComponent: () =>
+          import('./pages/users/users-configurator/users-configurator.component').then(
+            (m) => m.UsersConfiguratorComponent
+          )
+      },
+      {
+        path: 'users/new',
+        loadComponent: () =>
+          import('./pages/users/user-form/user-form.component').then((m) => m.UserFormComponent)
+      },
+      {
+        path: 'users/list',
+        loadComponent: () =>
+          import('./pages/users/user-list/user-list.component').then((m) => m.UserListComponent)
+      },
+      {
+        path: 'users/:id',
+        loadComponent: () =>
+          import('./pages/users/user-form/user-form.component').then((m) => m.UserFormComponent)
+      },
+      {
         path: 'patient-configurator',
         loadComponent: () =>
           import('./pages/patient-configurator/patient-configurator.component').then(

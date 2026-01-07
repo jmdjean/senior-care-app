@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { PatientReportResponse } from '../../../shared/services/patient-report.service';
@@ -12,7 +13,7 @@ type ReportSection = {
   selector: 'app-report-patient-response',
   templateUrl: './report-patient-response.component.html',
   styleUrl: './report-patient-response.component.scss',
-  imports: [RouterLink],
+  imports: [RouterLink, DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReportPatientResponseComponent implements OnInit {
@@ -20,6 +21,7 @@ export class ReportPatientResponseComponent implements OnInit {
 
   report = signal<PatientReportResponse | null>(null);
   sections = signal<ReportSection[]>([]);
+  createdAt = signal<string>('');
 
   ngOnInit(): void {
     const navigation = this.router.getCurrentNavigation();
@@ -28,6 +30,7 @@ export class ReportPatientResponseComponent implements OnInit {
     if (state?.['report']) {
       const reportData = state['report'] as PatientReportResponse;
       this.report.set(reportData);
+      this.createdAt.set(reportData.createdAt ?? '');
       this.buildSections(reportData);
     } else {
       this.router.navigate(['/patient-configurator/report']);
@@ -35,30 +38,31 @@ export class ReportPatientResponseComponent implements OnInit {
   }
 
   private buildSections(data: PatientReportResponse): void {
+    const reportContent = data.report;
     const sectionsList: ReportSection[] = [
       {
         title: 'Informações gerais',
-        items: data.generalInformation ?? [],
+        items: reportContent.generalInformation ?? [],
         icon: 'feather icon-user'
       },
       {
         title: 'Observações',
-        items: data.observations ?? [],
+        items: reportContent.observations ?? [],
         icon: 'feather icon-eye'
       },
       {
         title: 'Cuidados',
-        items: data.worries ?? [],
+        items: reportContent.worries ?? [],
         icon: 'feather icon-alert-triangle'
       },
       {
         title: 'Doenças',
-        items: data.diseases ?? [],
+        items: reportContent.diseases ?? [],
         icon: 'feather icon-activity'
       },
       {
         title: 'Remédios e dosagens',
-        items: data.medicationDosages ?? [],
+        items: reportContent.medicationDosages ?? [],
         icon: 'feather icon-package'
       }
     ];

@@ -1,12 +1,22 @@
-﻿import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+﻿import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { apiUrls } from '../urls';
 import { NotificationHelperService } from './notification-helper.service';
+import { CurrentUser, UserRole, UserService } from './user.service';
 
 type LoginResponse = {
   userId?: number | string;
   id?: number | string;
+  name?: string;
+  email?: string;
+  role?: UserRole;
+  user?: {
+    id?: number | string;
+    name?: string;
+    email?: string;
+    role?: UserRole;
+  };
 };
 
 export type SignupPayload = {
@@ -21,11 +31,9 @@ export type SignupPayload = {
 })
 export class AuthService {
   private readonly userIdKey = 'userId';
-
-  constructor(
-    private http: HttpClient,
-    private notificationHelper: NotificationHelperService
-  ) {}
+  private http = inject(HttpClient);
+  private notificationHelper = inject(NotificationHelperService);
+  private userService = inject(UserService);
 
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http
@@ -33,10 +41,21 @@ export class AuthService {
       .pipe(
         tap({
           next: (response) => {
-            const userId = response?.userId ?? response?.id;
+            const userData = response?.user ?? response;
+            const userId = userData?.id ?? response?.userId;
+            
             if (userId !== undefined && userId !== null) {
               this.setUserId(String(userId));
             }
+
+            const currentUser: CurrentUser = {
+              id: Number(userId) || 0,
+              name: userData?.name ?? 'Usuário',
+              email: userData?.email ?? email,
+              role: userData?.role ?? 'Nurse'
+            };
+            
+            this.userService.setCurrentUser(currentUser);
             this.notificationHelper.showSuccess('Login realizado com sucesso.');
           },
           error: (error) =>
@@ -73,6 +92,7 @@ export class AuthService {
 
   logout(): void {
     this.clearUserId();
+    this.userService.clearCurrentUser();
     localStorage.clear();
     sessionStorage.clear();
 
@@ -84,4 +104,9 @@ export class AuthService {
       });
     }
   }
+
+  initializeUser(): void {
+    this.userService.loadUserFromStorage();
+  }
 }
+

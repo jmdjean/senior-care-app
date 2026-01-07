@@ -20,9 +20,11 @@
     <div class="card table-card table-border-style">
       <div class="card-header d-flex align-items-center justify-content-between">
         <h5>Lista de pacientes</h5>
-        <button type="button" class="btn btn-primary btn-sm" routerLink="/patient-configurator/patients/new">
-          Cadastrar
-        </button>
+        @if (canManagePatients()) {
+          <button type="button" class="btn btn-primary btn-sm" routerLink="/patient-configurator/patients/new">
+            Cadastrar
+          </button>
+        }
       </div>
       <div class="card-body">
         <div class="table-responsive">
@@ -55,15 +57,17 @@
                       </button>
                       @if (openMenuId() === patient.id) {
                         <div class="action-dropdown" role="menu">
-                          <button
-                            type="button"
-                            class="dropdown-item"
-                            role="menuitem"
-                            (click)="editPatient(patient)"
-                          >
-                            <i class="feather icon-edit-2" aria-hidden="true"></i>
-                            Alterar
-                          </button>
+                          @if (canManagePatients()) {
+                            <button
+                              type="button"
+                              class="dropdown-item"
+                              role="menuitem"
+                              (click)="editPatient(patient)"
+                            >
+                              <i class="feather icon-edit-2" aria-hidden="true"></i>
+                              Alterar
+                            </button>
+                          }
                           <button
                             type="button"
                             class="dropdown-item"
@@ -73,43 +77,51 @@
                             <i class="feather icon-eye" aria-hidden="true"></i>
                             Visualizar
                           </button>
-                          <button
-                            type="button"
-                            class="dropdown-item"
-                            role="menuitem"
-                            (click)="openMedicines(patient)"
-                          >
-                            <i class="feather icon-clipboard" aria-hidden="true"></i>
-                            Prescrição médica
-                          </button>
-                          <button
-                            type="button"
-                            class="dropdown-item"
-                            role="menuitem"
-                            (click)="openExams(patient)"
-                          >
-                            <i class="feather icon-activity" aria-hidden="true"></i>
-                            Exames
-                          </button>
-                          <button
-                            type="button"
-                            class="dropdown-item"
-                            role="menuitem"
-                            (click)="openReport(patient)"
-                          >
-                            <i class="feather icon-file-text" aria-hidden="true"></i>
-                            Relatório do paciente
-                          </button>
-                          <div class="dropdown-divider"></div>
-                          <button
-                            type="button"
-                            class="dropdown-item text-danger"
-                            role="menuitem"
-                            (click)="confirmDelete(patient)"
-                          >
-                            <i class="feather icon-trash-2" aria-hidden="true"></i>
-                            Excluir
-                          </button>
+                          @if (canViewPrescriptions()) {
+                            <button
+                              type="button"
+                              class="dropdown-item"
+                              role="menuitem"
+                              (click)="openMedicines(patient)"
+                            >
+                              <i class="feather icon-clipboard" aria-hidden="true"></i>
+                              Prescrição médica
+                            </button>
+                          }
+                          @if (canViewExams()) {
+                            <button
+                              type="button"
+                              class="dropdown-item"
+                              role="menuitem"
+                              (click)="openExams(patient)"
+                            >
+                              <i class="feather icon-activity" aria-hidden="true"></i>
+                              Exames
+                            </button>
+                          }
+                          @if (canGenerateReport()) {
+                            <button
+                              type="button"
+                              class="dropdown-item"
+                              role="menuitem"
+                              (click)="openReport(patient)"
+                            >
+                              <i class="feather icon-file-text" aria-hidden="true"></i>
+                              Relatório do paciente
+                            </button>
+                          }
+                          @if (canManagePatients()) {
+                            <div class="dropdown-divider"></div>
+                            <button
+                              type="button"
+                              class="dropdown-item text-danger"
+                              role="menuitem"
+                              (click)="confirmDelete(patient)"
+                            >
+                              <i class="feather icon-trash-2" aria-hidden="true"></i>
+                              Excluir
+                            </button>
+                          }
                         </div>
                       }
                     </div>

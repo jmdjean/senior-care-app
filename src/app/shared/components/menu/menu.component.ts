@@ -1,11 +1,15 @@
-﻿import { Component } from '@angular/core';
+﻿import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-menu',
   imports: [RouterLink, RouterLinkActive],
   templateUrl: './menu.component.html',
-  styleUrl: './menu.component.scss',
-  standalone: true
+  styleUrl: './menu.component.scss'
 })
-export class MenuComponent {}
+export class MenuComponent {
+  private userService = inject(UserService);
+
+  readonly isAdmin = this.userService.isAdmin;
+}

@@ -11,7 +11,10 @@
   <div class="collapse navbar-collapse px-4">
     <ul class="navbar-nav me-auto">
       <li class="nav-item">
-        <span class="nav-link">Painel</span>
+        <span class="nav-link user-display">
+          <i class="feather icon-user" aria-hidden="true"></i>
+          {{ userDisplayName() }}
+        </span>
       </li>
     </ul>
     <ul class="navbar-nav ms-auto align-items-center">
