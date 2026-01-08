@@ -1,0 +1,63 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Visão Geral</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/financeiro">Financeiro</a>
+      </li>
+      <li class="breadcrumb-item">Visão Geral</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-12">
+    <div class="overview-cards">
+      <div class="overview-card">
+        <div class="card-header">
+          <h5>Balanço Geral</h5>
+        </div>
+        <div class="card-body">
+          <div class="value">{{ generalBalance() | currencyBrl }}</div>
+        </div>
+      </div>
+      <div class="overview-card">
+        <div class="card-header">
+          <h5>Gastos do Mês</h5>
+        </div>
+        <div class="card-body">
+          <div class="value">{{ monthlyExpenses() | currencyBrl }}</div>
+        </div>
+      </div>
+      <div class="overview-card">
+        <div class="card-header">
+          <h5>Mercado do Mês</h5>
+        </div>
+        <div class="card-body">
+          <div class="value">{{ monthlyMarket() | currencyBrl }}</div>
+        </div>
+      </div>
+      <div class="overview-card">
+        <div class="card-header">
+          <h5>Funcionários</h5>
+        </div>
+        <div class="card-body">
+          <div class="value">{{ employees() | currencyBrl }}</div>
+        </div>
+      </div>
+      <div class="overview-card">
+        <div class="card-header">
+          <h5>Aluguel</h5>
+        </div>
+        <div class="card-body">
+          <div class="value">{{ rent() | currencyBrl }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

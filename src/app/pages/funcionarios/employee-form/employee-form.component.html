@@ -1,0 +1,118 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>{{ isEdit() ? 'Editar Funcionário' : 'Novo Funcionário' }}</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/funcionarios">Funcionários</a>
+      </li>
+      <li class="breadcrumb-item">{{ isEdit() ? 'Editar' : 'Novo' }}</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-8">
+    <div class="card">
+      <div class="card-header">
+        <h5>{{ isEdit() ? 'Editar Funcionário' : 'Cadastrar Funcionário' }}</h5>
+      </div>
+      <div class="card-body">
+        <form [form]="employeeForm" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Tipo de Funcionário</mat-label>
+                <mat-select formControlName="type">
+                  @for (type of employeeTypes; track type) {
+                    <mat-option [value]="type">{{ type }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-md-6 mb-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Nome</mat-label>
+                <input matInput formControlName="name" required />
+              </mat-form-field>
+            </div>
+            <div class="col-md-6 mb-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>CPF</mat-label>
+                <input matInput formControlName="cpf" [value]="employeeForm.value().cpf | cpfMask" required />
+              </mat-form-field>
+            </div>
+            <div class="col-md-6 mb-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Nome Completo</mat-label>
+                <input matInput formControlName="fullName" required />
+              </mat-form-field>
+            </div>
+            <div class="col-md-6 mb-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Sexo</mat-label>
+                <mat-select formControlName="sex">
+                  @for (sex of sexes; track sex) {
+                    <mat-option [value]="sex">{{ sex }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-md-6 mb-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Endereço</mat-label>
+                <input matInput formControlName="address" required />
+              </mat-form-field>
+            </div>
+            <div class="col-md-6 mb-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Data de Entrada</mat-label>
+                <input matInput type="date" formControlName="entryDate" required />
+              </mat-form-field>
+            </div>
+            <div class="col-md-6 mb-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Celular</mat-label>
+                <input matInput formControlName="phone" [value]="employeeForm.value().phone | phoneMask" required />
+              </mat-form-field>
+            </div>
+            <div class="col-md-6 mb-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Contato de Emergência</mat-label>
+                <input matInput formControlName="emergencyContact" [value]="employeeForm.value().emergencyContact | phoneMask" required />
+              </mat-form-field>
+            </div>
+            <div class="col-md-6 mb-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Horas Semanais</mat-label>
+                <input matInput type="time" formControlName="weeklyHours" required />
+              </mat-form-field>
+            </div>
+            <div class="col-md-6 mb-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Salário</mat-label>
+                <input matInput formControlName="salary" [value]="employeeForm.value().salary | currencyBrl" required />
+              </mat-form-field>
+            </div>
+            <div class="col-md-6 mb-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Salário com Impostos</mat-label>
+                <input matInput formControlName="salaryWithTaxes" [value]="employeeForm.value().salaryWithTaxes | currencyBrl" required />
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              {{ isEdit() ? 'Atualizar' : 'Cadastrar' }}
+            </button>
+            <a routerLink="/funcionarios/list" class="btn btn-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

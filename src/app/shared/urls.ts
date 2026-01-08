@@ -17,5 +17,10 @@ export const apiUrls = {
   totalPatientsAveragePlan: `${baseUrl}/api/patients/totalPatientsAveragePlan`,
   totalPatientsGoldPlan: `${baseUrl}/api/patients/totalPatientsGoldPlan`,
   disease: `${baseUrl}/api/diseases`,
-  plans: `${baseUrl}/api/plans`
+  plans: `${baseUrl}/api/plans`,
+  contracts: `${baseUrl}/api/contracts`,
+  rent: `${baseUrl}/api/rent`,
+  market: `${baseUrl}/api/market`,
+  financialOverview: `${baseUrl}/api/financial/overview`,
+  employees: `${baseUrl}/api/employees`
 };

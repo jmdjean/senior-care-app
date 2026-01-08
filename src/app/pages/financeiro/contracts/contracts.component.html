@@ -1,0 +1,92 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Contratos</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/financeiro">Financeiro</a>
+      </li>
+      <li class="breadcrumb-item">Contratos</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card table-card table-border-style">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5>Lista de contratos</h5>
+        @if (canManageContracts()) {
+          <button type="button" class="btn btn-primary btn-sm" routerLink="/financeiro/contracts/new">
+            Adicionar
+          </button>
+        }
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Ações</th>
+                <th>Nome do paciente</th>
+                <th>Data da contratação</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (contract of contracts(); track contract.id) {
+                <tr>
+                  <td class="action-cell">
+                    <div class="action-menu-container">
+                      <button
+                        type="button"
+                        class="btn btn-action-menu"
+                        (click)="toggleMenu(contract.id, $event)"
+                        [attr.aria-expanded]="openMenuId() === contract.id"
+                        aria-haspopup="true"
+                        [attr.aria-label]="'Abrir menu de ações para ' + contract.patientName"
+                      >
+                        <i class="feather icon-more-horizontal" aria-hidden="true"></i>
+                      </button>
+                      @if (openMenuId() === contract.id) {
+                        <div class="action-dropdown" role="menu">
+                          @if (canManageContracts()) {
+                            <button
+                              type="button"
+                              class="dropdown-item"
+                              role="menuitem"
+                              (click)="editContract(contract)"
+                            >
+                              <i class="feather icon-edit-2" aria-hidden="true"></i>
+                              Alterar
+                            </button>
+                          }
+                          @if (canManageContracts()) {
+                            <button
+                              type="button"
+                              class="dropdown-item text-danger"
+                              role="menuitem"
+                              (click)="deleteContract(contract)"
+                            >
+                              <i class="feather icon-trash-2" aria-hidden="true"></i>
+                              Excluir
+                            </button>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </td>
+                  <td>{{ contract.patientName }}</td>
+                  <td>{{ contract.contractDate | date:'dd/MM/yyyy' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

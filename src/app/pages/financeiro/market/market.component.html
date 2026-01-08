@@ -1,0 +1,96 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Mercado</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/financeiro">Financeiro</a>
+      </li>
+      <li class="breadcrumb-item">Mercado</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card table-card table-border-style">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5>Lista de mercados</h5>
+        @if (canManageMarkets()) {
+          <button type="button" class="btn btn-primary btn-sm" routerLink="/financeiro/market/new">
+            Adicionar
+          </button>
+        }
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Ações</th>
+                <th>Data da importação</th>
+                <th>Data e hora da compra</th>
+                <th>Quantidade de itens</th>
+                <th>Valor total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (market of markets(); track market.id) {
+                <tr>
+                  <td class="action-cell">
+                    <div class="action-menu-container">
+                      <button
+                        type="button"
+                        class="btn btn-action-menu"
+                        (click)="toggleMenu(market.id, $event)"
+                        [attr.aria-expanded]="openMenuId() === market.id"
+                        aria-haspopup="true"
+                        [attr.aria-label]="'Abrir menu de ações para mercado ' + market.id"
+                      >
+                        <i class="feather icon-more-horizontal" aria-hidden="true"></i>
+                      </button>
+                      @if (openMenuId() === market.id) {
+                        <div class="action-dropdown" role="menu">
+                          @if (canManageMarkets()) {
+                            <button
+                              type="button"
+                              class="dropdown-item"
+                              role="menuitem"
+                              (click)="editMarket(market)"
+                            >
+                              <i class="feather icon-edit-2" aria-hidden="true"></i>
+                              Alterar
+                            </button>
+                          }
+                          @if (canManageMarkets()) {
+                            <button
+                              type="button"
+                              class="dropdown-item text-danger"
+                              role="menuitem"
+                              (click)="deleteMarket(market)"
+                            >
+                              <i class="feather icon-trash-2" aria-hidden="true"></i>
+                              Excluir
+                            </button>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </td>
+                  <td>{{ market.importDate | date:'dd/MM/yyyy' }}</td>
+                  <td>{{ getPurchaseDateTime(market) }}</td>
+                  <td>{{ market.itemCount }}</td>
+                  <td>{{ market.value | currencyBrl }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Financeiro</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">Financeiro</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-12">
+    <div class="config-cards">
+      @for (card of cards(); track card.route) {
+        <a [routerLink]="card.route" class="config-card" [attr.aria-label]="'Acessar ' + card.title">
+          <div class="card-icon">
+            <i [class]="card.icon" aria-hidden="true"></i>
+          </div>
+          <span class="card-title">{{ card.title }}</span>
+        </a>
+      }
+    </div>
+  </div>
+</div>

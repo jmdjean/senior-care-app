@@ -1,0 +1,79 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>{{ isEdit() ? 'Editar Mercado' : 'Novo Mercado' }}</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/financeiro">Financeiro</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/financeiro/market">Mercado</a>
+      </li>
+      <li class="breadcrumb-item">{{ isEdit() ? 'Editar' : 'Novo' }}</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-6 col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5>{{ isEdit() ? 'Editar Mercado' : 'Cadastrar Mercado' }}</h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label" for="marketFile">Arquivo do mercado</label>
+          <input
+            id="marketFile"
+            class="form-control"
+            type="file"
+            accept=".pdf,.txt,.doc,.docx,.xlsx,.xls"
+            (change)="onFileSelected($event)"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="value">Valor</label>
+          <input
+            id="value"
+            class="form-control"
+            type="text"
+            [(ngModel)]="value"
+            name="value"
+            placeholder="0,00"
+            currencyMask
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="purchaseDate">Data da compra</label>
+          <input
+            id="purchaseDate"
+            class="form-control"
+            type="date"
+            [(ngModel)]="purchaseDate"
+            name="purchaseDate"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="purchaseTime">Hora da compra</label>
+          <input
+            id="purchaseTime"
+            class="form-control"
+            type="time"
+            [(ngModel)]="purchaseTime"
+            name="purchaseTime"
+          />
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-primary" (click)="onSubmit()">
+            {{ isEdit() ? 'Atualizar' : 'Cadastrar' }}
+          </button>
+          <a routerLink="/financeiro/market" class="btn btn-secondary">Cancelar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

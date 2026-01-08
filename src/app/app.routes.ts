@@ -126,6 +126,75 @@ export const routes: Routes = [
         path: 'report',
         loadComponent: () =>
           import('./pages/report/report.component').then((m) => m.ReportComponent)
+      },
+      {
+        path: 'financeiro',
+        loadComponent: () =>
+          import('./pages/financeiro/financeiro-configurator/financeiro-configurator.component').then(
+            (m) => m.FinanceiroConfiguratorComponent
+          )
+      },
+      {
+        path: 'financeiro/contracts',
+        loadComponent: () =>
+          import('./pages/financeiro/contracts/contracts.component').then((m) => m.ContractsComponent)
+      },
+      {
+        path: 'financeiro/contracts/new',
+        loadComponent: () =>
+          import('./pages/financeiro/contracts/contract-form.component').then((m) => m.ContractFormComponent)
+      },
+      {
+        path: 'financeiro/contracts/:id',
+        loadComponent: () =>
+          import('./pages/financeiro/contracts/contract-form.component').then((m) => m.ContractFormComponent)
+      },
+      {
+        path: 'financeiro/rent',
+        loadComponent: () =>
+          import('./pages/financeiro/rent/rent.component').then((m) => m.RentComponent)
+      },
+      {
+        path: 'financeiro/market',
+        loadComponent: () =>
+          import('./pages/financeiro/market/market.component').then((m) => m.MarketComponent)
+      },
+      {
+        path: 'financeiro/market/new',
+        loadComponent: () =>
+          import('./pages/financeiro/market/market-form.component').then((m) => m.MarketFormComponent)
+      },
+      {
+        path: 'financeiro/market/:id',
+        loadComponent: () =>
+          import('./pages/financeiro/market/market-form.component').then((m) => m.MarketFormComponent)
+      },
+      {
+        path: 'financeiro/overview',
+        loadComponent: () =>
+          import('./pages/financeiro/overview/overview.component').then((m) => m.OverviewComponent)
+      },
+      {
+        path: 'funcionarios',
+        loadComponent: () =>
+          import('./pages/funcionarios/funcionarios-configurator/funcionarios-configurator.component').then(
+            (m) => m.FuncionariosConfiguratorComponent
+          )
+      },
+      {
+        path: 'funcionarios/new',
+        loadComponent: () =>
+          import('./pages/funcionarios/employee-form/employee-form.component').then((m) => m.EmployeeFormComponent)
+      },
+      {
+        path: 'funcionarios/:id',
+        loadComponent: () =>
+          import('./pages/funcionarios/employee-form/employee-form.component').then((m) => m.EmployeeFormComponent)
+      },
+      {
+        path: 'funcionarios/list',
+        loadComponent: () =>
+          import('./pages/funcionarios/employee-list/employee-list.component').then((m) => m.EmployeeListComponent)
       }
     ]
   },

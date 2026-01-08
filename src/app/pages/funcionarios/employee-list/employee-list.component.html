@@ -1,0 +1,116 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Funcionários</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/funcionarios">Funcionários</a>
+      </li>
+      <li class="breadcrumb-item">Lista</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card table-card table-border-style">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5>Lista de funcionários</h5>
+        @if (canManageEmployees()) {
+          <button type="button" class="btn btn-primary btn-sm" routerLink="/funcionarios/new">
+            Cadastrar
+          </button>
+        }
+      </div>
+      <div class="card-body">
+        <!-- Filters -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Buscar por nome ou tipo..."
+              [(ngModel)]="searchTerm"
+            />
+          </div>
+          <div class="col-md-6">
+            <select class="form-control" [(ngModel)]="selectedType">
+              <option value="">Todos os tipos</option>
+              @for (type of employeeTypes; track type) {
+                <option [value]="type">{{ type }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Ações</th>
+                <th>Nome</th>
+                <th>Categoria</th>
+                <th>Data de entrada</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (employee of filteredEmployees(); track employee.id) {
+                <tr>
+                  <td class="action-cell">
+                    <div class="action-menu-container">
+                      <button
+                        type="button"
+                        class="btn btn-action-menu"
+                        (click)="toggleMenu(employee.id, $event)"
+                        [attr.aria-expanded]="openMenuId() === employee.id"
+                        aria-haspopup="true"
+                        [attr.aria-label]="'Abrir menu de ações para ' + employee.name"
+                      >
+                        <i class="feather icon-more-horizontal" aria-hidden="true"></i>
+                      </button>
+                      @if (openMenuId() === employee.id) {
+                        <div class="action-dropdown" role="menu">
+                          @if (canManageEmployees()) {
+                            <button
+                              type="button"
+                              class="dropdown-item"
+                              role="menuitem"
+                              (click)="editEmployee(employee)"
+                            >
+                              <i class="feather icon-edit-2" aria-hidden="true"></i>
+                              Alterar
+                            </button>
+                          }
+                          @if (canManageEmployees()) {
+                            <button
+                              type="button"
+                              class="dropdown-item text-danger"
+                              role="menuitem"
+                              (click)="deleteEmployee(employee)"
+                            >
+                              <i class="feather icon-trash-2" aria-hidden="true"></i>
+                              Excluir
+                            </button>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </td>
+                  <td>{{ employee.name }}</td>
+                  <td>
+                    <span class="badge {{ getTypeBadgeClass(employee.type) }}">{{ employee.type }}</span>
+                  </td>
+                  <td>{{ employee.entryDate | date:'dd/MM/yyyy' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

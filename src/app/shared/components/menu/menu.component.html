@@ -40,6 +40,24 @@
               </a>
             </li>
           }
+          @if (isAdmin() || isManager()) {
+            <li class="nav-item" routerLinkActive="active">
+              <a class="nav-link" routerLink="/financeiro">
+                <span class="pcoded-micon">
+                  <i class="feather icon-dollar-sign"></i>
+                </span>
+                <span class="pcoded-mtext">Financeiro</span>
+              </a>
+            </li>
+            <li class="nav-item" routerLinkActive="active">
+              <a class="nav-link" routerLink="/funcionarios">
+                <span class="pcoded-micon">
+                  <i class="feather icon-user-check"></i>
+                </span>
+                <span class="pcoded-mtext">Funcionários</span>
+              </a>
+            </li>
+          }
         </ul>
       </div>
     </div>
