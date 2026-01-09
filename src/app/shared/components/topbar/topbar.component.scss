@@ -28,3 +28,40 @@ button.nav-link:hover {
     font-size: 1rem;
   }
 }
+
+.mobile-menu {
+  border: none;
+  background: transparent;
+  padding: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: #fff;
+}
+
+.mobile-menu span,
+.mobile-menu span::before,
+.mobile-menu span::after {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: #fff;
+  position: relative;
+  border-radius: 2px;
+}
+
+.mobile-menu span::before,
+.mobile-menu span::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+
+.mobile-menu span::before {
+  top: -6px;
+}
+
+.mobile-menu span::after {
+  top: 6px;
+}

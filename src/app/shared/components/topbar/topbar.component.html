@@ -1,6 +1,8 @@
 ﻿<header>
   <div class="m-header">
-    <a class="mobile-menu" id="mobile-collapse1" href="javascript:void(0)"><span></span></a>
+    <button type="button" class="mobile-menu" id="mobile-collapse1" (click)="onMenuToggle()" aria-label="Abrir menu">
+      <span></span>
+    </button>
     <a routerLink="/home" class="b-brand">
       <div class="b-bg">
         <i class="feather icon-heart"></i>

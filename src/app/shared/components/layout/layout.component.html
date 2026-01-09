@@ -1,5 +1,11 @@
-﻿<app-menu class="pcoded-navbar"></app-menu>
-<app-topbar class="navbar pcoded-header navbar-expand-lg navbar-light"></app-topbar>
+<app-menu class="pcoded-navbar"></app-menu>
+<app-topbar
+  class="navbar pcoded-header navbar-expand-lg navbar-light"
+  (menuToggle)="toggleMenu()"
+></app-topbar>
+@if (menuOpen) {
+  <button class="menu-overlay pc-menu-overlay" type="button" (click)="closeMenu()" aria-label="Fechar menu"></button>
+}
 <div class="pcoded-main-container">
   <div class="pcoded-wrapper">
     <div class="pcoded-content">

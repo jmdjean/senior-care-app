@@ -109,3 +109,46 @@
   background: #e5e7eb;
   margin: 4px 0;
 }
+
+/* Mobile menu overlay behavior */
+@media (max-width: 991px) {
+  .pcoded-navbar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 260px;
+    z-index: 1040;
+    transform: translateX(-105%) !important;
+    transition: transform 0.25s ease;
+    background: #1c2635;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+    overflow-y: auto;
+  }
+
+  body.menu-open .pcoded-navbar {
+    transform: translateX(0) !important;
+  }
+
+  .pcoded-main-container {
+    margin-left: 0 !important;
+  }
+
+  .pcoded-header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: #324763;
+  }
+
+  .pcoded-navbar.mob-open {
+    transform: translateX(0) !important;
+  }
+
+  .pc-menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1035;
+  }
+}
