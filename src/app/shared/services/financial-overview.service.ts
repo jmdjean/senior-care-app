@@ -9,6 +9,7 @@ export type FinancialOverview = {
   monthlyMarket: number;
   employees: number;
   rent: number;
+  patientsTotal: number;
 };
 
 @Injectable({
@@ -35,5 +36,13 @@ export class FinancialOverviewService {
 
   getRent(): Observable<{ value: number }> {
     return this.http.get<{ value: number }>(`${apiUrls.financialOverview}/rent`);
+  }
+
+  getPatientsTotal(): Observable<{ value: number }> {
+    return this.http.get<{ value: number }>(apiUrls.financialPatientsTotal);
+  }
+
+  getEmployeesTotalByType(type: string): Observable<{ value: number }> {
+    return this.http.get<{ value: number }>(apiUrls.financialEmployeesByType(type));
   }
 }

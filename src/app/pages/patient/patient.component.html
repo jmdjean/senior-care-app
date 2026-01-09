@@ -44,10 +44,10 @@
               @for (patient of patients(); track patient.id) {
                 <tr>
                   <td class="action-cell">
-                    <div class="action-menu-container">
+                    <div class="row-actions">
                       <button
                         type="button"
-                        class="btn btn-action-menu"
+                        class="btn-icon"
                         (click)="toggleMenu(patient.id, $event)"
                         [attr.aria-expanded]="openMenuId() === patient.id"
                         aria-haspopup="true"

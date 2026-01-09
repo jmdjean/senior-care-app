@@ -8,7 +8,7 @@
         <a routerLink="/home"><i class="feather icon-home"></i></a>
       </li>
       <li class="breadcrumb-item">
-        <a routerLink="/financeiro">Financeiro</a>
+        <a routerLink="/mercado">Mercado</a>
       </li>
       <li class="breadcrumb-item">Mercado</li>
     </ul>
@@ -21,7 +21,7 @@
       <div class="card-header d-flex align-items-center justify-content-between">
         <h5>Lista de mercados</h5>
         @if (canManageMarkets()) {
-          <button type="button" class="btn btn-primary btn-sm" routerLink="/financeiro/market/new">
+          <button type="button" class="btn btn-primary btn-sm" routerLink="/mercado/new">
             Adicionar
           </button>
         }
@@ -42,10 +42,10 @@
               @for (market of markets(); track market.id) {
                 <tr>
                   <td class="action-cell">
-                    <div class="action-menu-container">
+                    <div class="row-actions">
                       <button
                         type="button"
-                        class="btn btn-action-menu"
+                        class="btn-icon"
                         (click)="toggleMenu(market.id, $event)"
                         [attr.aria-expanded]="openMenuId() === market.id"
                         aria-haspopup="true"
@@ -55,6 +55,15 @@
                       </button>
                       @if (openMenuId() === market.id) {
                         <div class="action-dropdown" role="menu">
+                          <button
+                              type="button"
+                              class="dropdown-item"
+                              role="menuitem"
+                              (click)="viewMarket(market)"
+                            >
+                              <i class="feather icon-eye" aria-hidden="true"></i>
+                              Visualizar compra
+                            </button>
                           @if (canManageMarkets()) {
                             <button
                               type="button"

@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ContractCreatePayload, ContractService } from '../../../shared/services/contract.service';
+import { ContractCreatePayload, ContractService, ContractUpdatePayload } from '../../../shared/services/contract.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
 import { PatientName, PatientService } from '../../../shared/services/patient.service';
@@ -59,8 +59,10 @@ export class ContractFormComponent implements OnInit {
       // Load contract data if edit
       this.loadingService.track(this.contractService.getById(+id)).subscribe({
         next: (contract) => {
-          this.selectedPatientId.set(contract.patientId.toString());
-          this.contractDate.set(contract.contractDate);
+          const patientId = contract.patientId ? contract.patientId.toString() : '';
+          const dateOnly = contract.contractDate ? contract.contractDate.split('T')[0] : '';
+          this.selectedPatientId.set(patientId);
+          this.contractDate.set(dateOnly);
         },
         error: () => {
           this.notificationHelper.showError('Erro ao carregar contrato.');
@@ -81,15 +83,15 @@ export class ContractFormComponent implements OnInit {
       return;
     }
 
-    const payload: ContractCreatePayload = {
+    const payload: ContractCreatePayload | ContractUpdatePayload = {
       patientId: +this.selectedPatientId(),
       contractDate: this.contractDate(),
-      file: this.selectedFile()!
+      ...(this.isEdit() ? {} : { file: this.selectedFile()! })
     };
 
     const request = this.isEdit()
-      ? this.contractService.update(this.contractId()!, payload)
-      : this.contractService.create(payload);
+      ? this.contractService.update(this.contractId()!, payload as ContractUpdatePayload)
+      : this.contractService.create(payload as ContractCreatePayload);
 
     this.loadingService.track(request).subscribe({
       next: () => {

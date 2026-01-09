@@ -29,15 +29,15 @@
           <label class="form-label" for="patientSelect">Paciente</label>
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>Pesquisar paciente</mat-label>
-            <input matInput [(ngModel)]="searchTerm" placeholder="Digite o nome do paciente" name="search">
+            <input matInput [value]="searchTerm()" (input)="searchTerm.set($any($event.target).value)" placeholder="Digite o nome do paciente" name="search">
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
           <mat-form-field appearance="outline" class="w-100 mt-2">
             <mat-label>Selecione um paciente</mat-label>
-            <mat-select [(ngModel)]="selectedPatientId" name="patientId">
+            <mat-select [value]="selectedPatientId()" (selectionChange)="selectedPatientId.set($event.value)" name="patientId">
               <mat-option value="">Selecione um paciente</mat-option>
               @for (patient of filteredPatients(); track patient.id) {
-                <mat-option [value]="patient.id">{{ patient.name }}</mat-option>
+                <mat-option [value]="patient.id.toString()">{{ patient.name }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
@@ -48,20 +48,23 @@
             id="contractDate"
             class="form-control"
             type="date"
-            [(ngModel)]="contractDate"
+            [value]="contractDate()"
+            (input)="contractDate.set($any($event.target).value)"
             name="contractDate"
           />
         </div>
-        <div class="mb-3">
-          <label class="form-label" for="contractFile">Arquivo do contrato</label>
-          <input
-            id="contractFile"
-            class="form-control"
-            type="file"
-            accept=".pdf,.txt,.doc,.docx"
-            (change)="onFileSelected($event)"
-          />
-        </div>
+        @if (!isEdit()) {
+          <div class="mb-3">
+            <label class="form-label" for="contractFile">Arquivo do contrato</label>
+            <input
+              id="contractFile"
+              class="form-control"
+              type="file"
+              accept=".pdf,.txt,.doc,.docx"
+              (change)="onFileSelected($event)"
+            />
+          </div>
+        }
         <div class="d-flex gap-2">
           <button type="button" class="btn btn-primary" (click)="onSubmit()">
             {{ isEdit() ? 'Atualizar' : 'Cadastrar' }}

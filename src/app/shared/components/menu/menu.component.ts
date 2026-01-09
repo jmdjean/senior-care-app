@@ -12,4 +12,5 @@ export class MenuComponent {
   private userService = inject(UserService);
 
   readonly isAdmin = this.userService.isAdmin;
+  readonly isManager = this.userService.isManager;
 }

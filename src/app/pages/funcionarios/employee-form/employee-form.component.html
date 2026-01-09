@@ -1,6 +1,6 @@
 <section class="page-header">
   <div class="page-header-title">
-    <h5>{{ isEdit() ? 'Editar Funcionário' : 'Novo Funcionário' }}</h5>
+    <h5>{{ isEdit ? 'Editar Funcionário' : 'Novo Funcionário' }}</h5>
   </div>
   <div class="page-header-breadcrumb">
     <ul class="breadcrumb">
@@ -10,7 +10,7 @@
       <li class="breadcrumb-item">
         <a routerLink="/funcionarios">Funcionários</a>
       </li>
-      <li class="breadcrumb-item">{{ isEdit() ? 'Editar' : 'Novo' }}</li>
+      <li class="breadcrumb-item">{{ isEdit ? 'Editar' : 'Novo' }}</li>
     </ul>
   </div>
 </section>
@@ -19,10 +19,10 @@
   <div class="col-xl-8">
     <div class="card">
       <div class="card-header">
-        <h5>{{ isEdit() ? 'Editar Funcionário' : 'Cadastrar Funcionário' }}</h5>
+        <h5>{{ isEdit ? 'Editar Funcionário' : 'Cadastrar Funcionário' }}</h5>
       </div>
       <div class="card-body">
-        <form [form]="employeeForm" (ngSubmit)="onSubmit()">
+        <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
           <div class="row">
             <div class="col-md-6 mb-3">
               <mat-form-field appearance="outline" class="w-100">
@@ -36,14 +36,14 @@
             </div>
             <div class="col-md-6 mb-3">
               <mat-form-field appearance="outline" class="w-100">
-                <mat-label>Nome</mat-label>
-                <input matInput formControlName="name" required />
+                <mat-label>Apelido</mat-label>
+                <input matInput formControlName="name" placeholder="Apelido" required />
               </mat-form-field>
             </div>
             <div class="col-md-6 mb-3">
               <mat-form-field appearance="outline" class="w-100">
                 <mat-label>CPF</mat-label>
-                <input matInput formControlName="cpf" [value]="employeeForm.value().cpf | cpfMask" required />
+                <input matInput formControlName="cpf" [value]="employeeForm.get('cpf')?.value | cpfMask" maxlength="11" required />
               </mat-form-field>
             </div>
             <div class="col-md-6 mb-3">
@@ -77,37 +77,50 @@
             <div class="col-md-6 mb-3">
               <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Celular</mat-label>
-                <input matInput formControlName="phone" [value]="employeeForm.value().phone | phoneMask" required />
+                <input matInput formControlName="phone" [value]="employeeForm.get('phone')?.value | phoneMask" maxlength="11" required />
               </mat-form-field>
             </div>
             <div class="col-md-6 mb-3">
               <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Contato de Emergência</mat-label>
-                <input matInput formControlName="emergencyContact" [value]="employeeForm.value().emergencyContact | phoneMask" required />
+                <input matInput formControlName="emergencyContact" [value]="employeeForm.get('emergencyContact')?.value | phoneMask" maxlength="11" required />
               </mat-form-field>
             </div>
             <div class="col-md-6 mb-3">
               <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Horas Semanais</mat-label>
-                <input matInput type="time" formControlName="weeklyHours" required />
+                <input
+                  matInput
+                  type="text"
+                  formControlName="weeklyHours"
+                  placeholder="00:00"
+                  maxlength="5"
+                  inputmode="numeric"
+                  (input)="onWeeklyHoursInput($event)"
+                  required
+                />
               </mat-form-field>
             </div>
             <div class="col-md-6 mb-3">
-              <mat-form-field appearance="outline" class="w-100">
-                <mat-label>Salário</mat-label>
-                <input matInput formControlName="salary" [value]="employeeForm.value().salary | currencyBrl" required />
-              </mat-form-field>
+              <label class="form-label d-block">Salário</label>
+              <div class="input-group">
+                <span class="input-group-text">R$</span>
+                <input class="form-control" type="text" formControlName="salary" placeholder="0,00" required />
+                <span class="input-group-text">,00</span>
+              </div>
             </div>
             <div class="col-md-6 mb-3">
-              <mat-form-field appearance="outline" class="w-100">
-                <mat-label>Salário com Impostos</mat-label>
-                <input matInput formControlName="salaryWithTaxes" [value]="employeeForm.value().salaryWithTaxes | currencyBrl" required />
-              </mat-form-field>
+              <label class="form-label d-block">Salário com Impostos</label>
+              <div class="input-group">
+                <span class="input-group-text">R$</span>
+                <input class="form-control" type="text" formControlName="salaryWithTaxes" placeholder="0,00" required />
+                <span class="input-group-text">,00</span>
+              </div>
             </div>
           </div>
           <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary">
-              {{ isEdit() ? 'Atualizar' : 'Cadastrar' }}
+              {{ isEdit ? 'Atualizar' : 'Cadastrar' }}
             </button>
             <a routerLink="/funcionarios/list" class="btn btn-secondary">Cancelar</a>
           </div>

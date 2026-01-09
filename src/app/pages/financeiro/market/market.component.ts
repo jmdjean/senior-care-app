@@ -1,4 +1,4 @@
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router, RouterLink } from '@angular/router';
@@ -11,7 +11,7 @@ import { UserService } from '../../../shared/services/user.service';
 
 @Component({
   selector: 'app-market',
-  imports: [RouterLink, DatePipe, NgClass, MatDialogModule, CurrencyBrlPipe],
+  imports: [RouterLink, DatePipe, MatDialogModule, CurrencyBrlPipe],
   templateUrl: './market.component.html',
   styleUrl: './market.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -23,6 +23,7 @@ export class MarketComponent implements OnInit {
   private notificationHelper = inject(NotificationHelperService);
   private userService = inject(UserService);
   private router = inject(Router);
+  private readonly marketBasePath = '/mercado';
 
   markets = signal<Market[]>([]);
   openMenuId = signal<number | null>(null);
@@ -49,8 +50,12 @@ export class MarketComponent implements OnInit {
     this.openMenuId.set(this.openMenuId() === marketId ? null : marketId);
   }
 
+  viewMarket(market: Market): void {
+    this.router.navigate([this.marketBasePath, market.id, 'view']);
+  }
+
   editMarket(market: Market): void {
-    this.router.navigate(['/financeiro/market', market.id]);
+    this.router.navigate([this.marketBasePath, market.id]);
   }
 
   deleteMarket(market: Market): void {

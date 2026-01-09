@@ -1,4 +1,4 @@
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router, RouterLink } from '@angular/router';
@@ -10,7 +10,7 @@ import { UserService } from '../../../shared/services/user.service';
 
 @Component({
   selector: 'app-contracts',
-  imports: [RouterLink, DatePipe, NgClass, MatDialogModule],
+  imports: [RouterLink, DatePipe, MatDialogModule],
   templateUrl: './contracts.component.html',
   styleUrl: './contracts.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

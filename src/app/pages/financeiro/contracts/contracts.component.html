@@ -40,10 +40,10 @@
               @for (contract of contracts(); track contract.id) {
                 <tr>
                   <td class="action-cell">
-                    <div class="action-menu-container">
+                    <div class="row-actions">
                       <button
                         type="button"
-                        class="btn btn-action-menu"
+                        class="btn-icon"
                         (click)="toggleMenu(contract.id, $event)"
                         [attr.aria-expanded]="openMenuId() === contract.id"
                         aria-haspopup="true"

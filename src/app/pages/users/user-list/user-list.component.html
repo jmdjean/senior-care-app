@@ -39,19 +39,19 @@
             <thead>
               <tr>
                 <th>Ações</th>
+                <th>Perfil</th>
                 <th>Nome</th>
                 <th>E-mail</th>
-                <th>Perfil</th>
               </tr>
             </thead>
             <tbody>
               @for (user of users(); track user.id) {
                 <tr>
                   <td class="action-cell">
-                    <div class="action-menu-container">
+                    <div class="row-actions">
                       <button
                         type="button"
-                        class="btn btn-action-menu"
+                        class="btn-icon"
                         (click)="toggleMenu(user.id, $event)"
                         [attr.aria-expanded]="openMenuId() === user.id"
                         aria-haspopup="true"
@@ -84,13 +84,13 @@
                       }
                     </div>
                   </td>
-                  <td>{{ user.name }}</td>
-                  <td>{{ user.email }}</td>
                   <td>
                     <span class="badge role-badge" [ngClass]="getRoleBadgeClass(user.role)">
                       {{ getRoleLabel(user.role) }}
                     </span>
                   </td>
+                  <td>{{ user.name }}</td>
+                  <td>{{ user.email }}</td>
                 </tr>
               }
               @if (users().length === 0) {

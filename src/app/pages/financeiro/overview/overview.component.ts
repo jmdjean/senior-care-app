@@ -22,6 +22,11 @@ export class OverviewComponent implements OnInit {
   monthlyMarket = signal<number | null>(null);
   employees = signal<number | null>(null);
   rent = signal<number | null>(null);
+  patientsTotal = signal<number | null>(null);
+  nursesTotal = signal<number | null>(null);
+  cleanersTotal = signal<number | null>(null);
+  cooksTotal = signal<number | null>(null);
+  guardsTotal = signal<number | null>(null);
 
   ngOnInit(): void {
     this.loadOverview();
@@ -52,6 +57,31 @@ export class OverviewComponent implements OnInit {
     this.loadingService.track(this.financialOverviewService.getRent()).subscribe({
       next: (res) => this.rent.set(res.value),
       error: () => this.notificationHelper.showError('Erro ao carregar aluguel.')
+    });
+
+    this.loadingService.track(this.financialOverviewService.getPatientsTotal()).subscribe({
+      next: (res) => this.patientsTotal.set(res.value),
+      error: () => this.notificationHelper.showError('Erro ao carregar total de pacientes.')
+    });
+
+    this.loadingService.track(this.financialOverviewService.getEmployeesTotalByType('Enfermeiro')).subscribe({
+      next: (res) => this.nursesTotal.set(res.value),
+      error: () => this.notificationHelper.showError('Erro ao carregar total de Enfermeiros.')
+    });
+
+    this.loadingService.track(this.financialOverviewService.getEmployeesTotalByType('Faxineiro')).subscribe({
+      next: (res) => this.cleanersTotal.set(res.value),
+      error: () => this.notificationHelper.showError('Erro ao carregar total de Faxineiros.')
+    });
+
+    this.loadingService.track(this.financialOverviewService.getEmployeesTotalByType('Cozinheiros')).subscribe({
+      next: (res) => this.cooksTotal.set(res.value),
+      error: () => this.notificationHelper.showError('Erro ao carregar total de Cozinheiros.')
+    });
+
+    this.loadingService.track(this.financialOverviewService.getEmployeesTotalByType('Seguranças')).subscribe({
+      next: (res) => this.guardsTotal.set(res.value),
+      error: () => this.notificationHelper.showError('Erro ao carregar total de Seguranças.')
     });
   }
 }

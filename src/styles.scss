@@ -24,3 +24,88 @@
 @use 'sass:meta';
 
 @include meta.load-css('@angular/material/prebuilt-themes/indigo-pink.css');
+
+/* Action menu styling shared across tables */
+.table tbody tr {
+  position: relative;
+}
+
+.action-cell {
+  width: 56px;
+  text-align: right;
+}
+
+.row-actions {
+  position: relative;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.btn-icon {
+  border: none;
+  background: transparent;
+  padding: 6px;
+  border-radius: 8px;
+  opacity: 0.7;
+  transition: opacity 120ms ease, transform 120ms ease, background 120ms ease;
+}
+
+.btn-icon:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.action-dropdown {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 8px);
+  right: auto;
+  transform: translateY(-50%);
+  min-width: 160px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  padding: 6px 0;
+  z-index: 2000;
+}
+
+.action-dropdown .dropdown-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 8px 14px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #111827;
+  font-weight: 500;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.action-dropdown .dropdown-item:hover {
+  background: #f3f4f6;
+}
+
+.action-dropdown .dropdown-item i {
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.action-dropdown .dropdown-item.danger,
+.action-dropdown .dropdown-item.text-danger {
+  color: #b91c1c;
+}
+
+.action-dropdown .dropdown-item.danger i,
+.action-dropdown .dropdown-item.text-danger i {
+  color: #b91c1c;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 4px 0;
+}

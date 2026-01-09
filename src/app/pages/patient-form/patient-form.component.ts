@@ -193,7 +193,7 @@ export class PatientFormComponent implements OnInit {
 
   onContactInput(event: Event): void {
     const target = event.target as HTMLInputElement;
-    const digits = (target.value || '').replace(/\D/g, '');
+    const digits = (target.value || '').replace(/\D/g, '').slice(0, 11);
     let masked = digits;
     if (digits.length > 0) {
       const ddd = digits.slice(0, 2);

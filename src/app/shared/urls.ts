@@ -21,6 +21,11 @@ export const apiUrls = {
   contracts: `${baseUrl}/api/contracts`,
   rent: `${baseUrl}/api/rent`,
   market: `${baseUrl}/api/market`,
+  marketFoodTotal: `${baseUrl}/api/market/overview/food`,
+  marketCleaningTotal: `${baseUrl}/api/market/overview/cleaning`,
   financialOverview: `${baseUrl}/api/financial/overview`,
+  financialPatientsTotal: `${baseUrl}/api/financial/overview/patients-total`,
+  financialEmployeesByType: (type: string) =>
+    `${baseUrl}/api/financial/overview/employees/${encodeURIComponent(type)}`,
   employees: `${baseUrl}/api/employees`
 };

@@ -1,25 +1,112 @@
 <div class="exams-container">
   @if (exams().length > 0) {
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Nome do paciente</th>
-            <th>Tipo de exame</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (exam of exams(); track $index) {
-            <tr>
-              <td>{{ exam.patientName }}</td>
-              <td>
-                <span class="exam-type-badge">{{ exam.examType || '-' }}</span>
-              </td>
-            </tr>
+    @for (exam of exams(); track $index) {
+      <div class="exam-card">
+        <div class="exam-card__header">
+          <div>
+            <div class="exam-type-badge">{{ exam.aiPayload?.examType || exam.examType || 'Exame' }}</div>
+            <div class="exam-patient">{{ exam.aiPayload?.patient?.name || exam.patientName || '-' }}</div>
+          </div>
+          @if (exam.aiPayload?.performedAt || exam.performedAt) {
+            <div class="exam-date">
+              {{ (exam.aiPayload?.performedAt || exam.performedAt) | date: 'dd/MM/yyyy' }}
+            </div>
           }
-        </tbody>
-      </table>
-    </div>
+        </div>
+
+        @if (exam.aiPayload?.summary) {
+          <div class="exam-section">
+            <div class="section-title">Resumo</div>
+            <p class="section-text">{{ exam.aiPayload?.summary }}</p>
+          </div>
+        }
+
+        <div class="exam-section two-cols">
+          @if (exam.aiPayload?.patient) {
+            <div>
+              <div class="section-title">Paciente</div>
+              <p class="section-text">
+                {{ exam.aiPayload?.patient?.name || '-' }} •
+                {{ exam.aiPayload?.patient?.sex || '—' }}
+              </p>
+            </div>
+          }
+          @if (exam.aiPayload?.recommendations?.length) {
+            <div>
+              <div class="section-title">Recomendações</div>
+              <ul class="pill-list">
+                @for (rec of exam.aiPayload?.recommendations ?? []; track rec) {
+                  <li class="pill">{{ rec }}</li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+
+        @if (exam.aiPayload?.risks?.length) {
+          <div class="exam-section">
+            <div class="section-title">Riscos</div>
+            <ul class="pill-list">
+              @for (risk of exam.aiPayload?.risks ?? []; track risk) {
+                <li class="pill pill-danger">{{ risk }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (exam.aiPayload?.findings?.length) {
+          <div class="exam-section">
+            <div class="section-title">Achados</div>
+            <ul class="pill-list">
+              @for (finding of exam.aiPayload?.findings ?? []; track finding) {
+                <li class="pill">{{ finding }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (exam.aiPayload?.diagnoses?.length) {
+          <div class="exam-section">
+            <div class="section-title">Diagnósticos</div>
+            <ul class="pill-list">
+              @for (diag of exam.aiPayload?.diagnoses ?? []; track diag) {
+                <li class="pill pill-strong">{{ diag }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if ((exam.aiPayload?.metrics ?? []).length) {
+          <div class="exam-section">
+            <div class="section-title">Métricas</div>
+            <div class="table-responsive">
+              <table class="table table-sm metrics-table">
+                <thead>
+                  <tr>
+                    <th>Exame</th>
+                    <th>Valor</th>
+                    <th>Referência</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (metric of exam.aiPayload?.metrics ?? []; track metric.name) {
+                    <tr>
+                      <td>{{ metric.name || '-' }}</td>
+                      <td>
+                        <span class="pill">
+                          {{ metric.value || '-' }} {{ metric.unit || '' }}
+                        </span>
+                      </td>
+                      <td>{{ metric.reference || '-' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      </div>
+    }
   } @else {
     <div class="empty-state">
       <i class="feather icon-file-text empty-icon" aria-hidden="true"></i>

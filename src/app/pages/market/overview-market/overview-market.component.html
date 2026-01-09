@@ -1,0 +1,34 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Visão Geral do Mercado</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/mercado">Mercado</a>
+      </li>
+      <li class="breadcrumb-item">Visão geral</li>
+    </ul>
+  </div>
+</section>
+
+<div class="overview-cards">
+  <div class="stat-card">
+    <div class="stat-meta">
+      <span class="stat-label">Gasto com alimentos (mês)</span>
+    </div>
+    <div class="stat-value">{{ foodTotal() | currencyBrl }}</div>
+    <p class="stat-description">Compras de comida importadas para o mês atual.</p>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-meta">
+      <span class="stat-label">Gasto com limpeza (mês)</span>
+    </div>
+    <div class="stat-value">{{ cleaningTotal() | currencyBrl }}</div>
+    <p class="stat-description">Compras de produtos de limpeza do mês atual.</p>
+  </div>
+</div>

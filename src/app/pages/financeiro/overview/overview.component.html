@@ -15,49 +15,84 @@
   </div>
 </section>
 
-<div class="row">
-  <div class="col-12">
-    <div class="overview-cards">
-      <div class="overview-card">
-        <div class="card-header">
-          <h5>Balanço Geral</h5>
-        </div>
-        <div class="card-body">
-          <div class="value">{{ generalBalance() | currencyBrl }}</div>
-        </div>
-      </div>
-      <div class="overview-card">
-        <div class="card-header">
-          <h5>Gastos do Mês</h5>
-        </div>
-        <div class="card-body">
-          <div class="value">{{ monthlyExpenses() | currencyBrl }}</div>
-        </div>
-      </div>
-      <div class="overview-card">
-        <div class="card-header">
-          <h5>Mercado do Mês</h5>
-        </div>
-        <div class="card-body">
-          <div class="value">{{ monthlyMarket() | currencyBrl }}</div>
-        </div>
-      </div>
-      <div class="overview-card">
-        <div class="card-header">
-          <h5>Funcionários</h5>
-        </div>
-        <div class="card-body">
-          <div class="value">{{ employees() | currencyBrl }}</div>
-        </div>
-      </div>
-      <div class="overview-card">
-        <div class="card-header">
-          <h5>Aluguel</h5>
-        </div>
-        <div class="card-body">
-          <div class="value">{{ rent() | currencyBrl }}</div>
-        </div>
-      </div>
+<div class="overview-cards">
+  <div class="stat-card">
+    <div class="stat-meta">
+      <span class="stat-label">Balanço Geral</span>
     </div>
+    <div class="stat-value">{{ generalBalance() | currencyBrl }}</div>
+    <p class="stat-description">Caixa geral menos despesas consolidadas.</p>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-meta">
+      <span class="stat-label">Gastos do Mês</span>
+    </div>
+    <div class="stat-value">{{ monthlyExpenses() | currencyBrl }}</div>
+    <p class="stat-description">Despesas registradas no mês corrente.</p>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-meta">
+      <span class="stat-label">Mercado do Mês</span>
+    </div>
+    <div class="stat-value">{{ monthlyMarket() | currencyBrl }}</div>
+    <p class="stat-description">Compras de mercado importadas para o mês.</p>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-meta">
+      <span class="stat-label">Funcionários</span>
+    </div>
+    <div class="stat-value">{{ employees() | currencyBrl }}</div>
+    <p class="stat-description">Folha salarial e encargos do período.</p>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-meta">
+      <span class="stat-label">Enfermeiros</span>
+    </div>
+    <div class="stat-value">{{ nursesTotal() | currencyBrl }}</div>
+    <p class="stat-description">Total com impostos dos enfermeiros.</p>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-meta">
+      <span class="stat-label">Faxineiros</span>
+    </div>
+    <div class="stat-value">{{ cleanersTotal() | currencyBrl }}</div>
+    <p class="stat-description">Total com impostos dos faxineiros.</p>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-meta">
+      <span class="stat-label">Cozinheiros</span>
+    </div>
+    <div class="stat-value">{{ cooksTotal() | currencyBrl }}</div>
+    <p class="stat-description">Total com impostos dos cozinheiros.</p>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-meta">
+      <span class="stat-label">Seguranças</span>
+    </div>
+    <div class="stat-value">{{ guardsTotal() | currencyBrl }}</div>
+    <p class="stat-description">Total com impostos dos seguranças.</p>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-meta">
+      <span class="stat-label">Aluguel</span>
+    </div>
+    <div class="stat-value">{{ rent() | currencyBrl }}</div>
+    <p class="stat-description">Valor de aluguel configurado.</p>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-meta">
+      <span class="stat-label">Total de Pacientes</span>
+    </div>
+    <div class="stat-value">{{ patientsTotal() | currencyBrl }}</div>
+    <p class="stat-description">Somatório dos valores dos pacientes cadastrados.</p>
   </div>
 </div>

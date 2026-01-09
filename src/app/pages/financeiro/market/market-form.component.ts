@@ -5,14 +5,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { CurrencyBrlPipe } from '../../../shared/pipes/currency-brl.pipe';
 import { LoadingService } from '../../../shared/services/loading.service';
-import { MarketCreatePayload, MarketService } from '../../../shared/services/market.service';
+import { MarketCreatePayload, MarketService, MarketUpdatePayload } from '../../../shared/services/market.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
 
 @Component({
   selector: 'app-market-form',
-  imports: [RouterLink, FormsModule, MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, CurrencyBrlPipe],
+  imports: [RouterLink, FormsModule, MatFormFieldModule, MatInputModule, MatIconModule, CommonModule],
   templateUrl: './market-form.component.html',
   styleUrl: './market-form.component.scss',
   standalone: true,
@@ -45,10 +44,14 @@ export class MarketFormComponent implements OnInit {
       // Load market data if edit
       this.loadingService.track(this.marketService.getById(+id)).subscribe({
         next: (market) => {
-          this.value.set(market.value.toString());
-          const date = new Date(market.purchaseDate);
-          this.purchaseDate.set(date.toISOString().split('T')[0]);
-          this.purchaseTime.set(date.toTimeString().slice(0, 5));
+          const parsedValue = market?.value ?? 0;
+          this.value.set(parsedValue ? this.formatCurrencyInput(parsedValue) : '');
+          const isoDate = market?.purchaseDate ?? '';
+          const date = isoDate ? new Date(isoDate) : null;
+          if (date && !isNaN(date.getTime())) {
+            this.purchaseDate.set(date.toISOString().split('T')[0]);
+            this.purchaseTime.set(date.toTimeString().slice(0, 5));
+          }
         },
         error: () => {
           this.notificationHelper.showError('Erro ao carregar mercado.');
@@ -64,48 +67,72 @@ export class MarketFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (!this.value() || !this.purchaseDate() || !this.purchaseTime() || (!this.selectedFile() && !this.isEdit())) {
+    if (!this.purchaseDate() || !this.purchaseTime() || (!this.selectedFile() && !this.isEdit())) {
       this.notificationHelper.showError('Preencha todos os campos obrigatórios.');
       return;
     }
 
-    const value = parseFloat(this.value().replace(',', '.'));
-    if (isNaN(value) || value <= 0) {
+    const valueSanitized = this.value()
+      .replace(/[R$\s]/g, '')
+      .replace(/\./g, '')
+      .replace(',', '.');
+    const value = valueSanitized ? parseFloat(valueSanitized) : 0;
+    if (isNaN(value) || value < 0) {
       this.notificationHelper.showError('Valor inválido.');
       return;
     }
 
     const purchaseDateTime = `${this.purchaseDate()}T${this.purchaseTime()}:00`;
 
-    const payload: MarketCreatePayload = {
-      file: this.selectedFile()!,
-      value,
-      purchaseDate: purchaseDateTime
-    };
+    if (this.isEdit()) {
+      const file = this.selectedFile();
+      const payload: MarketUpdatePayload = {
+        value,
+        purchaseDate: purchaseDateTime,
+        ...(file ? { file } : {})
+      };
 
-    const request = this.isEdit()
-      ? this.marketService.update(this.marketId()!, payload)
-      : this.marketService.create(payload);
+      this.loadingService.track(this.marketService.update(this.marketId()!, payload)).subscribe({
+        next: () => {
+          this.notificationHelper.showSuccess('Mercado atualizado com sucesso.');
+          this.router.navigate(['/mercado/list']);
+        },
+        error: () => {
+          this.notificationHelper.showError('Erro ao atualizar mercado.');
+        }
+      });
+      return;
+    }
 
-    this.loadingService.track(request).subscribe({
+    const payload: MarketCreatePayload = { file: this.selectedFile()!, value, purchaseDate: purchaseDateTime };
+
+    this.loadingService.track(this.marketService.create(payload)).subscribe({
       next: () => {
-        this.notificationHelper.showSuccess(
-          this.isEdit() ? 'Mercado atualizado com sucesso.' : 'Mercado criado com sucesso.'
-        );
-        this.router.navigate(['/financeiro/market']);
+        this.notificationHelper.showSuccess('Mercado criado com sucesso.');
+        this.router.navigate(['/mercado/list']);
       },
       error: () => {
-        this.notificationHelper.showError(
-          this.isEdit() ? 'Erro ao atualizar mercado.' : 'Erro ao criar mercado.'
-        );
+        this.notificationHelper.showError('Erro ao criar mercado.');
       }
     });
   }
 
   private resetForm(): void {
+    const now = new Date();
+    const date = [
+      now.getFullYear(),
+      (now.getMonth() + 1).toString().padStart(2, '0'),
+      now.getDate().toString().padStart(2, '0')
+    ].join('-');
+    const time = [now.getHours().toString().padStart(2, '0'), now.getMinutes().toString().padStart(2, '0')].join(':');
+
     this.selectedFile.set(null);
     this.value.set('');
-    this.purchaseDate.set('');
-    this.purchaseTime.set('');
+    this.purchaseDate.set(date);
+    this.purchaseTime.set(time);
+  }
+
+  private formatCurrencyInput(value: number): string {
+    return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 }

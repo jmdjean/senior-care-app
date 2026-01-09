@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { CurrencyBrlPipe } from '../../../shared/pipes/currency-brl.pipe';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
 import { Rent, RentService } from '../../../shared/services/rent.service';
 
 @Component({
   selector: 'app-rent',
-  imports: [RouterLink, FormsModule, CurrencyBrlPipe],
+  imports: [RouterLink, FormsModule],
   templateUrl: './rent.component.html',
   styleUrl: './rent.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -29,7 +28,8 @@ export class RentComponent implements OnInit {
     this.loadingService.track(this.rentService.get()).subscribe({
       next: (rent) => {
         this.currentRent.set(rent);
-        this.rentValue.set(rent.value.toString());
+        const value = rent?.value ?? 0;
+        this.rentValue.set(value ? this.formatCurrencyInput(value) : '');
       },
       error: () => {
         this.notificationHelper.showError('Erro ao carregar valor do aluguel.');
@@ -43,7 +43,11 @@ export class RentComponent implements OnInit {
       return;
     }
 
-    const value = parseFloat(this.rentValue().replace(',', '.'));
+    const sanitized = this.rentValue()
+      .replace(/[R$\s]/g, '')
+      .replace(/\./g, '')
+      .replace(',', '.');
+    const value = parseFloat(sanitized);
     if (isNaN(value) || value <= 0) {
       this.notificationHelper.showError('Valor inválido.');
       return;
@@ -58,5 +62,9 @@ export class RentComponent implements OnInit {
         this.notificationHelper.showError('Erro ao atualizar valor do aluguel.');
       }
     });
+  }
+
+  private formatCurrencyInput(value: number): string {
+    return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 }

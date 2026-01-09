@@ -27,7 +27,6 @@
         }
       </div>
       <div class="card-body">
-        <!-- Filters -->
         <div class="row mb-3">
           <div class="col-md-6">
             <input
@@ -52,19 +51,20 @@
             <thead>
               <tr>
                 <th>Ações</th>
-                <th>Nome</th>
                 <th>Categoria</th>
+                <th>Nome</th>
                 <th>Data de entrada</th>
+                <th>Horas semanais</th>
               </tr>
             </thead>
             <tbody>
-              @for (employee of filteredEmployees(); track employee.id) {
+              @for (employee of filteredEmployees; track employee.id) {
                 <tr>
                   <td class="action-cell">
-                    <div class="action-menu-container">
+                    <div class="row-actions">
                       <button
                         type="button"
-                        class="btn btn-action-menu"
+                        class="btn-icon"
                         (click)="toggleMenu(employee.id, $event)"
                         [attr.aria-expanded]="openMenuId() === employee.id"
                         aria-haspopup="true"
@@ -85,26 +85,30 @@
                               Alterar
                             </button>
                           }
-                          @if (canManageEmployees()) {
-                            <button
-                              type="button"
-                              class="dropdown-item text-danger"
-                              role="menuitem"
-                              (click)="deleteEmployee(employee)"
-                            >
-                              <i class="feather icon-trash-2" aria-hidden="true"></i>
-                              Excluir
-                            </button>
-                          }
+                          <button
+                            type="button"
+                            class="dropdown-item"
+                            role="menuitem"
+                            (click)="viewEmployee(employee)"
+                          >
+                            <i class="feather icon-eye" aria-hidden="true"></i>
+                            Visualizar
+                          </button>
                         </div>
                       }
                     </div>
                   </td>
-                  <td>{{ employee.name }}</td>
                   <td>
                     <span class="badge {{ getTypeBadgeClass(employee.type) }}">{{ employee.type }}</span>
                   </td>
+                  <td>{{ employee.name }}</td>
                   <td>{{ employee.entryDate | date:'dd/MM/yyyy' }}</td>
+                  <td>{{ employee.weeklyHours }}</td>
+                </tr>
+              }
+              @if (filteredEmployees.length === 0) {
+                <tr>
+                  <td colspan="5" class="text-muted">Nenhum funcionário encontrado.</td>
                 </tr>
               }
             </tbody>
@@ -114,3 +118,14 @@
     </div>
   </div>
 </div>
+
+@if (openMenuId() !== null) {
+  <button
+    type="button"
+    class="action-menu-backdrop"
+    (click)="closeMenu()"
+    (keydown.escape)="closeMenu()"
+    aria-label="Fechar menu"
+  ></button>
+}
+

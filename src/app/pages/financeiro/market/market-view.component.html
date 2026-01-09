@@ -1,0 +1,98 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Detalhe da compra</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/mercado">Mercado</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/mercado/list">Mercado</a>
+      </li>
+      <li class="breadcrumb-item">Visualizar</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-10 col-lg-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>Resumo da compra</h5>
+        <a class="btn btn-light btn-sm" routerLink="/mercado/list">
+          <i class="feather icon-arrow-left"></i> Voltar
+        </a>
+      </div>
+      <div class="card-body">
+        @if (market()) {
+          <div class="row mb-3">
+            <div class="col-md-3">
+              <div class="text-muted small">Data da compra</div>
+              <div class="fw-bold">{{ market()?.purchaseDate | date:'dd/MM/yyyy HH:mm' }}</div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-muted small">Importado em</div>
+              <div class="fw-bold">{{ market()?.importDate | date:'dd/MM/yyyy' }}</div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-muted small">Itens</div>
+              <div class="fw-bold">{{ market()?.itemCount }}</div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-muted small">Valor total</div>
+              <div class="fw-bold text-primary">{{ market()?.value | currencyBrl }}</div>
+            </div>
+          </div>
+
+          <hr />
+
+          @if (hasItems) {
+            <div class="table-responsive">
+              <table class="table align-middle">
+                <thead>
+                  <tr>
+                    <th>Produto</th>
+                    <th>Categoria</th>
+                    <th class="text-end">Qtd.</th>
+                    <th class="text-end">Valor unit.</th>
+                    <th class="text-end">Valor total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of market()?.items ?? []; track item.name) {
+                    <tr>
+                      <td>{{ item.name || '-' }}</td>
+                      <td>
+                        <span
+                          class="category-badge"
+                          [ngClass]="'category-' + ((item.category || 'diverso').toLowerCase())"
+                        >
+                          {{ item.category || 'Diverso' }}
+                        </span>
+                      </td>
+                      <td class="text-end">{{ item.quantity ?? '-' }}</td>
+                      <td class="text-end">
+                        {{ item.unitPrice !== undefined ? (item.unitPrice | currencyBrl) : '-' }}
+                      </td>
+                      <td class="text-end">
+                        {{ item.totalPrice !== undefined ? (item.totalPrice | currencyBrl) : '-' }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <div class="text-muted">Nenhum item encontrado para esta compra.</div>
+          }
+        } @else {
+          <div class="text-muted">Carregando compra...</div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

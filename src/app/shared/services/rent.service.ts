@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { apiUrls } from '../urls';
 
 export type Rent = {
@@ -24,6 +24,15 @@ export class RentService {
   }
 
   get(): Observable<Rent> {
-    return this.http.get<Rent>(apiUrls.rent);
+    return this.http.get<Record<string, unknown>>(apiUrls.rent).pipe(
+      map((response) => {
+        const data: Record<string, unknown> = (response['rent'] as Record<string, unknown>) ?? response;
+        return {
+          id: (data['id'] as number) ?? 0,
+          value: typeof data['value'] === 'string' ? parseFloat(data['value']) : (data['value'] as number) ?? 0,
+          createdAt: (data['created_at'] ?? data['createdAt'] ?? '') as string
+        };
+      })
+    );
   }
 }

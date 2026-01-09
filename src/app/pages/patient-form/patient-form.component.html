@@ -288,15 +288,19 @@
                   readonly
                 />
               } @else {
-                <input
-                  id="patient-custom-value"
-                  type="text"
-                  class="form-control"
-                  autocomplete="off"
-                  [value]="patientModel().customValue"
-                  (input)="onCurrencyInput($event)"
-                  placeholder="R$ 0,00"
-                />
+                <div class="input-group">
+                  <span class="input-group-text">R$</span>
+                  <input
+                    id="patient-custom-value"
+                    type="text"
+                    class="form-control"
+                    autocomplete="off"
+                    [value]="patientModel().customValue"
+                    (input)="onCurrencyInput($event)"
+                    placeholder="0,00"
+                  />
+                  <span class="input-group-text">,00</span>
+                </div>
                 <small class="form-text text-muted">Deixe vazio para usar o valor do plano</small>
               }
             </div>

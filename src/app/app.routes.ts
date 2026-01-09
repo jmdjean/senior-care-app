@@ -170,9 +170,48 @@ export const routes: Routes = [
           import('./pages/financeiro/market/market-form.component').then((m) => m.MarketFormComponent)
       },
       {
+        path: 'financeiro/market/:id/view',
+        loadComponent: () =>
+          import('./pages/financeiro/market/market-view.component').then((m) => m.MarketViewComponent)
+      },
+      {
         path: 'financeiro/overview',
         loadComponent: () =>
           import('./pages/financeiro/overview/overview.component').then((m) => m.OverviewComponent)
+      },
+      {
+        path: 'mercado',
+        loadComponent: () =>
+          import('./pages/market/market-configurator/market-configurator.component').then(
+            (m) => m.MarketConfiguratorComponent
+          )
+      },
+      {
+        path: 'mercado/list',
+        loadComponent: () =>
+          import('./pages/financeiro/market/market.component').then((m) => m.MarketComponent)
+      },
+      {
+        path: 'mercado/new',
+        loadComponent: () =>
+          import('./pages/financeiro/market/market-form.component').then((m) => m.MarketFormComponent)
+      },
+      {
+        path: 'mercado/overview',
+        loadComponent: () =>
+          import('./pages/market/overview-market/overview-market.component').then(
+            (m) => m.OverviewMarketComponent
+          )
+      },
+      {
+        path: 'mercado/:id/view',
+        loadComponent: () =>
+          import('./pages/financeiro/market/market-view.component').then((m) => m.MarketViewComponent)
+      },
+      {
+        path: 'mercado/:id',
+        loadComponent: () =>
+          import('./pages/financeiro/market/market-form.component').then((m) => m.MarketFormComponent)
       },
       {
         path: 'funcionarios',
@@ -187,14 +226,14 @@ export const routes: Routes = [
           import('./pages/funcionarios/employee-form/employee-form.component').then((m) => m.EmployeeFormComponent)
       },
       {
-        path: 'funcionarios/:id',
-        loadComponent: () =>
-          import('./pages/funcionarios/employee-form/employee-form.component').then((m) => m.EmployeeFormComponent)
-      },
-      {
         path: 'funcionarios/list',
         loadComponent: () =>
           import('./pages/funcionarios/employee-list/employee-list.component').then((m) => m.EmployeeListComponent)
+      },
+      {
+        path: 'funcionarios/:id',
+        loadComponent: () =>
+          import('./pages/funcionarios/employee-form/employee-form.component').then((m) => m.EmployeeFormComponent)
       }
     ]
   },
@@ -204,11 +243,6 @@ export const routes: Routes = [
       import('./pages/auth/authentication/authentication.component').then(
         (m) => m.AuthenticationComponent
       )
-  },
-  {
-    path: 'signup',
-    loadComponent: () =>
-      import('./pages/auth/signup/signup.component').then((m) => m.SignupComponent)
   },
   {
     path: '**',

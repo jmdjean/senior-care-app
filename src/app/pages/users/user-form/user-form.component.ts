@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LoadingService } from '../../../shared/services/loading.service';
@@ -23,7 +22,7 @@ const emptyUserModel: UserFormModel = {
 
 @Component({
   selector: 'app-user-form',
-  imports: [RouterLink, NgClass],
+  imports: [RouterLink],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

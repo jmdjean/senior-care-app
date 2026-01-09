@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { UserService } from '../../shared/services/user.service';
+import { UserService } from '../../../shared/services/user.service';
 
 type FinancialCard = {
   title: string;
@@ -32,7 +32,7 @@ export class FinanceiroConfiguratorComponent {
     {
       title: 'Mercado',
       icon: 'feather icon-shopping-cart',
-      route: '/financeiro/market'
+      route: '/mercado/list'
     },
     {
       title: 'Visão Geral',
