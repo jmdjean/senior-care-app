@@ -1,3 +1,49 @@
+@use '../../../../scss/_variables' as *;
+
 :host {
   display: block;
+}
+
+.rent-card {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #e9edf2;
+  overflow: hidden;
+
+  &__accent {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, $primary-color 0%, lighten($primary-color, 10%) 100%);
+  }
+
+  &__body {
+    margin-left: 0.75rem;
+  }
+
+  &__label {
+    margin: 0 0 0.35rem;
+    color: #1f2937;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  &__value {
+    margin: 0 0 0.35rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  &__caption {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
 }

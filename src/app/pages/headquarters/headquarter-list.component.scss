@@ -1,0 +1,51 @@
+@use '../../../scss/variables' as *;
+
+:host {
+  display: block;
+}
+
+.row {
+  margin-left: -30px;
+  margin-right: -30px;
+
+  > .col-xl-12 {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.card.table-card {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  margin-bottom: 0;
+  min-height: calc(100vh - 200px);
+  overflow: visible;
+}
+
+.table-card .card-header {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+.table-card .card-body {
+  padding-top: 0.5rem;
+  padding-left: 30px;
+  padding-right: 30px;
+  overflow: visible;
+}
+
+.table-responsive {
+  overflow: visible;
+}
+
+.table tbody tr td {
+  vertical-align: middle;
+}
+
+.create-form {
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 1.25rem;
+}

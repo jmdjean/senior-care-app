@@ -35,6 +35,22 @@
             (change)="onFileSelected($event)"
           />
         </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="market-headquarter">Sede</label>
+          <select
+            id="market-headquarter"
+            class="form-select"
+            [value]="selectedHeadquarterId()"
+            (change)="selectedHeadquarterId.set($any($event.target).value)"
+          >
+            <option value="">Selecione</option>
+            @for (headquarter of headquarters(); track headquarter.id) {
+              <option [value]="headquarter.id">{{ headquarter.name }}</option>
+            }
+          </select>
+        </div>
+
         <div class="mb-3">
           <label class="form-label" for="value">Valor</label>
           <div class="input-group">
@@ -43,22 +59,21 @@
               id="value"
               class="form-control"
               type="text"
-              [(ngModel)]="value"
-              name="value"
+              [value]="value()"
+              (input)="onValueInput($event)"
               placeholder="0,00"
-              currencyMask
             />
-            <span class="input-group-text">,00</span>
           </div>
         </div>
+
         <div class="mb-3">
           <label class="form-label" for="purchaseDate">Data da compra</label>
           <input
             id="purchaseDate"
             class="form-control"
             type="date"
-            [(ngModel)]="purchaseDate"
-            name="purchaseDate"
+            [value]="purchaseDate()"
+            (input)="purchaseDate.set($any($event.target).value)"
           />
         </div>
         <div class="mb-3">
@@ -67,8 +82,8 @@
             id="purchaseTime"
             class="form-control"
             type="time"
-            [(ngModel)]="purchaseTime"
-            name="purchaseTime"
+            [value]="purchaseTime()"
+            (input)="purchaseTime.set($any($event.target).value)"
           />
         </div>
         <div class="d-flex gap-2">

@@ -32,8 +32,9 @@
             <thead>
               <tr>
                 <th>Ações</th>
-                <th>Nome do paciente</th>
-                <th>Data da contratação</th>
+                <th>Plano</th>
+                <th>Paciente</th>
+                <th>Data</th>
               </tr>
             </thead>
             <tbody>
@@ -78,6 +79,11 @@
                         </div>
                       }
                     </div>
+                  </td>
+                  <td>
+                    <span class="badge plan-badge" [ngClass]="getPlanBadgeClass(contract.planName)">
+                      {{ contract.planName || '-' }}
+                    </span>
                   </td>
                   <td>{{ contract.patientName }}</td>
                   <td>{{ contract.contractDate | date:'dd/MM/yyyy' }}</td>

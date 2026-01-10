@@ -1,0 +1,146 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Sede</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">Sede</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card table-card table-border-style">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5>Lista de sedes</h5>
+        <button type="button" class="btn btn-primary btn-sm" (click)="toggleCreateForm()">
+          {{ showCreateForm() ? 'Fechar' : 'Cadastrar' }}
+        </button>
+      </div>
+      <div class="card-body">
+        @if (showCreateForm()) {
+          <form (submit)="onSubmit($event)" autocomplete="off" class="create-form">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="headquarter-name">Nome</label>
+                <input
+                  id="headquarter-name"
+                  type="text"
+                  class="form-control"
+                  autocomplete="off"
+                  [field]="headquarterForm.name"
+                  [class.is-invalid]="submitted() && headquarterForm.name().invalid()"
+                  placeholder="Nome da sede"
+                />
+                @if (submitted() && headquarterForm.name().invalid()) {
+                  <div class="invalid-feedback">
+                    @for (error of headquarterForm.name().errors(); track error.kind) {
+                      <div>{{ error.message }}</div>
+                    }
+                  </div>
+                }
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="headquarter-rent">Aluguel</label>
+                <div class="input-group">
+                  <span class="input-group-text">R$</span>
+                  <input
+                    id="headquarter-rent"
+                    type="text"
+                    class="form-control"
+                    autocomplete="off"
+                    [field]="headquarterForm.rent"
+                    currencyMask
+                    placeholder="0,00"
+                  />
+                  <span class="input-group-text">,00</span>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="headquarter-address">Endereco</label>
+                <input
+                  id="headquarter-address"
+                  type="text"
+                  class="form-control"
+                  autocomplete="off"
+                  [field]="headquarterForm.address"
+                  placeholder="Rua, numero, bairro"
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="headquarter-phone">Telefone</label>
+                <input
+                  id="headquarter-phone"
+                  type="tel"
+                  class="form-control"
+                  autocomplete="off"
+                  [field]="headquarterForm.phone"
+                  (input)="onPhoneInput($event)"
+                  placeholder="(00) 00000-0000"
+                />
+              </div>
+              <div class="col-12 mb-3">
+                <label class="form-label" for="headquarter-observation">Observacao</label>
+                <textarea
+                  id="headquarter-observation"
+                  class="form-control"
+                  rows="3"
+                  autocomplete="off"
+                  [field]="headquarterForm.observation"
+                  placeholder="Informacoes adicionais sobre a sede..."
+                ></textarea>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-outline-secondary" (click)="toggleCreateForm()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+          </form>
+          <hr class="my-4" />
+        }
+
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Aluguel</th>
+                <th>Endereco</th>
+                <th>Observacao</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (headquarter of headquarters(); track headquarter.id) {
+                <tr>
+                  <td>{{ headquarter.name }}</td>
+                  <td>{{ headquarter.phone ? (headquarter.phone | phoneMask) : '-' }}</td>
+                  <td>
+                    {{
+                      headquarter.rent !== undefined && headquarter.rent !== null
+                        ? (headquarter.rent | currencyBrl)
+                        : '-'
+                    }}
+                  </td>
+                  <td>{{ headquarter.address || '-' }}</td>
+                  <td>{{ headquarter.observation || '-' }}</td>
+                </tr>
+              }
+              @if (headquarters().length === 0) {
+                <tr>
+                  <td colspan="5" class="text-muted">Nenhuma sede cadastrada.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -53,6 +53,7 @@
                 <th>Ações</th>
                 <th>Categoria</th>
                 <th>Nome</th>
+                <th>Sede</th>
                 <th>Data de entrada</th>
                 <th>Horas semanais</th>
               </tr>
@@ -102,6 +103,13 @@
                     <span class="badge {{ getTypeBadgeClass(employee.type) }}">{{ employee.type }}</span>
                   </td>
                   <td>{{ employee.name }}</td>
+                  <td>
+                    @if (employee.headquarterName) {
+                      <span class="badge badge-light">{{ employee.headquarterName }}</span>
+                    } @else {
+                      -
+                    }
+                  </td>
                   <td>{{ employee.entryDate | date:'dd/MM/yyyy' }}</td>
                   <td>{{ employee.weeklyHours }}</td>
                 </tr>

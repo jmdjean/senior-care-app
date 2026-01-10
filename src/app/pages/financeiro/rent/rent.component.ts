@@ -1,13 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CurrencyBrlPipe } from '../../../shared/pipes/currency-brl.pipe';
+import { HeadquarterSelectionService } from '../../../shared/services/headquarter-selection.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
 import { Rent, RentService } from '../../../shared/services/rent.service';
 
 @Component({
   selector: 'app-rent',
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, CurrencyBrlPipe],
   templateUrl: './rent.component.html',
   styleUrl: './rent.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -16,12 +17,19 @@ export class RentComponent implements OnInit {
   private rentService = inject(RentService);
   private loadingService = inject(LoadingService);
   private notificationHelper = inject(NotificationHelperService);
+  private headquarterSelection = inject(HeadquarterSelectionService);
 
-  rentValue = signal('');
   currentRent = signal<Rent | null>(null);
+  formattedRent = signal<string>('');
+
+  private readonly loadRentEffect = effect(() => {
+    this.loadRent();
+  });
 
   ngOnInit(): void {
-    this.loadRent();
+    this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
+      error: () => this.notificationHelper.showError('Não foi possível carregar as sedes.')
+    });
   }
 
   private loadRent(): void {
@@ -29,7 +37,7 @@ export class RentComponent implements OnInit {
       next: (rent) => {
         this.currentRent.set(rent);
         const value = rent?.value ?? 0;
-        this.rentValue.set(value ? this.formatCurrencyInput(value) : '');
+        this.formattedRent.set(value ? this.formatCurrency(value) : 'R$ 0,00');
       },
       error: () => {
         this.notificationHelper.showError('Erro ao carregar valor do aluguel.');
@@ -37,34 +45,10 @@ export class RentComponent implements OnInit {
     });
   }
 
-  onSubmit(): void {
-    if (!this.rentValue()) {
-      this.notificationHelper.showError('Preencha o valor do aluguel.');
-      return;
-    }
-
-    const sanitized = this.rentValue()
-      .replace(/[R$\s]/g, '')
-      .replace(/\./g, '')
-      .replace(',', '.');
-    const value = parseFloat(sanitized);
-    if (isNaN(value) || value <= 0) {
-      this.notificationHelper.showError('Valor inválido.');
-      return;
-    }
-
-    this.loadingService.track(this.rentService.create({ value })).subscribe({
-      next: () => {
-        this.notificationHelper.showSuccess('Valor do aluguel atualizado com sucesso.');
-        this.loadRent();
-      },
-      error: () => {
-        this.notificationHelper.showError('Erro ao atualizar valor do aluguel.');
-      }
+  private formatCurrency(value: number): string {
+    return value.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
     });
-  }
-
-  private formatCurrencyInput(value: number): string {
-    return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 }

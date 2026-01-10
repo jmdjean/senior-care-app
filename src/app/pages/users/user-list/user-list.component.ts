@@ -1,8 +1,9 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router, RouterLink } from '@angular/router';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { HeadquarterSelectionService } from '../../../shared/services/headquarter-selection.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
 import { User, UserRole, UserService } from '../../../shared/services/user.service';
@@ -20,12 +21,19 @@ export class UserListComponent implements OnInit {
   private loadingService = inject(LoadingService);
   private notificationHelper = inject(NotificationHelperService);
   private userService = inject(UserService);
+  private headquarterSelection = inject(HeadquarterSelectionService);
 
   users = signal<User[]>([]);
   openMenuId = signal<number | null>(null);
 
-  ngOnInit(): void {
+  private readonly loadUsersEffect = effect(() => {
     this.loadUsers();
+  });
+
+  ngOnInit(): void {
+    this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
+      error: () => this.notificationHelper.showError('Não foi possível carregar as sedes.')
+    });
   }
 
   private loadUsers(): void {

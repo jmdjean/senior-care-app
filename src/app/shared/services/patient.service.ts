@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { apiUrls } from '../urls';
+import { HeadquarterSelectionService } from './headquarter-selection.service';
 
 export type Patient = {
   id: number;
@@ -18,6 +19,8 @@ export type Patient = {
   planName: string;
   diseases: string[];
   diseaseIds?: number[];
+  headquarterId?: number;
+  headquarterName?: string;
   cpf?: string;
   rg?: string;
   customValue?: number;
@@ -33,6 +36,7 @@ export type PatientCreatePayload = {
   weight: number;
   planId: number;
   diseaseIds: number[];
+  headquarterId?: number;
   cpf?: string;
   rg?: string;
   customValue?: number;
@@ -52,6 +56,8 @@ type PatientsResponse = {
   providedIn: 'root'
 })
 export class PatientService {
+  private headquarterSelection = inject(HeadquarterSelectionService);
+
   constructor(private http: HttpClient) {}
 
   create(patient: PatientCreatePayload): Observable<Patient> {
@@ -71,33 +77,18 @@ export class PatientService {
       map((response) => {
         // Handle both snake_case and camelCase responses from API
         const data: Record<string, unknown> = (response['patient'] as Record<string, unknown>) ?? response;
-        return {
-          id: (data['id'] as number) ?? 0,
-          name: (data['name'] as string) ?? '',
-          birthday: (data['birthday'] as string) ?? '',
-          closerContact: (data['closer_contact'] ?? data['closerContact'] ?? '') as string,
-          sex: (data['sex'] as string) ?? '',
-          heightCm: String(data['height_cm'] ?? data['heightCm'] ?? data['height'] ?? ''),
-          weightKg: String(data['weight_kg'] ?? data['weightKg'] ?? data['weight'] ?? ''),
-          height: (data['height'] as number) ?? undefined,
-          weight: (data['weight'] as number) ?? undefined,
-          planId: (data['plan_id'] ?? data['planId'] ?? 0) as number,
-          createdAt: (data['created_at'] ?? data['createdAt'] ?? '') as string,
-          planName: (data['plan_name'] ?? data['planName'] ?? '') as string,
-          diseases: (data['diseases'] as string[]) ?? [],
-          diseaseIds: (data['disease_ids'] ?? data['diseaseIds']) as number[] | undefined,
-          cpf: (data['cpf'] as string) ?? undefined,
-          rg: (data['rg'] as string) ?? undefined,
-          customValue: (data['custom_value'] ?? data['customValue']) as number | undefined,
-          observation: (data['observation'] as string) ?? undefined
-        };
+        return this.normalizePatient(data);
       })
     );
   }
 
   getAll(): Observable<Patient[]> {
-    return this.http.get<PatientsResponse>(apiUrls.patients).pipe(
-      map((response) => response.patients ?? [])
+    const params = this.headquarterSelection.buildParams();
+    return this.http.get<PatientsResponse | Patient[]>(apiUrls.patients, { params }).pipe(
+      map((response) => {
+        const patients = Array.isArray(response) ? response : response.patients ?? [];
+        return patients.map((data) => this.normalizePatient(data as Record<string, unknown>));
+      })
     );
   }
 
@@ -110,5 +101,30 @@ export class PatientService {
         return response?.patients ?? [];
       })
     );
+  }
+
+  private normalizePatient(data: Record<string, unknown>): Patient {
+    return {
+      id: (data['id'] as number) ?? 0,
+      name: (data['name'] as string) ?? '',
+      birthday: (data['birthday'] as string) ?? '',
+      closerContact: (data['closer_contact'] ?? data['closerContact'] ?? '') as string,
+      sex: (data['sex'] as string) ?? '',
+      heightCm: String(data['height_cm'] ?? data['heightCm'] ?? data['height'] ?? ''),
+      weightKg: String(data['weight_kg'] ?? data['weightKg'] ?? data['weight'] ?? ''),
+      height: (data['height'] as number) ?? undefined,
+      weight: (data['weight'] as number) ?? undefined,
+      planId: (data['plan_id'] ?? data['planId'] ?? 0) as number,
+      createdAt: (data['created_at'] ?? data['createdAt'] ?? '') as string,
+      planName: (data['plan_name'] ?? data['planName'] ?? '') as string,
+      diseases: (data['diseases'] as string[]) ?? [],
+      diseaseIds: (data['disease_ids'] ?? data['diseaseIds']) as number[] | undefined,
+      headquarterId: (data['headquarter_id'] ?? data['headquarterId']) as number | undefined,
+      headquarterName: (data['headquarter_name'] ?? data['headquarterName']) as string | undefined,
+      cpf: (data['cpf'] as string) ?? undefined,
+      rg: (data['rg'] as string) ?? undefined,
+      customValue: (data['custom_value'] ?? data['customValue']) as number | undefined,
+      observation: (data['observation'] as string) ?? undefined
+    };
   }
 }

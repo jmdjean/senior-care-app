@@ -7,6 +7,7 @@ export const apiUrls = {
   user: `${baseUrl}/api/users/register`,
   users: `${baseUrl}/api/users`,
   patients: `${baseUrl}/api/patients`,
+  headquarters: `${baseUrl}/api/headquarters`,
   patientNames: `${baseUrl}/api/patients/patient-names`,
   patientExams: (patientId: number | string) => `${baseUrl}/api/patients/${patientId}/exams`,
   patientReport: `${baseUrl}/api/patient/report`,
@@ -24,6 +25,7 @@ export const apiUrls = {
   marketFoodTotal: `${baseUrl}/api/market/overview/food`,
   marketCleaningTotal: `${baseUrl}/api/market/overview/cleaning`,
   financialOverview: `${baseUrl}/api/financial/overview`,
+  financialOverviewRent: `${baseUrl}/api/financial/overview/rent`,
   financialPatientsTotal: `${baseUrl}/api/financial/overview/patients-total`,
   financialEmployeesByType: (type: string) =>
     `${baseUrl}/api/financial/overview/employees/${encodeURIComponent(type)}`,

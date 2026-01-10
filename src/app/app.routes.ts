@@ -214,6 +214,11 @@ export const routes: Routes = [
           import('./pages/financeiro/market/market-form.component').then((m) => m.MarketFormComponent)
       },
       {
+        path: 'sede',
+        loadComponent: () =>
+          import('./pages/headquarters/headquarter-list.component').then((m) => m.HeadquarterListComponent)
+      },
+      {
         path: 'funcionarios',
         loadComponent: () =>
           import('./pages/funcionarios/funcionarios-configurator/funcionarios-configurator.component').then(

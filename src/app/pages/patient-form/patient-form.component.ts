@@ -9,13 +9,17 @@ import { CurrencyBrlPipe } from '../../shared/pipes/currency-brl.pipe';
 import { PhoneMaskPipe } from '../../shared/pipes/phone-mask.pipe';
 import { RgMaskPipe } from '../../shared/pipes/rg-mask.pipe';
 import { Disease, DiseaseService } from '../../shared/services/disease.service';
+import { Headquarter, HeadquarterService } from '../../shared/services/headquarter.service';
 import { LoadingService } from '../../shared/services/loading.service';
 import { NotificationHelperService } from '../../shared/services/notification-helper.service';
 import { Patient, PatientCreatePayload, PatientService } from '../../shared/services/patient.service';
 import { Plan, PlansService } from '../../shared/services/plans.service';
+import { UserService } from '../../shared/services/user.service';
 
-type PatientFormModel = Omit<Patient, 'diseases' | 'id' | 'planId' | 'createdAt' | 'customValue' | 'observation' | 'cpf' | 'rg'> & {
+type PatientFormModel = Omit<Patient, 'diseases' | 'id' | 'planId' | 'createdAt' | 'customValue' | 'observation' | 'cpf' | 'rg' | 'headquarterId' | 'headquarterName'> & {
   planId: string;
+  headquarterId: string;
+  headquarterName: string;
   diseases: number[];
   cpf: string;
   rg: string;
@@ -31,6 +35,8 @@ const emptyPatientModel: PatientFormModel = {
   heightCm: '',
   weightKg: '',
   planId: '',
+  headquarterId: '',
+  headquarterName: '',
   planName: '',
   diseases: [],
   cpf: '',
@@ -51,6 +57,8 @@ export class PatientFormComponent implements OnInit {
   private patientService = inject(PatientService);
   private diseaseService = inject(DiseaseService);
   private plansService = inject(PlansService);
+  private headquarterService = inject(HeadquarterService);
+  private userService = inject(UserService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -60,9 +68,12 @@ export class PatientFormComponent implements OnInit {
   submitted = signal(false);
   diseases = signal<Disease[]>([]);
   plans = signal<Plan[]>([]);
+  headquarters = signal<Headquarter[]>([]);
   patientModel = signal<PatientFormModel>({ ...emptyPatientModel });
   isEdit = signal(false);
   isViewMode = signal(false);
+  isManager = this.userService.isManager;
+  disableHeadquarterSelect = computed(() => this.isEdit() && this.isManager());
   formTitle = computed(() => {
     if (this.isViewMode()) {
       return 'Visualizar paciente';
@@ -96,6 +107,7 @@ export class PatientFormComponent implements OnInit {
 
     this.loadDiseases();
     this.loadPlans();
+    this.loadHeadquarters();
 
     if (this.editingPatientId !== null) {
       this.loadPatient(this.editingPatientId);
@@ -140,6 +152,17 @@ export class PatientFormComponent implements OnInit {
     });
   }
 
+  private loadHeadquarters(): void {
+    this.loadingService.track(this.headquarterService.getAll()).subscribe({
+      next: (headquarters) => {
+        this.headquarters.set(headquarters);
+      },
+      error: () => {
+        this.notificationHelper.showError('Nao foi possivel carregar as sedes.');
+      }
+    });
+  }
+
   private loadPatient(patientId: number): void {
     this.loadingService.track(this.patientService.getById(patientId)).subscribe({
       next: (patient) => {
@@ -159,15 +182,17 @@ export class PatientFormComponent implements OnInit {
           name: patient.name ?? '',
           birthday: patient.birthday ?? '',
           closerContact: patient.closerContact ?? '',
-          sex: patient.sex ?? '',
-          heightCm: heightValue === null ? '' : String(heightValue),
-          weightKg: weightValue === null ? '' : String(weightValue),
-          planId: patient.planId ? String(patient.planId) : '',
-          planName: patient.planName ?? '',
-          diseases: diseaseIds,
-          cpf: patient.cpf ?? '',
-          rg: patient.rg ?? '',
-          customValue: patient.customValue ? String(patient.customValue) : '',
+            sex: patient.sex ?? '',
+            heightCm: heightValue === null ? '' : String(heightValue),
+            weightKg: weightValue === null ? '' : String(weightValue),
+            planId: patient.planId ? String(patient.planId) : '',
+            headquarterId: patient.headquarterId ? String(patient.headquarterId) : '',
+            headquarterName: patient.headquarterName ?? '',
+            planName: patient.planName ?? '',
+            diseases: diseaseIds,
+            cpf: patient.cpf ?? '',
+            rg: patient.rg ?? '',
+            customValue: patient.customValue ? String(patient.customValue) : '',
           observation: patient.observation ?? ''
         });
       },
@@ -249,6 +274,7 @@ export class PatientFormComponent implements OnInit {
       weight: Number(model.weightKg) || 0,
       planId: Number(model.planId) || 0,
       diseaseIds: model.diseases,
+      headquarterId: model.headquarterId ? Number(model.headquarterId) : undefined,
       cpf: cpfDigits || undefined,
       rg: rgDigits || undefined,
       customValue: model.customValue ? this.parseCurrency(model.customValue) : undefined,
@@ -352,6 +378,18 @@ export class PatientFormComponent implements OnInit {
   private parseCurrency(value: string): number {
     const cleaned = value.replace(/[R$\s.]/g, '').replace(',', '.');
     return parseFloat(cleaned) || 0;
+  }
+
+  getHeadquarterName(): string {
+    const model = this.patientModel();
+    const selectedId = Number(model.headquarterId);
+    if (selectedId) {
+      const found = this.headquarters().find((hq) => hq.id === selectedId);
+      if (found?.name) {
+        return found.name;
+      }
+    }
+    return model.headquarterName || '';
   }
 
   cancel(): void {

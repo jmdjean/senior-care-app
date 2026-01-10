@@ -32,6 +32,7 @@
             <thead>
               <tr>
                 <th>Ações</th>
+                <th>Sede</th>
                 <th>Data da importação</th>
                 <th>Data e hora da compra</th>
                 <th>Quantidade de itens</th>
@@ -90,6 +91,7 @@
                       }
                     </div>
                   </td>
+                  <td>{{ market.headquarterName || '-' }}</td>
                   <td>{{ market.importDate | date:'dd/MM/yyyy' }}</td>
                   <td>{{ getPurchaseDateTime(market) }}</td>
                   <td>{{ market.itemCount }}</td>

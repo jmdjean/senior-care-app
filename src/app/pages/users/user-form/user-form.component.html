@@ -80,6 +80,21 @@
           </div>
 
           <div class="mb-3">
+            <label class="form-label" for="user-headquarter">Sede</label>
+            <select
+              id="user-headquarter"
+              class="form-select"
+              [value]="userModel().headquarterId"
+              (change)="updateField('headquarterId', $event)"
+            >
+              <option value="">Selecione</option>
+              @for (headquarter of headquarters(); track headquarter.id) {
+                <option [value]="headquarter.id">{{ headquarter.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="mb-3">
             <label class="form-label" for="user-password">
               Senha
               @if (!isEditing()) {

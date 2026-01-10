@@ -1,10 +1,11 @@
 import { DatePipe, NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router, RouterLink } from '@angular/router';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { AgePipe } from '../../shared/pipes/age.pipe';
 import { PhoneMaskPipe } from '../../shared/pipes/phone-mask.pipe';
+import { HeadquarterSelectionService } from '../../shared/services/headquarter-selection.service';
 import { LoadingService } from '../../shared/services/loading.service';
 import { NotificationHelperService } from '../../shared/services/notification-helper.service';
 import { PatientReportResponse, PatientReportService } from '../../shared/services/patient-report.service';
@@ -26,11 +27,17 @@ export class PatientComponent implements OnInit {
   private patientReportService = inject(PatientReportService);
   private userService = inject(UserService);
   private router = inject(Router);
+  private headquarterSelection = inject(HeadquarterSelectionService);
 
   patients = signal<Patient[]>([]);
   openMenuId = signal<number | null>(null);
 
+  private readonly loadPatientsEffect = effect(() => {
+    this.loadPatients();
+  });
+
   readonly canManagePatients = this.userService.canManagePatients;
+  readonly isAdmin = this.userService.isAdmin;
   readonly canSendExams = this.userService.canSendExams;
   readonly canSendPrescriptions = this.userService.canSendPrescriptions;
   readonly canGenerateReport = this.userService.canGenerateReport;
@@ -38,7 +45,9 @@ export class PatientComponent implements OnInit {
   readonly canViewPrescriptions = this.userService.canViewPrescriptions;
 
   ngOnInit(): void {
-    this.loadPatients();
+    this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
+      error: () => this.notificationHelper.showError('Não foi possível carregar as sedes.')
+    });
   }
 
   private loadPatients(): void {

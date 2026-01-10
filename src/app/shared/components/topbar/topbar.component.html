@@ -12,6 +12,30 @@
   </div>
   <div class="collapse navbar-collapse px-4">
     <ul class="navbar-nav me-auto">
+      <li class="nav-item me-3 headquarter-select">
+        <label class="visually-hidden" for="headquarterSelect">Selecionar sede</label>
+        <div class="hq-select__shell">
+          <i class="feather icon-home" aria-hidden="true"></i>
+          <select
+            id="headquarterSelect"
+            class="form-select form-select-sm hq-select__control"
+            [ngModel]="isAdmin() ? (selectedHeadquarterId() ?? 'all') : selectedHeadquarterId()"
+            (ngModelChange)="onHeadquarterChange($event)"
+            [disabled]="!isAdmin()"
+            aria-label="Selecionar sede"
+          >
+            @if (isAdmin()) {
+              <option value="all">Todos</option>
+            }
+            @for (headquarter of headquarters(); track headquarter.id) {
+              <option [value]="headquarter.id">{{ headquarter.name }}</option>
+            }
+          </select>
+        </div>
+        @if (!isAdmin()) {
+          <small class="hq-select__hint">Vinculada ao seu perfil</small>
+        }
+      </li>
       <li class="nav-item">
         <span class="nav-link user-display">
           <i class="feather icon-user" aria-hidden="true"></i>

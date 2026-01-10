@@ -1,9 +1,10 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router, RouterLink } from '@angular/router';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { CurrencyBrlPipe } from '../../../shared/pipes/currency-brl.pipe';
+import { HeadquarterSelectionService } from '../../../shared/services/headquarter-selection.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { Market, MarketService } from '../../../shared/services/market.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
@@ -23,15 +24,22 @@ export class MarketComponent implements OnInit {
   private notificationHelper = inject(NotificationHelperService);
   private userService = inject(UserService);
   private router = inject(Router);
+  private headquarterSelection = inject(HeadquarterSelectionService);
   private readonly marketBasePath = '/mercado';
 
   markets = signal<Market[]>([]);
   openMenuId = signal<number | null>(null);
 
+  private readonly loadMarketsEffect = effect(() => {
+    this.loadMarkets();
+  });
+
   readonly canManageMarkets = this.userService.isAdmin || this.userService.isManager;
 
   ngOnInit(): void {
-    this.loadMarkets();
+    this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
+      error: () => this.notificationHelper.showError('Não foi possível carregar as sedes.')
+    });
   }
 
   private loadMarkets(): void {

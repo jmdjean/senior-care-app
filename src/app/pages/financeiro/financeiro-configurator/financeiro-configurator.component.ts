@@ -30,11 +30,6 @@ export class FinanceiroConfiguratorComponent {
       route: '/financeiro/rent'
     },
     {
-      title: 'Mercado',
-      icon: 'feather icon-shopping-cart',
-      route: '/mercado/list'
-    },
-    {
       title: 'Visão Geral',
       icon: 'feather icon-bar-chart-2',
       route: '/financeiro/overview'

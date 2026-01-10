@@ -42,6 +42,45 @@
             </mat-select>
           </mat-form-field>
         </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="contract-headquarter">Sede</label>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Selecione a sede</mat-label>
+            <mat-select [value]="selectedHeadquarterId()" (selectionChange)="selectedHeadquarterId.set($event.value)" name="headquarterId">
+              <mat-option value="">Selecione</mat-option>
+              @for (headquarter of headquarters(); track headquarter.id) {
+                <mat-option [value]="headquarter.id.toString()">{{ headquarter.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="contract-plan">Plano</label>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Selecione o plano</mat-label>
+            <mat-select [value]="selectedPlanId()" (selectionChange)="selectedPlanId.set($event.value)" name="planId">
+              <mat-option value="">Selecione</mat-option>
+              @for (plan of plans(); track plan.id) {
+                <mat-option [value]="plan.id.toString()">{{ plan.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="contract-value">Valor do contrato</label>
+          <input
+            id="contract-value"
+            class="form-control"
+            type="text"
+            [value]="contractValue()"
+            (input)="contractValue.set($any($event.target).value)"
+            placeholder="Ex: 1500,00"
+          />
+        </div>
+
         <div class="mb-3">
           <label class="form-label" for="contractDate">Data da contratação</label>
           <input

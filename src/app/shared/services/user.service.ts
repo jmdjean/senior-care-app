@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { apiUrls } from '../urls';
+import { HeadquarterSelectionService } from './headquarter-selection.service';
 
 export type UserRole = 'Admin' | 'Manager' | 'Nurse';
 
@@ -10,6 +11,8 @@ export type User = {
   name: string;
   email: string;
   role: UserRole;
+  headquarterId?: number;
+  headquarterName?: string;
   createdAt?: string;
 };
 
@@ -19,6 +22,7 @@ export type UserCreatePayload = {
   password: string;
   confirmPassword: string;
   role: UserRole;
+  headquarterId?: number;
 };
 
 export type CurrentUser = {
@@ -26,6 +30,8 @@ export type CurrentUser = {
   name: string;
   email: string;
   role: UserRole;
+  headquarterId?: number;
+  headquarterName?: string;
 };
 
 type UsersResponse = {
@@ -37,6 +43,7 @@ type UsersResponse = {
 })
 export class UserService {
   private http = inject(HttpClient);
+  private headquarterSelection = inject(HeadquarterSelectionService);
 
   private currentUser = signal<CurrentUser | null>(null);
 
@@ -58,6 +65,10 @@ export class UserService {
   setCurrentUser(user: CurrentUser): void {
     this.currentUser.set(user);
     sessionStorage.setItem('currentUser', JSON.stringify(user));
+
+    if (user.role !== 'Admin' && user.headquarterId) {
+      this.headquarterSelection.setSelectedHeadquarter(user.headquarterId);
+    }
   }
 
   loadUserFromStorage(): void {
@@ -66,6 +77,9 @@ export class UserService {
       try {
         const user = JSON.parse(storedUser) as CurrentUser;
         this.currentUser.set(user);
+        if (user.role !== 'Admin' && user.headquarterId) {
+          this.headquarterSelection.setSelectedHeadquarter(user.headquarterId);
+        }
       } catch {
         this.clearCurrentUser();
       }
@@ -78,13 +92,19 @@ export class UserService {
   }
 
   getAll(): Observable<User[]> {
-    return this.http.get<UsersResponse>(apiUrls.users).pipe(
-      map((response) => response.users ?? [])
+    const params = this.headquarterSelection.buildParams();
+    return this.http.get<UsersResponse | User[]>(apiUrls.users, { params }).pipe(
+      map((response) => {
+        const users = Array.isArray(response) ? response : response.users ?? [];
+        return users.map((user) => this.normalizeUser(user as Record<string, unknown>));
+      })
     );
   }
 
   getById(userId: number): Observable<User> {
-    return this.http.get<User>(`${apiUrls.users}/${userId}`);
+    return this.http.get<Record<string, unknown>>(`${apiUrls.users}/${userId}`).pipe(
+      map((user) => this.normalizeUser(user))
+    );
   }
 
   create(payload: UserCreatePayload): Observable<User> {
@@ -97,6 +117,18 @@ export class UserService {
 
   delete(userId: number): Observable<void> {
     return this.http.delete<void>(`${apiUrls.users}/${userId}`);
+  }
+
+  private normalizeUser(data: Record<string, unknown>): User {
+    return {
+      id: (data['id'] as number) ?? 0,
+      name: (data['name'] as string) ?? '',
+      email: (data['email'] as string) ?? '',
+      role: (data['role'] as UserRole) ?? 'Nurse',
+      headquarterId: (data['headquarter_id'] ?? data['headquarterId']) as number | undefined,
+      headquarterName: (data['headquarter_name'] ?? data['headquarterName']) as string | undefined,
+      createdAt: (data['created_at'] ?? data['createdAt']) as string | undefined
+    };
   }
 
   getRoleBadgeClass(role: UserRole): string {

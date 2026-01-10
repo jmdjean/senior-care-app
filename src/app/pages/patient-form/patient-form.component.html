@@ -169,6 +169,38 @@
                 }
               }
             </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="patient-headquarter-id">Sede</label>
+              @if (isViewMode()) {
+                <input
+                  type="text"
+                  class="form-control readonly-field"
+                  [value]="getHeadquarterName()"
+                  readonly
+                />
+              } @else {
+                @if (disableHeadquarterSelect()) {
+                  <input
+                    type="text"
+                    class="form-control readonly-field"
+                    [value]="getHeadquarterName()"
+                    readonly
+                  />
+                  <small class="text-muted">Gerentes não alteram a sede na edição.</small>
+                } @else {
+                  <select
+                    id="patient-headquarter-id"
+                    class="form-select"
+                    [field]="patientForm.headquarterId"
+                  >
+                    <option value="">Selecione</option>
+                    @for (headquarter of headquarters(); track headquarter.id) {
+                      <option [value]="headquarter.id">{{ headquarter.name }}</option>
+                    }
+                  </select>
+                }
+              }
+            </div>
             <div class="col-md-3 mb-3">
               <label class="form-label" for="patient-height">Altura (cm)</label>
               @if (isViewMode()) {

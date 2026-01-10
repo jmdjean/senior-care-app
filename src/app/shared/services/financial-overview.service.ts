@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { apiUrls } from '../urls';
+import { HeadquarterSelectionService } from './headquarter-selection.service';
 
 export type FinancialOverview = {
   generalBalance: number;
@@ -16,33 +17,42 @@ export type FinancialOverview = {
   providedIn: 'root'
 })
 export class FinancialOverviewService {
+  private headquarterSelection = inject(HeadquarterSelectionService);
+
   constructor(private http: HttpClient) {}
 
   getGeneralBalance(): Observable<{ value: number }> {
-    return this.http.get<{ value: number }>(`${apiUrls.financialOverview}/general-balance`);
+    const params = this.headquarterSelection.buildParams();
+    return this.http.get<{ value: number }>(`${apiUrls.financialOverview}/general-balance`, { params });
   }
 
   getMonthlyExpenses(): Observable<{ value: number }> {
-    return this.http.get<{ value: number }>(`${apiUrls.financialOverview}/monthly-expenses`);
+    const params = this.headquarterSelection.buildParams();
+    return this.http.get<{ value: number }>(`${apiUrls.financialOverview}/monthly-expenses`, { params });
   }
 
   getMonthlyMarket(): Observable<{ value: number }> {
-    return this.http.get<{ value: number }>(`${apiUrls.financialOverview}/monthly-market`);
+    const params = this.headquarterSelection.buildParams();
+    return this.http.get<{ value: number }>(`${apiUrls.financialOverview}/monthly-market`, { params });
   }
 
   getEmployees(): Observable<{ value: number }> {
-    return this.http.get<{ value: number }>(`${apiUrls.financialOverview}/employees`);
+    const params = this.headquarterSelection.buildParams();
+    return this.http.get<{ value: number }>(`${apiUrls.financialOverview}/employees`, { params });
   }
 
   getRent(): Observable<{ value: number }> {
-    return this.http.get<{ value: number }>(`${apiUrls.financialOverview}/rent`);
+    const params = this.headquarterSelection.buildParams();
+    return this.http.get<{ value: number }>(`${apiUrls.financialOverview}/rent`, { params });
   }
 
   getPatientsTotal(): Observable<{ value: number }> {
-    return this.http.get<{ value: number }>(apiUrls.financialPatientsTotal);
+    const params = this.headquarterSelection.buildParams();
+    return this.http.get<{ value: number }>(apiUrls.financialPatientsTotal, { params });
   }
 
   getEmployeesTotalByType(type: string): Observable<{ value: number }> {
-    return this.http.get<{ value: number }>(apiUrls.financialEmployeesByType(type));
+    const params = this.headquarterSelection.buildParams();
+    return this.http.get<{ value: number }>(apiUrls.financialEmployeesByType(type), { params });
   }
 }

@@ -40,6 +40,7 @@
               <tr>
                 <th>Ações</th>
                 <th>Perfil</th>
+                <th>Sede</th>
                 <th>Nome</th>
                 <th>E-mail</th>
               </tr>
@@ -89,13 +90,20 @@
                       {{ getRoleLabel(user.role) }}
                     </span>
                   </td>
+                  <td>
+                    @if (user.headquarterName) {
+                      <span class="badge badge-light text-dark">{{ user.headquarterName }}</span>
+                    } @else {
+                      -
+                    }
+                  </td>
                   <td>{{ user.name }}</td>
                   <td>{{ user.email }}</td>
                 </tr>
               }
               @if (users().length === 0) {
                 <tr>
-                  <td colspan="4" class="text-muted">Nenhum usuário encontrado.</td>
+                  <td colspan="5" class="text-muted">Nenhum usuário encontrado.</td>
                 </tr>
               }
             </tbody>

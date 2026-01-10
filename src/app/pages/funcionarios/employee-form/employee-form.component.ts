@@ -7,10 +7,11 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CpfMaskPipe } from '../../../shared/pipes/cpf-mask.pipe';
 import { PhoneMaskPipe } from '../../../shared/pipes/phone-mask.pipe';
 import { Employee, EmployeeCreatePayload, EmployeeService, EmployeeType } from '../../../shared/services/employee.service';
+import { HeadquarterSelectionService } from '../../../shared/services/headquarter-selection.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
 
-type EmployeeFormModel = Omit<Employee, 'id'>;
+type EmployeeFormModel = Omit<Employee, 'id' | 'headquarterName'>;
 
 @Component({
   selector: 'app-employee-form',
@@ -25,6 +26,7 @@ export class EmployeeFormComponent implements OnInit {
   private employeeService = inject(EmployeeService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private headquarterSelection = inject(HeadquarterSelectionService);
 
   employeeForm = this.fb.group({
     type: ['Enfermeiro', Validators.required],
@@ -38,17 +40,28 @@ export class EmployeeFormComponent implements OnInit {
     emergencyContact: ['', [Validators.required, Validators.maxLength(11)]],
     weeklyHours: ['', [Validators.required, Validators.pattern(/^[0-9]{2}:[0-5][0-9]$/)]],
     salary: [0, Validators.required],
-    salaryWithTaxes: [0, Validators.required]
+    salaryWithTaxes: [0, Validators.required],
+    headquarterId: this.fb.control<number | null>(null, Validators.required)
   });
 
   readonly employeeTypes: EmployeeType[] = ['Enfermeiro', 'Faxineiro', 'Segurança', 'Cozinheiro'];
   readonly sexes = ['Homem', 'Mulher'];
+  readonly headquarters = this.headquarterSelection.headquarters;
 
   isEdit = false;
   employeeId?: number;
 
   ngOnInit(): void {
-    this.checkIfEdit();
+    this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
+      next: () => {
+        const headquarterId = this.headquarterSelection.selectedHeadquarterId();
+        if (headquarterId !== null) {
+          this.employeeForm.get('headquarterId')?.setValue(headquarterId);
+        }
+        this.checkIfEdit();
+      },
+      error: () => this.notificationHelper.showError('Não foi possível carregar as sedes.')
+    });
   }
 
   private checkIfEdit(): void {
@@ -60,7 +73,8 @@ export class EmployeeFormComponent implements OnInit {
         next: (employee) => {
           this.employeeForm.patchValue({
             ...employee,
-            entryDate: this.toInputDate(employee.entryDate)
+            entryDate: this.toInputDate(employee.entryDate),
+            headquarterId: employee.headquarterId ?? this.headquarterSelection.selectedHeadquarterId()
           });
         },
         error: () => {
@@ -89,7 +103,8 @@ export class EmployeeFormComponent implements OnInit {
       emergencyContact: formValue.emergencyContact!,
       weeklyHours: formValue.weeklyHours!,
       salary: formValue.salary!,
-      salaryWithTaxes: formValue.salaryWithTaxes!
+      salaryWithTaxes: formValue.salaryWithTaxes!,
+      headquarterId: formValue.headquarterId!
     };
 
     const request = this.isEdit

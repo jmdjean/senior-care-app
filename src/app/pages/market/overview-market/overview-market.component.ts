@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CurrencyBrlPipe } from '../../../shared/pipes/currency-brl.pipe';
+import { HeadquarterSelectionService } from '../../../shared/services/headquarter-selection.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { MarketOverviewService } from '../../../shared/services/market-overview.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
@@ -17,12 +18,19 @@ export class OverviewMarketComponent implements OnInit {
   private marketOverviewService = inject(MarketOverviewService);
   private loadingService = inject(LoadingService);
   private notificationHelper = inject(NotificationHelperService);
+  private headquarterSelection = inject(HeadquarterSelectionService);
 
   foodTotal = signal<number | null>(null);
   cleaningTotal = signal<number | null>(null);
 
-  ngOnInit(): void {
+  private readonly loadOverviewEffect = effect(() => {
     this.loadOverview();
+  });
+
+  ngOnInit(): void {
+    this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
+      error: () => this.notificationHelper.showError('Não foi possível carregar as sedes.')
+    });
   }
 
   private loadOverview(): void {

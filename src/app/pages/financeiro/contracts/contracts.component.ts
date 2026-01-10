@@ -1,16 +1,17 @@
-import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { DatePipe, NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router, RouterLink } from '@angular/router';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { Contract, ContractService } from '../../../shared/services/contract.service';
+import { HeadquarterSelectionService } from '../../../shared/services/headquarter-selection.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
 import { UserService } from '../../../shared/services/user.service';
 
 @Component({
   selector: 'app-contracts',
-  imports: [RouterLink, DatePipe, MatDialogModule],
+  imports: [RouterLink, DatePipe, MatDialogModule, NgClass],
   templateUrl: './contracts.component.html',
   styleUrl: './contracts.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -22,14 +23,21 @@ export class ContractsComponent implements OnInit {
   private notificationHelper = inject(NotificationHelperService);
   private userService = inject(UserService);
   private router = inject(Router);
+  private headquarterSelection = inject(HeadquarterSelectionService);
 
   contracts = signal<Contract[]>([]);
   openMenuId = signal<number | null>(null);
 
+  private readonly loadContractsEffect = effect(() => {
+    this.loadContracts();
+  });
+
   readonly canManageContracts = this.userService.canManagePatients; // Assuming similar permission
 
   ngOnInit(): void {
-    this.loadContracts();
+    this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
+      error: () => this.notificationHelper.showError('Não foi possível carregar as sedes.')
+    });
   }
 
   private loadContracts(): void {
@@ -75,5 +83,16 @@ export class ContractsComponent implements OnInit {
         });
       }
     });
+  }
+
+  getPlanBadgeClass(planName: string | null | undefined): string {
+    const normalized = (planName ?? '').trim().toLowerCase();
+    if (normalized === 'avarage' || normalized === 'average') {
+      return 'bg-info';
+    }
+    if (normalized === 'gold') {
+      return 'bg-warning';
+    }
+    return 'bg-secondary';
   }
 }

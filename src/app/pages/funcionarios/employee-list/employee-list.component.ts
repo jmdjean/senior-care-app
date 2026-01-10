@@ -1,9 +1,10 @@
 // Employee List Component - Updated
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Employee, EmployeeService, EmployeeType } from '../../../shared/services/employee.service';
+import { HeadquarterSelectionService } from '../../../shared/services/headquarter-selection.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
 import { UserService } from '../../../shared/services/user.service';
@@ -21,11 +22,16 @@ export class EmployeeListComponent implements OnInit {
   private notificationHelper = inject(NotificationHelperService);
   private userService = inject(UserService);
   private router = inject(Router);
+  private headquarterSelection = inject(HeadquarterSelectionService);
 
   employees = signal<Employee[]>([]);
   openMenuId = signal<number | null>(null);
   searchTerm = signal('');
   selectedType = signal<EmployeeType | ''>('');
+
+  private readonly loadEmployeesEffect = effect(() => {
+    this.loadEmployees();
+  });
 
   readonly employeeTypes: EmployeeType[] = ['Enfermeiro', 'Faxineiro', 'Segurança', 'Cozinheiro'];
   readonly canManageEmployees = computed(() => this.userService.isAdmin());
@@ -56,7 +62,9 @@ export class EmployeeListComponent implements OnInit {
       return;
     }
 
-    this.loadEmployees();
+    this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
+      error: () => this.notificationHelper.showError('Não foi possível carregar as sedes.')
+    });
   }
 
   toggleMenu(employeeId: number, event: Event): void {

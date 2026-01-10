@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { apiUrls } from '../urls';
+import { HeadquarterSelectionService } from './headquarter-selection.service';
 
 export type EmployeeType = 'Enfermeiro' | 'Faxineiro' | 'Segurança' | 'Cozinheiro';
 
@@ -19,9 +20,11 @@ export type Employee = {
   weeklyHours: string;
   salary: number;
   salaryWithTaxes: number;
+  headquarterId?: number;
+  headquarterName?: string;
 };
 
-export type EmployeeCreatePayload = Omit<Employee, 'id'>;
+export type EmployeeCreatePayload = Omit<Employee, 'id' | 'headquarterName'> & { headquarterId: number };
 
 type EmployeesResponse = {
   employees: Employee[];
@@ -31,6 +34,8 @@ type EmployeesResponse = {
   providedIn: 'root'
 })
 export class EmployeeService {
+  private headquarterSelection = inject(HeadquarterSelectionService);
+
   constructor(private http: HttpClient) {}
 
   create(employee: EmployeeCreatePayload): Observable<Employee> {
@@ -49,36 +54,45 @@ export class EmployeeService {
     return this.http.get<Record<string, unknown>>(`${apiUrls.employees}/${employeeId}`).pipe(
       map((response) => {
         const data: Record<string, unknown> = (response['employee'] as Record<string, unknown>) ?? response;
-        const toNumber = (value: unknown) =>
-          typeof value === 'string' ? parseFloat(value) : (value as number) ?? 0;
-        const weeklyRaw = data['weekly_hours'] ?? data['weeklyHours'];
-        const weeklyHours =
-          typeof weeklyRaw === 'number'
-            ? `${weeklyRaw.toString().padStart(2, '0')}:00`
-            : (weeklyRaw as string) ?? '';
-
-        return {
-          id: (data['id'] as number) ?? 0,
-          type: (data['type'] ?? data['employee_type'] ?? data['employeeType'] ?? '') as EmployeeType,
-          name: (data['name'] as string) ?? '',
-          cpf: (data['cpf'] as string) ?? '',
-          fullName: (data['full_name'] ?? data['fullName'] ?? '') as string,
-          sex: ((data['sex'] as string) ?? 'Homem') as 'Homem' | 'Mulher',
-          address: (data['address'] as string) ?? '',
-          entryDate: (data['entry_date'] ?? data['entryDate'] ?? '') as string,
-          phone: (data['phone'] as string) ?? '',
-          emergencyContact: (data['emergency_contact'] ?? data['emergencyContact'] ?? '') as string,
-          weeklyHours,
-          salary: toNumber(data['salary']),
-          salaryWithTaxes: toNumber(data['salary_with_taxes'] ?? data['salaryWithTaxes'])
-        };
+        return this.normalizeEmployee(data);
       })
     );
   }
 
   getAll(): Observable<Employee[]> {
-    return this.http.get<EmployeesResponse>(apiUrls.employees).pipe(
-      map((response) => response.employees ?? [])
+    const params = this.headquarterSelection.buildParams();
+    return this.http.get<EmployeesResponse | Employee[]>(apiUrls.employees, { params }).pipe(
+      map((response) => {
+        const employees = Array.isArray(response) ? response : response.employees ?? [];
+        return employees.map((employee) => this.normalizeEmployee(employee as Record<string, unknown>));
+      })
     );
+  }
+
+  private normalizeEmployee(data: Record<string, unknown>): Employee {
+    const toNumber = (value: unknown) => (typeof value === 'string' ? parseFloat(value) : (value as number) ?? 0);
+    const weeklyRaw = data['weekly_hours'] ?? data['weeklyHours'];
+    const weeklyHours =
+      typeof weeklyRaw === 'number'
+        ? `${weeklyRaw.toString().padStart(2, '0')}:00`
+        : (weeklyRaw as string) ?? '';
+
+    return {
+      id: (data['id'] as number) ?? 0,
+      type: (data['type'] ?? data['employee_type'] ?? data['employeeType'] ?? '') as EmployeeType,
+      name: (data['name'] as string) ?? '',
+      cpf: (data['cpf'] as string) ?? '',
+      fullName: (data['full_name'] ?? data['fullName'] ?? '') as string,
+      sex: ((data['sex'] as string) ?? 'Homem') as 'Homem' | 'Mulher',
+      address: (data['address'] as string) ?? '',
+      entryDate: (data['entry_date'] ?? data['entryDate'] ?? '') as string,
+      phone: (data['phone'] as string) ?? '',
+      emergencyContact: (data['emergency_contact'] ?? data['emergencyContact'] ?? '') as string,
+      weeklyHours,
+      salary: toNumber(data['salary']),
+      salaryWithTaxes: toNumber(data['salary_with_taxes'] ?? data['salaryWithTaxes']),
+      headquarterId: (data['headquarter_id'] ?? data['headquarterId']) as number | undefined,
+      headquarterName: (data['headquarter_name'] ?? data['headquarterName']) as string | undefined
+    };
   }
 }

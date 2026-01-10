@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
+import { Headquarter, HeadquarterService } from '../../../shared/services/headquarter.service';
 import { UserCreatePayload, UserRole, UserService } from '../../../shared/services/user.service';
 
 type UserFormModel = {
@@ -10,6 +11,7 @@ type UserFormModel = {
   password: string;
   confirmPassword: string;
   role: UserRole;
+  headquarterId: string;
 };
 
 const emptyUserModel: UserFormModel = {
@@ -17,7 +19,8 @@ const emptyUserModel: UserFormModel = {
   email: '',
   password: '',
   confirmPassword: '',
-  role: 'Nurse'
+  role: 'Nurse',
+  headquarterId: ''
 };
 
 @Component({
@@ -33,11 +36,13 @@ export class UserFormComponent implements OnInit {
   private loadingService = inject(LoadingService);
   private notificationHelper = inject(NotificationHelperService);
   private userService = inject(UserService);
+  private headquarterService = inject(HeadquarterService);
 
   userModel = signal<UserFormModel>({ ...emptyUserModel });
   submitted = signal(false);
   isEditing = signal(false);
   editingUserId = signal<number | null>(null);
+  headquarters = signal<Headquarter[]>([]);
 
   roles: { value: UserRole; label: string }[] = [
     { value: 'Admin', label: 'Administrador' },
@@ -55,6 +60,8 @@ export class UserFormComponent implements OnInit {
         this.loadUser(parsedId);
       }
     }
+
+    this.loadHeadquarters();
   }
 
   private loadUser(userId: number): void {
@@ -65,7 +72,8 @@ export class UserFormComponent implements OnInit {
           email: user.email,
           password: '',
           confirmPassword: '',
-          role: user.role
+          role: user.role,
+          headquarterId: user.headquarterId ? String(user.headquarterId) : ''
         });
       },
       error: () => {
@@ -110,7 +118,8 @@ export class UserFormComponent implements OnInit {
       email: model.email,
       password: model.password,
       confirmPassword: model.confirmPassword,
-      role: model.role
+      role: model.role,
+      headquarterId: model.headquarterId ? Number(model.headquarterId) : undefined
     };
 
     this.loadingService.track(this.userService.create(payload)).subscribe({
@@ -132,7 +141,8 @@ export class UserFormComponent implements OnInit {
     const payload: Partial<UserCreatePayload> = {
       name: model.name,
       email: model.email,
-      role: model.role
+      role: model.role,
+      headquarterId: model.headquarterId ? Number(model.headquarterId) : undefined
     };
 
     if (model.password) {
@@ -154,6 +164,17 @@ export class UserFormComponent implements OnInit {
   updateField(field: keyof UserFormModel, event: Event): void {
     const target = event.target as HTMLInputElement | HTMLSelectElement;
     this.userModel.update((model) => ({ ...model, [field]: target.value }));
+  }
+
+  private loadHeadquarters(): void {
+    this.loadingService.track(this.headquarterService.getAll()).subscribe({
+      next: (headquarters) => {
+        this.headquarters.set(headquarters);
+      },
+      error: () => {
+        this.notificationHelper.showError('Nao foi possivel carregar as sedes.');
+      }
+    });
   }
 
   goBack(): void {
