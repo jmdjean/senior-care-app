@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CurrencyBrlPipe } from '../../../shared/pipes/currency-brl.pipe';
 import { HeadquarterSelectionService } from '../../../shared/services/headquarter-selection.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
@@ -8,7 +7,7 @@ import { Rent, RentService } from '../../../shared/services/rent.service';
 
 @Component({
   selector: 'app-rent',
-  imports: [RouterLink, CurrencyBrlPipe],
+  imports: [RouterLink],
   templateUrl: './rent.component.html',
   styleUrl: './rent.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
