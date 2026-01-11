@@ -23,10 +23,14 @@ export class RentService {
 
   constructor(private http: HttpClient) {}
 
+  // Registra novo valor de aluguel vinculado a uma sede.
+  // Envia payload simples em JSON.
   create(rent: RentCreatePayload): Observable<Rent> {
     return this.http.post<Rent>(apiUrls.rent, rent);
   }
 
+  // Recupera valor de aluguel considerando sede selecionada.
+  // Normaliza campos de data e valor em caso de snake_case.
   get(): Observable<Rent> {
     const params = this.headquarterSelection.buildParams();
     return this.http.get<Record<string, unknown>>(apiUrls.financialOverviewRent, { params }).pipe(

@@ -49,16 +49,26 @@ export class MedicalPrescriptionComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.inicializarFormulario();
+  }
+
+  // Prepara a tela: limpa campos e carrega lista de pacientes disponíveis.
+  // Mantém o ngOnInit focado apenas em disparar a configuração inicial.
+  private inicializarFormulario(): void {
     this.resetForm();
     this.loadPatients();
   }
 
+  // Captura o arquivo selecionado e armazena para envio posterior.
+  // Limpa a seleção se nenhum arquivo for escolhido.
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
     this.selectedFile.set(file);
   }
 
+  // Valida entradas, monta payload e envia prescrição (arquivo ou observação) para a API.
+  // Exibe mensagens claras de sucesso ou erro e reseta o formulário ao concluir.
   onSubmit(): void {
     if (!this.selectedPatientId()) {
       this.notificationHelper.showWarning('Informe o paciente para enviar a prescrição médica.');
@@ -103,6 +113,8 @@ export class MedicalPrescriptionComponent implements OnInit {
       });
   }
 
+  // Restaura o formulário para estado inicial, limpando seleção e textos.
+  // Útil após envio ou ao abrir a tela.
   private resetForm(): void {
     this.selectedPatientId.set('');
     this.selectedFile.set(null);
@@ -110,12 +122,16 @@ export class MedicalPrescriptionComponent implements OnInit {
     this.observation.set('');
   }
 
+  // Verifica extensão permitida para arquivos de prescrição.
+  // Aceita PDF, TXT e formatos Word; compara por sufixo do nome.
   private isAllowedFile(file: File): boolean {
     const allowedExtensions = ['.pdf', '.txt', '.doc', '.docx'];
     const lowerName = file.name.toLowerCase();
     return allowedExtensions.some((ext) => lowerName.endsWith(ext));
   }
 
+  // Carrega nomes de pacientes para popular a seleção e filtro.
+  // Em falha, informa o usuário com mensagem amigável.
   private loadPatients(): void {
     this.loadingService.track(this.patientService.getNames()).subscribe({
       next: (patients) => {

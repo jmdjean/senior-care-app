@@ -27,6 +27,8 @@ type ApiResponse = {
 export class PatientReportService {
   private http = inject(HttpClient);
 
+  // Gera relatório textual do paciente via API.
+  // Normaliza resposta preservando dados do relatório e criação.
   generateReport(patientId: number): Observable<PatientReportResponse> {
     return this.http.post<ApiResponse>(apiUrls.patientReport, { patientId }).pipe(
       map((response) => ({

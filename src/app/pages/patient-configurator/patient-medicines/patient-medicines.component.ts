@@ -23,6 +23,12 @@ export class PatientMedicinesComponent implements OnInit {
   patientId = signal<number | null>(null);
 
   ngOnInit(): void {
+    this.inicializarTela();
+  }
+
+  // Obtém o id do paciente pela rota e inicia a carga das prescrições.
+  // Redireciona para a lista caso o parâmetro seja inválido ou ausente.
+  private inicializarTela(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       const parsedId = Number(idParam);
@@ -37,6 +43,8 @@ export class PatientMedicinesComponent implements OnInit {
     }
   }
 
+  // Busca prescrições do paciente e atualiza a lista exibida.
+  // Em caso de erro, apresenta mensagem detalhada vinda do backend.
   private loadPrescriptions(patientId: number): void {
     this.loadingService.track(this.medicalPrescriptionService.getByPatientId(patientId)).subscribe({
       next: (prescriptions) => {
@@ -48,6 +56,8 @@ export class PatientMedicinesComponent implements OnInit {
     });
   }
 
+  // Retorna para a tela de pacientes dentro do configurador.
+  // Mantém a navegação consistente com as demais seções.
   goBack(): void {
     this.router.navigate(['/patient-configurator/patients']);
   }

@@ -62,6 +62,8 @@ export class UserService {
   readonly canViewPrescriptions = computed(() => this.isAdmin() || this.isManager() || this.isNurse());
   readonly canImportFiles = computed(() => this.isAdmin() || this.isManager());
 
+  // Define o usuário atual na sessão e persiste no sessionStorage.
+  // Ajusta sede selecionada para perfis não admin com sede vinculada.
   setCurrentUser(user: CurrentUser): void {
     this.currentUser.set(user);
     sessionStorage.setItem('currentUser', JSON.stringify(user));
@@ -71,6 +73,8 @@ export class UserService {
     }
   }
 
+  // Restaura o usuário atual a partir do sessionStorage, se existir.
+  // Se houver dados inválidos, limpa o estado para evitar erros.
   loadUserFromStorage(): void {
     const storedUser = sessionStorage.getItem('currentUser');
     if (storedUser) {
@@ -86,11 +90,15 @@ export class UserService {
     }
   }
 
+  // Limpa o usuário atual e remove o registro persistido.
+  // Use em logout ou quando os dados salvos estiverem corrompidos.
   clearCurrentUser(): void {
     this.currentUser.set(null);
     sessionStorage.removeItem('currentUser');
   }
 
+  // Busca todos os usuários respeitando filtro de sede selecionada.
+  // Normaliza resposta para formato consistente na aplicação.
   getAll(): Observable<User[]> {
     const params = this.headquarterSelection.buildParams();
     return this.http.get<UsersResponse | User[]>(apiUrls.users, { params }).pipe(
@@ -101,24 +109,34 @@ export class UserService {
     );
   }
 
+  // Recupera usuário específico por id e normaliza o resultado.
+  // Útil para formulários de edição ou detalhes.
   getById(userId: number): Observable<User> {
     return this.http.get<Record<string, unknown>>(`${apiUrls.users}/${userId}`).pipe(
       map((user) => this.normalizeUser(user))
     );
   }
 
+  // Cria um novo usuário via API com payload tipado.
+  // Retorna o usuário criado para uso imediato.
   create(payload: UserCreatePayload): Observable<User> {
     return this.http.post<User>(apiUrls.user, payload);
   }
 
+  // Atualiza dados de um usuário existente com campos parciais.
+  // Retorna o usuário atualizado vindo do backend.
   update(userId: number, payload: Partial<UserCreatePayload>): Observable<User> {
     return this.http.put<User>(`${apiUrls.users}/${userId}`, payload);
   }
 
+  // Remove um usuário pelo id informado.
+  // Não retorna corpo; use para recarregar listas após sucesso.
   delete(userId: number): Observable<void> {
     return this.http.delete<void>(`${apiUrls.users}/${userId}`);
   }
 
+  // Converte resposta da API para o modelo User usado na aplicação.
+  // Aceita tanto snake_case quanto camelCase vindos do backend.
   private normalizeUser(data: Record<string, unknown>): User {
     return {
       id: (data['id'] as number) ?? 0,
@@ -131,6 +149,8 @@ export class UserService {
     };
   }
 
+  // Retorna a classe CSS de badge para um papel de usuário.
+  // Mantém mapeamento centralizado para uso em listas e detalhes.
   getRoleBadgeClass(role: UserRole): string {
     switch (role) {
       case 'Admin':
@@ -144,6 +164,8 @@ export class UserService {
     }
   }
 
+  // Retorna rótulo amigável do papel do usuário para exibição.
+  // Garante consistência de textos em toda a aplicação.
   getRoleLabel(role: UserRole): string {
     switch (role) {
       case 'Admin':

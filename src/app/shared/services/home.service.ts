@@ -17,6 +17,8 @@ export class HomeService {
     private notificationHelper: NotificationHelperService
   ) {}
 
+  // Busca total de pacientes e notifica erro amigável.
+  // Encapsula tratamento de falha via snackbar.
   getTotalPatient(): Observable<TotalResponse> {
     return this.http.get<TotalResponse>(apiUrls.totalPatients).pipe(
       tap({
@@ -26,6 +28,8 @@ export class HomeService {
     );
   }
 
+  // Retorna média de pacientes no plano Average.
+  // Exibe snackbar quando a requisição falha.
   getPatientPlanAverage(): Observable<TotalResponse> {
     return this.http.get<TotalResponse>(apiUrls.totalPatientsAveragePlan).pipe(
       tap({
@@ -35,6 +39,8 @@ export class HomeService {
     );
   }
 
+  // Retorna total de pacientes no plano Gold.
+  // Em caso de erro informa usuário via snackbar.
   getPatientPlanGold(): Observable<TotalResponse> {
     return this.http.get<TotalResponse>(apiUrls.totalPatientsGoldPlan).pipe(
       tap({

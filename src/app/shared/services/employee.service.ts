@@ -38,18 +38,26 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) {}
 
+  // Cria colaborador associado à sede informada.
+  // Encaminha payload diretamente para API.
   create(employee: EmployeeCreatePayload): Observable<Employee> {
     return this.http.post<Employee>(apiUrls.employees, employee);
   }
 
+  // Atualiza colaborador existente mantendo vínculo de sede.
+  // Usa rota parametrizada pelo id.
   update(employeeId: number, employee: EmployeeCreatePayload): Observable<Employee> {
     return this.http.put<Employee>(`${apiUrls.employees}/${employeeId}`, employee);
   }
 
+  // Remove colaborador pelo id.
+  // Responde com observable vazio para composição.
   delete(employeeId: number): Observable<void> {
     return this.http.delete<void>(`${apiUrls.employees}/${employeeId}`);
   }
 
+  // Busca colaborador por id e normaliza campos snake/camel.
+  // Aceita respostas com wrapper `employee` ou objeto direto.
   getById(employeeId: number): Observable<Employee> {
     return this.http.get<Record<string, unknown>>(`${apiUrls.employees}/${employeeId}`).pipe(
       map((response) => {
@@ -59,6 +67,8 @@ export class EmployeeService {
     );
   }
 
+  // Lista colaboradores aplicando filtro opcional de sede.
+  // Normaliza cada item para o modelo interno.
   getAll(): Observable<Employee[]> {
     const params = this.headquarterSelection.buildParams();
     return this.http.get<EmployeesResponse | Employee[]>(apiUrls.employees, { params }).pipe(
@@ -69,6 +79,8 @@ export class EmployeeService {
     );
   }
 
+  // Converte payloads diversos em `Employee` consistente.
+  // Ajusta horas semanais e números que chegam como string.
   private normalizeEmployee(data: Record<string, unknown>): Employee {
     const toNumber = (value: unknown) => (typeof value === 'string' ? parseFloat(value) : (value as number) ?? 0);
     const weeklyRaw = data['weekly_hours'] ?? data['weeklyHours'];

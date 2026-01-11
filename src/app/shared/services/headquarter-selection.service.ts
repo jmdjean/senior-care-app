@@ -23,6 +23,8 @@ export class HeadquarterSelectionService {
     return this.headquartersList().find((headquarter) => headquarter.id === id) ?? null;
   });
 
+  // Garante que a lista de sedes seja carregada uma única vez, reutilizando chamada em curso.
+  // Retorna imediatamente se já estiver inicializado.
   ensureLoaded(): Observable<Headquarter[]> {
     if (this.initialized()) {
       return of(this.headquartersList());
@@ -37,6 +39,8 @@ export class HeadquarterSelectionService {
     return this.loading$;
   }
 
+  // Recarrega a lista de sedes ignorando cache atual, reutilizando chamada em progresso.
+  // Útil para forçar atualização de dados.
   reload(): Observable<Headquarter[]> {
     if (this.loading$) {
       return this.loading$;
@@ -47,11 +51,15 @@ export class HeadquarterSelectionService {
     return this.loading$;
   }
 
+  // Define a sede selecionada e persiste a escolha localmente.
+  // Aceita null para representar seleção de todas as sedes.
   setSelectedHeadquarter(headquarterId: number | null): void {
     this.selectedHeadquarterIdSignal.set(headquarterId);
     this.persistSelectedId(headquarterId);
   }
 
+  // Constrói HttpParams com a sede selecionada e extras opcionais.
+  // Retorna undefined quando não há parâmetros para enviar.
   buildParams(
     extra?: Record<string, string | number | boolean | null | undefined>
   ): HttpParams | undefined {
@@ -72,6 +80,8 @@ export class HeadquarterSelectionService {
     return Object.keys(params).length ? new HttpParams({ fromObject: params }) : undefined;
   }
 
+  // Persiste o id da sede no localStorage para restaurar escolhas futuras.
+  // Usa o marcador 'all' para representar nenhuma sede selecionada.
   private persistSelectedId(id: number | null): void {
     if (id === null) {
       localStorage.setItem(this.storageKey, 'all');
@@ -80,6 +90,8 @@ export class HeadquarterSelectionService {
     localStorage.setItem(this.storageKey, id.toString());
   }
 
+  // Lê o id da sede armazenado no localStorage e converte para número.
+  // Retorna null quando não há sede ou quando o valor salvo é inválido.
   private getStoredHeadquarterId(): number | null {
     const stored = localStorage.getItem(this.storageKey);
     if (!stored) return null;
@@ -88,6 +100,8 @@ export class HeadquarterSelectionService {
     return Number.isFinite(parsed) ? parsed : null;
   }
 
+  // Busca sedes na API, aplica seleção inicial (persistida ou primeira) e cacheia o resultado.
+  // Libera referência de loading quando concluir para permitir novas chamadas.
   private fetchAndApply(options: { preferStored: boolean }): Observable<Headquarter[]> {
     return this.headquarterService.getAll().pipe(
       tap((headquarters) => {

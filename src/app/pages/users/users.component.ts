@@ -50,9 +50,17 @@ export class UsersComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.inicializarLista();
+  }
+
+  // Prepara a tela inicial carregando a lista de usuários existentes.
+  // Centraliza a orquestração para manter o ngOnInit enxuto e reutilizável.
+  private inicializarLista(): void {
     this.loadUsers();
   }
 
+  // Busca todos os usuários e atualiza o estado reativo da listagem.
+  // Exibe mensagem de erro amigável caso a consulta falhe.
   private loadUsers(): void {
     this.loadingService.track(this.userService.getAll()).subscribe({
       next: (users) => {
@@ -64,6 +72,8 @@ export class UsersComponent implements OnInit {
     });
   }
 
+  // Valida o formulário, decide entre criar ou atualizar e dispara a ação correspondente.
+  // Garante mensagens claras para campos obrigatórios e confirmação de senha.
   onSubmit(event: Event): void {
     event.preventDefault();
     this.submitted.set(true);
@@ -92,6 +102,8 @@ export class UsersComponent implements OnInit {
     }
   }
 
+  // Cria um novo usuário com os dados informados e recarrega a lista após sucesso.
+  // Exibe erros detalhados retornados pelo backend em caso de falha.
   private createUser(): void {
     const model = this.userModel();
     const payload: UserCreatePayload = {
@@ -114,6 +126,8 @@ export class UsersComponent implements OnInit {
     });
   }
 
+  // Atualiza usuário existente preservando id em edição e campos alterados.
+  // Suporta atualização opcional de senha quando fornecida.
   private updateUser(): void {
     const userId = this.editingUserId();
     if (!userId) return;
@@ -142,6 +156,8 @@ export class UsersComponent implements OnInit {
     });
   }
 
+  // Preenche o formulário com dados do usuário selecionado para edição e ativa modo de edição.
+  // Zera campos sensíveis como senha para evitar reuso acidental.
   editUser(user: User): void {
     this.isEditing.set(true);
     this.editingUserId.set(user.id);
@@ -154,6 +170,8 @@ export class UsersComponent implements OnInit {
     });
   }
 
+  // Pede confirmação e, ao confirmar, remove o usuário e atualiza a lista.
+  // Reporta mensagens de sucesso ou erro conforme resposta do backend.
   confirmDelete(user: User): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -178,6 +196,8 @@ export class UsersComponent implements OnInit {
     });
   }
 
+  // Restaura o formulário ao estado inicial e desativa modo de edição.
+  // Útil após criar/atualizar ou ao cancelar a operação.
   resetForm(): void {
     this.userModel.set({ ...emptyUserModel });
     this.submitted.set(false);
@@ -185,15 +205,21 @@ export class UsersComponent implements OnInit {
     this.editingUserId.set(null);
   }
 
+  // Atualiza campo específico do modelo a partir de eventos de input/select.
+  // Mantém o estado reativo sincronizado com o formulário manual.
   updateField(field: keyof UserFormModel, event: Event): void {
     const target = event.target as HTMLInputElement | HTMLSelectElement;
     this.userModel.update((model) => ({ ...model, [field]: target.value }));
   }
 
+  // Retorna a classe CSS de badge de acordo com o papel do usuário.
+  // Usa a lógica centralizada no serviço para manter consistência.
   getRoleBadgeClass(role: UserRole): string {
     return this.userService.getRoleBadgeClass(role);
   }
 
+  // Fornece o rótulo amigável do papel do usuário para exibição.
+  // Mantém o mapeamento centralizado no serviço de usuários.
   getRoleLabel(role: UserRole): string {
     return this.userService.getRoleLabel(role);
   }

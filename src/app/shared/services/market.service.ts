@@ -54,6 +54,8 @@ export class MarketService {
 
   constructor(private http: HttpClient) {}
 
+  // Importa nota de mercado enviando arquivo e metadados.
+  // Inclui sede e plano quando informados.
   create(market: MarketCreatePayload): Observable<Market> {
     const formData = new FormData();
     formData.append('file', market.file);
@@ -69,6 +71,8 @@ export class MarketService {
     return this.http.post<Market>(apiUrls.market, formData);
   }
 
+  // Atualiza compra de mercado permitindo troca opcional do arquivo.
+  // Serializa valores numéricos como string para multipart.
   update(marketId: number, market: MarketUpdatePayload): Observable<Market> {
     const formData = new FormData();
     formData.append('value', market.value.toString());
@@ -86,10 +90,14 @@ export class MarketService {
     return this.http.put<Market>(`${apiUrls.market}/${marketId}`, formData);
   }
 
+  // Remove registro de mercado pelo id.
+  // Retorna Observable vazio para encadear.
   delete(marketId: number): Observable<void> {
     return this.http.delete<void>(`${apiUrls.market}/${marketId}`);
   }
 
+  // Busca compra específica e adapta nomes de campos retornados.
+  // Suporta resposta com wrapper `market` ou objeto direto.
   getById(marketId: number): Observable<Market> {
     return this.http.get<Record<string, unknown>>(`${apiUrls.market}/${marketId}`).pipe(
       map((response) => {
@@ -99,6 +107,8 @@ export class MarketService {
     );
   }
 
+  // Lista compras aplicando filtro opcional de sede.
+  // Normaliza itens e valores convertendo strings numéricas.
   getAll(): Observable<Market[]> {
     const params = this.headquarterSelection.buildParams();
     return this.http.get<MarketsResponse | Market[]>(apiUrls.market, { params }).pipe(
@@ -109,6 +119,8 @@ export class MarketService {
     );
   }
 
+  // Converte payloads variados em `Market` coerente.
+  // Trata itens, alias de campos e números em string.
   private normalizeMarket(data: Record<string, unknown>): Market {
     const rawItems = (data['items'] ?? data['products'] ?? data['productItems']) as unknown;
     const items: MarketItem[] | undefined = Array.isArray(rawItems)

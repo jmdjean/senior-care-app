@@ -31,11 +31,19 @@ export class UserListComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.inicializarCarregamentoDeSedes();
+  }
+
+  // Garante que as sedes estejam carregadas antes de listar usuários vinculados.
+  // Exibe erro amigável caso a busca falhe, evitando estado inconsistente.
+  private inicializarCarregamentoDeSedes(): void {
     this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
       error: () => this.notificationHelper.showError('Não foi possível carregar as sedes.')
     });
   }
 
+  // Carrega todos os usuários e atualiza a listagem reativa.
+  // Notifica o usuário se a requisição falhar.
   private loadUsers(): void {
     this.loadingService.track(this.userService.getAll()).subscribe({
       next: (users) => {
@@ -47,6 +55,8 @@ export class UserListComponent implements OnInit {
     });
   }
 
+  // Alterna o menu de ações de um usuário específico evitando propagação do clique.
+  // Fecha o menu se já estiver aberto para o mesmo usuário.
   toggleMenu(userId: number, event: Event): void {
     event.stopPropagation();
     if (this.openMenuId() === userId) {
@@ -56,15 +66,21 @@ export class UserListComponent implements OnInit {
     }
   }
 
+  // Fecha qualquer menu de contexto aberto na listagem.
+  // Usado antes de navegações ou confirmações.
   closeMenu(): void {
     this.openMenuId.set(null);
   }
 
+  // Navega para a edição do usuário selecionado e fecha o menu.
+  // Mantém consistência de rota usando o id do usuário.
   editUser(user: User): void {
     this.closeMenu();
     this.router.navigate(['/users', user.id]);
   }
 
+  // Solicita confirmação e, se aprovado, exclui o usuário e recarrega a lista.
+  // Exibe feedback de sucesso ou erro conforme resposta da API.
   confirmDelete(user: User): void {
     this.closeMenu();
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -90,10 +106,14 @@ export class UserListComponent implements OnInit {
     });
   }
 
+  // Retorna a classe de badge para exibir o papel do usuário.
+  // Centraliza a lógica no serviço para manter o padrão.
   getRoleBadgeClass(role: UserRole): string {
     return this.userService.getRoleBadgeClass(role);
   }
 
+  // Retorna o rótulo amigável do papel do usuário para exibição na lista.
+  // Reutiliza mapeamento do serviço de usuários.
   getRoleLabel(role: UserRole): string {
     return this.userService.getRoleLabel(role);
   }

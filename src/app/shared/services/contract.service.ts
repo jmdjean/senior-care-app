@@ -47,6 +47,8 @@ export class ContractService {
 
   constructor(private http: HttpClient) {}
 
+  // Envia novo contrato com metadados e arquivo em multipart.
+  // Inclui sede e plano quando presentes.
   create(contract: ContractCreatePayload): Observable<Contract> {
     const formData = new FormData();
     formData.append('patientId', contract.patientId.toString());
@@ -65,6 +67,8 @@ export class ContractService {
     return this.http.post<Contract>(apiUrls.contracts, formData);
   }
 
+  // Atualiza contrato existente permitindo troca opcional do arquivo.
+  // Normaliza payload para multipart com valores numéricos em string.
   update(contractId: number, contract: ContractUpdatePayload): Observable<Contract> {
     const formData = new FormData();
     formData.append('patientId', contract.patientId.toString());
@@ -85,10 +89,14 @@ export class ContractService {
     return this.http.put<Contract>(`${apiUrls.contracts}/${contractId}`, formData);
   }
 
+  // Remove contrato pelo id.
+  // Retorna Observable vazio para encadear ações.
   delete(contractId: number): Observable<void> {
     return this.http.delete<void>(`${apiUrls.contracts}/${contractId}`);
   }
 
+  // Busca contrato por id e converte resposta flexível em modelo interno.
+  // Aceita tanto wrapper 'contract' quanto objeto direto da API.
   getById(contractId: number): Observable<Contract> {
     return this.http.get<Record<string, unknown>>(`${apiUrls.contracts}/${contractId}`).pipe(
       map((response) => {
@@ -98,6 +106,8 @@ export class ContractService {
     );
   }
 
+  // Lista contratos aplicando filtro de sede quando definido.
+  // Normaliza snake_case/camelCase para o modelo da aplicação.
   getAll(): Observable<Contract[]> {
     const params = this.headquarterSelection.buildParams();
     return this.http.get<ContractsResponse | Contract[]>(apiUrls.contracts, { params }).pipe(
@@ -108,6 +118,8 @@ export class ContractService {
     );
   }
 
+  // Converte payloads heterogêneos da API em `Contract` consistente.
+  // Trata alias de campos e números em string.
   private normalizeContract(data: Record<string, unknown>): Contract {
     return {
       id: (data['id'] as number) ?? 0,

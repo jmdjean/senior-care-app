@@ -43,12 +43,16 @@ type PatientExamsResponse = {
 export class ExamService {
   private http = inject(HttpClient);
 
+  // Faz upload de exame do paciente em multipart.
+  // Apenas arquivo é necessário, id segue na rota.
   uploadExam(patientId: number, file: File): Observable<void> {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<void>(apiUrls.patientExams(patientId), formData);
   }
 
+  // Lista exames do paciente e normaliza campos para camelCase.
+  // Preserva payload de IA quando presente na resposta.
   getByPatientId(patientId: number): Observable<PatientExam[]> {
     return this.http.get<PatientExamsResponse>(apiUrls.patientExams(patientId)).pipe(
       map((response) =>

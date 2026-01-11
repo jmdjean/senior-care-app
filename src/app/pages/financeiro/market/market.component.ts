@@ -37,11 +37,19 @@ export class MarketComponent implements OnInit {
   readonly canManageMarkets = this.userService.isAdmin || this.userService.isManager;
 
   ngOnInit(): void {
+    this.inicializarCarregamentoDeSedes();
+  }
+
+  // Garante que as sedes estejam carregadas antes de listar mercados vinculados.
+  // Evita navegação com sede ausente e mostra erro claro em caso de falha.
+  private inicializarCarregamentoDeSedes(): void {
     this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
       error: () => this.notificationHelper.showError('Não foi possível carregar as sedes.')
     });
   }
 
+  // Obtém todos os mercados da sede atual e atualiza o estado reativo da lista.
+  // Em caso de erro, exibe notificação para o usuário tentar novamente.
   private loadMarkets(): void {
     this.loadingService.track(this.marketService.getAll()).subscribe({
       next: (markets) => {
@@ -53,19 +61,27 @@ export class MarketComponent implements OnInit {
     });
   }
 
+  // Alterna a abertura do menu contextual de ações para um mercado específico.
+  // Impede propagação do evento para evitar cliques indesejados na linha.
   toggleMenu(marketId: number, event: Event): void {
     event.stopPropagation();
     this.openMenuId.set(this.openMenuId() === marketId ? null : marketId);
   }
 
+  // Navega para a página de detalhes do mercado selecionado.
+  // Usa rota base configurada para manter consistência de URLs.
   viewMarket(market: Market): void {
     this.router.navigate([this.marketBasePath, market.id, 'view']);
   }
 
+  // Navega para o formulário de edição do mercado selecionado.
+  // Reaproveita rota base e o id para abrir o modo de edição.
   editMarket(market: Market): void {
     this.router.navigate([this.marketBasePath, market.id]);
   }
 
+  // Solicita confirmação e, ao confirmar, exclui o mercado e recarrega a lista.
+  // Mostra mensagens de sucesso ou erro conforme o resultado da operação.
   deleteMarket(market: Market): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -91,6 +107,8 @@ export class MarketComponent implements OnInit {
     });
   }
 
+  // Converte a data de compra do mercado para string localizada pt-BR.
+  // Ajuda a exibir data e hora no mesmo campo de forma legível.
   getPurchaseDateTime(market: Market): string {
     const date = new Date(market.purchaseDate);
     return date.toLocaleString('pt-BR');

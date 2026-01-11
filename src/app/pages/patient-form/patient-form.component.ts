@@ -90,13 +90,19 @@ export class PatientFormComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.inicializarFormulario();
+  }
+
+  // Orquestra a preparação inicial: detecta modo de visualização/edição, carrega listas e paciente.
+  // Mantém o ngOnInit enxuto e centraliza a sequência de carregamentos.
+  private inicializarFormulario(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     const viewParam = this.route.snapshot.queryParamMap.get('view');
-    
+
     if (viewParam === 'true') {
       this.isViewMode.set(true);
     }
-    
+
     if (idParam) {
       const parsedId = Number(idParam);
       if (!Number.isNaN(parsedId)) {
@@ -114,6 +120,8 @@ export class PatientFormComponent implements OnInit {
     }
   }
 
+  // Busca lista de doenças e aplica mapeamento pendente de nomes para ids se necessário.
+  // Exibe mensagem de erro amigável caso a consulta falhe.
   private loadDiseases(): void {
     this.loadingService.track(this.diseaseService.getAll()).subscribe({
       next: (diseases) => {
@@ -136,6 +144,8 @@ export class PatientFormComponent implements OnInit {
     });
   }
 
+  // Carrega planos disponíveis e normaliza resposta para array seguro.
+  // Informa ao usuário quando não for possível obter os planos.
   private loadPlans(): void {
     this.loadingService.track(this.plansService.getAll()).subscribe({
       next: (plans) => {
@@ -152,6 +162,8 @@ export class PatientFormComponent implements OnInit {
     });
   }
 
+  // Busca as sedes disponíveis e popula o combo de seleção.
+  // Mostra alerta de falha caso a API não responda.
   private loadHeadquarters(): void {
     this.loadingService.track(this.headquarterService.getAll()).subscribe({
       next: (headquarters) => {
@@ -163,6 +175,8 @@ export class PatientFormComponent implements OnInit {
     });
   }
 
+  // Carrega dados do paciente em edição e preenche o formulário com valores normalizados.
+  // Converte listas e campos numéricos para strings conforme os inputs esperam.
   private loadPatient(patientId: number): void {
     this.loadingService.track(this.patientService.getById(patientId)).subscribe({
       next: (patient) => {
@@ -202,6 +216,8 @@ export class PatientFormComponent implements OnInit {
     });
   }
 
+  // Mapeia nomes de doenças para seus ids usando o cache carregado.
+  // Ignora entradas inválidas e retorna lista somente com ids válidos.
   private mapDiseaseNamesToIds(diseaseNames: string[]): number[] {
     if (!Array.isArray(diseaseNames) || diseaseNames.length === 0) {
       return [];
@@ -216,6 +232,8 @@ export class PatientFormComponent implements OnInit {
       .filter((value): value is number => typeof value === 'number');
   }
 
+  // Formata input de contato: mantém apenas dígitos e aplica máscara dinâmica.
+  // Atualiza o modelo reativo com o valor mascarado.
   onContactInput(event: Event): void {
     const target = event.target as HTMLInputElement;
     const digits = (target.value || '').replace(/\D/g, '').slice(0, 11);
@@ -235,6 +253,8 @@ export class PatientFormComponent implements OnInit {
     this.patientModel.update((model) => ({ ...model, closerContact: masked }));
   }
 
+  // Valida formulário, normaliza CPF/RG/valores e envia criação ou atualização.
+  // Exibe feedback de sucesso ou erro e navega de volta à lista após concluir.
   onSubmit(event: Event): void {
     event.preventDefault();
     this.submitted.set(true);
@@ -305,10 +325,14 @@ export class PatientFormComponent implements OnInit {
     });
   }
 
+  // Atualiza lista de doenças selecionadas no modelo ao mudar o multi-select.
+  // Garante fallback para array vazio se valor vier indefinido.
   onDiseasesChange(selected: number[]): void {
     this.patientModel.update((model) => ({ ...model, diseases: selected ?? [] }));
   }
 
+  // Retorna string com nomes das doenças selecionadas separados por vírgula.
+  // Usa lista carregada para resolver ids em nomes.
   getDiseasesNames(): string {
     const diseasesIds = this.patientModel().diseases;
     if (!diseasesIds || diseasesIds.length === 0) {
@@ -321,6 +345,8 @@ export class PatientFormComponent implements OnInit {
       .join(', ');
   }
 
+  // Aplica máscara dinâmica ao CPF conforme quantidade de dígitos digitados.
+  // Atualiza o modelo com o valor mascarado preservando apenas 11 dígitos.
   onCpfInput(event: Event): void {
     const target = event.target as HTMLInputElement;
     const digits = (target.value || '').replace(/\D/g, '').slice(0, 11);
@@ -338,6 +364,8 @@ export class PatientFormComponent implements OnInit {
     this.patientModel.update((model) => ({ ...model, cpf: masked }));
   }
 
+  // Formata entrada de RG com pontuação progressiva e limite de 9 dígitos.
+  // Sincroniza o modelo com o valor mascarado para persistência.
   onRgInput(event: Event): void {
     const target = event.target as HTMLInputElement;
     const digits = (target.value || '').replace(/\D/g, '').slice(0, 9);
@@ -355,6 +383,8 @@ export class PatientFormComponent implements OnInit {
     this.patientModel.update((model) => ({ ...model, rg: masked }));
   }
 
+  // Converte input numérico para formato monetário BRL e atualiza o modelo.
+  // Limpa quando não há dígitos para manter consistência de estado.
   onCurrencyInput(event: Event): void {
     const target = event.target as HTMLInputElement;
     const digits = (target.value || '').replace(/\D/g, '');
@@ -375,11 +405,15 @@ export class PatientFormComponent implements OnInit {
     this.patientModel.update((model) => ({ ...model, customValue: masked }));
   }
 
+  // Normaliza string monetária removendo símbolos e separadores para número decimal.
+  // Retorna 0 quando parsing não resulta em valor válido.
   private parseCurrency(value: string): number {
     const cleaned = value.replace(/[R$\s.]/g, '').replace(',', '.');
     return parseFloat(cleaned) || 0;
   }
 
+  // Resolve o nome da sede a partir do id escolhido ou do nome já presente no modelo.
+  // Útil para exibir o texto correto em modo de visualização.
   getHeadquarterName(): string {
     const model = this.patientModel();
     const selectedId = Number(model.headquarterId);
@@ -392,6 +426,8 @@ export class PatientFormComponent implements OnInit {
     return model.headquarterName || '';
   }
 
+  // Cancela a edição e retorna para a lista de pacientes.
+  // Não altera o estado atual além da navegação.
   cancel(): void {
     this.router.navigate(['/patients']);
   }

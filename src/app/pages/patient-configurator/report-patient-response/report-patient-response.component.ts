@@ -24,6 +24,12 @@ export class ReportPatientResponseComponent implements OnInit {
   createdAt = signal<string>('');
 
   ngOnInit(): void {
+    this.inicializarRelatorio();
+  }
+
+  // Recupera o relatório da navegação; constrói se houver dados, redireciona se faltar estado.
+  // Evita exibir tela vazia quando o acesso ocorre sem contexto válido.
+  private inicializarRelatorio(): void {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras?.state ?? history.state;
 
@@ -37,6 +43,8 @@ export class ReportPatientResponseComponent implements OnInit {
     }
   }
 
+  // Monta as seções do relatório com títulos, itens e ícones para exibição.
+  // Usa dados retornados pela API para preencher listas de cada bloco.
   private buildSections(data: PatientReportResponse): void {
     const reportContent = data.report;
     const sectionsList: ReportSection[] = [
@@ -70,6 +78,8 @@ export class ReportPatientResponseComponent implements OnInit {
     this.sections.set(sectionsList);
   }
 
+  // Indica se a seção possui conteúdo para controle de renderização.
+  // Retorna falso quando a lista é vazia ou indefinida.
   hasContent(items: string[]): boolean {
     return items && items.length > 0;
   }

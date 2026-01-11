@@ -13,6 +13,8 @@ export class LoadingService {
     distinctUntilChanged()
   );
 
+  // Encapsula observables incrementando contador de requisições pendentes ao iniciar.
+  // Garante decremento único ao finalizar com sucesso, erro ou conclusão.
   track<T>(source$: Observable<T>): Observable<T> {
     return defer(() => {
       this.increment();
@@ -35,10 +37,14 @@ export class LoadingService {
     });
   }
 
+  // Aumenta o contador de requisições em progresso.
+  // Usado internamente pelo fluxo de track.
   private increment(): void {
     this.pendingCount$.next(this.pendingCount$.value + 1);
   }
 
+  // Reduz o contador de requisições, sem deixar ficar negativo.
+  // Protege contra múltiplas finalizações simultâneas.
   private decrement(): void {
     const nextValue = this.pendingCount$.value - 1;
     this.pendingCount$.next(nextValue < 0 ? 0 : nextValue);

@@ -31,6 +31,8 @@ type HeadquartersResponse = {
 export class HeadquarterService {
   constructor(private http: HttpClient) {}
 
+  // Lista sedes disponíveis, aceitando resposta com wrapper ou array direto.
+  // Normaliza campos antes de devolver.
   getAll(): Observable<Headquarter[]> {
     return this.http.get<HeadquartersResponse | Headquarter[]>(apiUrls.headquarters).pipe(
       map((response) => {
@@ -42,12 +44,16 @@ export class HeadquarterService {
     );
   }
 
+  // Cria nova sede e já normaliza dados retornados.
+  // Aceita valores numéricos em formato string.
   create(payload: HeadquarterCreatePayload): Observable<Headquarter> {
     return this.http
       .post<Headquarter>(apiUrls.headquarters, payload)
       .pipe(map((created) => this.normalizeHeadquarter(created)));
   }
 
+  // Converte payloads heterogêneos em `Headquarter` consistente.
+  // Lida com números em string e alias de nomes.
   private normalizeHeadquarter(data: Partial<Headquarter>): Headquarter {
     const toNumber = (value: unknown): number | undefined => {
       if (typeof value === 'number') {

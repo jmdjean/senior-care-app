@@ -45,11 +45,19 @@ export class PatientComponent implements OnInit {
   readonly canViewPrescriptions = this.userService.canViewPrescriptions;
 
   ngOnInit(): void {
+    this.inicializarCarregamentoDeSedes();
+  }
+
+  // Garante que as sedes estejam carregadas antes de listar pacientes ligados a elas.
+  // Exibe mensagem clara de erro para evitar operações inconsistentes quando a busca falha.
+  private inicializarCarregamentoDeSedes(): void {
     this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
       error: () => this.notificationHelper.showError('Não foi possível carregar as sedes.')
     });
   }
 
+  // Busca todos os pacientes da sede atual e atualiza a lista exibida na tela.
+  // Em caso de falha, notifica o usuário e evita estado parcialmente carregado.
   private loadPatients(): void {
     this.loadingService.track(this.patientService.getAll()).subscribe({
       next: (patients) => {
@@ -61,6 +69,8 @@ export class PatientComponent implements OnInit {
     });
   }
 
+  // Abre diálogo de confirmação e, ao confirmar, exclui o paciente e recarrega a lista.
+  // Reporta mensagens claras de sucesso ou de erro retornado pelo backend.
   confirmDelete(patient: Patient): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -90,6 +100,8 @@ export class PatientComponent implements OnInit {
     });
   }
 
+  // Alterna o menu de ações do paciente específico e impede propagação do clique.
+  // Fecha o menu se ele já estiver aberto, abrindo apenas um por vez.
   toggleMenu(patientId: number, event: Event): void {
     event.stopPropagation();
     if (this.openMenuId() === patientId) {
@@ -99,15 +111,21 @@ export class PatientComponent implements OnInit {
     }
   }
 
+  // Fecha qualquer menu de contexto aberto na lista de pacientes.
+  // Usado antes de navegar ou executar outras ações para evitar menus pendentes.
   closeMenu(): void {
     this.openMenuId.set(null);
   }
 
+  // Redireciona para edição do paciente selecionado e fecha o menu de contexto.
+  // Usa rota configurada do configurador de pacientes.
   editPatient(patient: Patient): void {
     this.closeMenu();
     this.router.navigate(['/patient-configurator/patients', patient.id]);
   }
 
+  // Abre a visualização somente leitura do paciente escolhido e fecha o menu.
+  // Envia query param para sinalizar modo de visualização.
   viewPatient(patient: Patient): void {
     this.closeMenu();
     this.router.navigate(['/patient-configurator/patients', patient.id], {
@@ -115,16 +133,22 @@ export class PatientComponent implements OnInit {
     });
   }
 
+  // Navega para a lista de medicamentos do paciente selecionado e fecha o menu.
+  // Mantém a UX consistente evitando menus abertos após a navegação.
   openMedicines(patient: Patient): void {
     this.closeMenu();
     this.router.navigate(['/patient-configurator/patients', patient.id, 'medicines']);
   }
 
+  // Navega para a área de exames do paciente selecionado e fecha o menu de contexto.
+  // Mantém o estado limpo antes da troca de rota.
   openExams(patient: Patient): void {
     this.closeMenu();
     this.router.navigate(['/patient-configurator/patients', patient.id, 'exams']);
   }
 
+  // Gera relatório do paciente e navega para a tela de resposta ao concluir.
+  // Notifica erros específicos retornados pela API de relatório.
   openReport(patient: Patient): void {
     this.closeMenu();
     this.loadingService.track(this.patientReportService.generateReport(patient.id)).subscribe({
@@ -139,6 +163,8 @@ export class PatientComponent implements OnInit {
     });
   }
 
+  // Normaliza e devolve o sexo em formato amigável ou hífen quando ausente.
+  // Garante consistência textual na tabela de pacientes.
   formatSex(sex: string): string {
     const normalized = sex?.toLowerCase() ?? '';
     if (normalized === 'masculino') {
@@ -150,6 +176,8 @@ export class PatientComponent implements OnInit {
     return '-';
   }
 
+  // Define a classe da badge do plano com base no nome, distinguindo Gold e Average.
+  // Retorna classe neutra quando o plano não é reconhecido.
   getPlanBadgeClass(planName: string | null | undefined): string {
     const normalized = (planName ?? '').trim().toLowerCase();
     if (normalized === 'avarage' || normalized === 'average') {

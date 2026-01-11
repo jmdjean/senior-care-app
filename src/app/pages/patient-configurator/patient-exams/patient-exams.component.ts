@@ -24,6 +24,12 @@ export class PatientExamsComponent implements OnInit {
   showResults = signal(false);
 
   ngOnInit(): void {
+    this.inicializarTela();
+  }
+
+  // Resolve o id do paciente pela rota e dispara a carga de exames válidos.
+  // Redireciona para a lista caso o parâmetro esteja ausente ou inválido.
+  private inicializarTela(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       const parsedId = Number(idParam);
@@ -38,6 +44,8 @@ export class PatientExamsComponent implements OnInit {
     }
   }
 
+  // Busca exames do paciente informado e exibe os resultados ao concluir.
+  // Mostra erro detalhado se a API retornar falha.
   private loadExams(patientId: number): void {
     this.loadingService.track(this.examService.getByPatientId(patientId)).subscribe({
       next: (exams) => {
@@ -50,6 +58,8 @@ export class PatientExamsComponent implements OnInit {
     });
   }
 
+  // Retorna para a listagem de pacientes do configurador.
+  // Usa navegação direta para manter fluxo consistente.
   goBack(): void {
     this.router.navigate(['/patient-configurator/patients']);
   }

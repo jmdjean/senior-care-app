@@ -23,14 +23,14 @@ import { Plan, PlansService } from '../../../shared/services/plans.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContractFormComponent implements OnInit {
-  private contractService = inject(ContractService);
-  private loadingService = inject(LoadingService);
-  private notificationHelper = inject(NotificationHelperService);
-  private patientService = inject(PatientService);
-  private headquarterService = inject(HeadquarterService);
-  private plansService = inject(PlansService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  private readonly contractService = inject(ContractService);
+  private readonly loadingService = inject(LoadingService);
+  private readonly notificationHelper = inject(NotificationHelperService);
+  private readonly patientService = inject(PatientService);
+  private readonly headquarterService = inject(HeadquarterService);
+  private readonly plansService = inject(PlansService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   patients = signal<PatientName[]>([]);
   headquarters = signal<Headquarter[]>([]);
@@ -56,6 +56,12 @@ export class ContractFormComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.inicializarFormulario();
+  }
+
+  // Centraliza a preparação inicial: limpa campos, carrega dados auxiliares e detecta modo edição.
+  // Mantém o ngOnInit enxuto e facilita reutilização da sequência de carga.
+  private inicializarFormulario(): void {
     this.resetForm();
     this.loadPatients();
     this.loadHeadquarters();
@@ -63,6 +69,8 @@ export class ContractFormComponent implements OnInit {
     this.checkIfEdit();
   }
 
+  // Verifica se há id na rota e, se estiver em edição, popula o formulário com dados do contrato.
+  // Em falha de carregamento, informa o usuário sem quebrar o fluxo da tela.
   private checkIfEdit(): void {
     const id = this.route.snapshot.params['id'];
     if (id && id !== 'new') {
@@ -89,12 +97,16 @@ export class ContractFormComponent implements OnInit {
     }
   }
 
+  // Salva o arquivo de contrato selecionado para ser enviado com o formulário.
+  // Aceita limpar caso nenhum arquivo seja escolhido.
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
     this.selectedFile.set(file);
   }
 
+  // Valida campos, monta payload adequado e envia criação ou atualização para API.
+  // Exibe mensagens de sucesso ou erro e redireciona para a lista ao concluir.
   onSubmit(): void {
     if (!this.selectedPatientId() || !this.contractDate() || (!this.selectedFile() && !this.isEdit())) {
       this.notificationHelper.showError('Preencha todos os campos obrigatórios.');
@@ -131,6 +143,8 @@ export class ContractFormComponent implements OnInit {
     });
   }
 
+  // Restaura o formulário para valores iniciais, limpando seleções e entradas.
+  // Útil para inicialização e para reset manual se necessário.
   private resetForm(): void {
     this.selectedPatientId.set('');
     this.selectedHeadquarterId.set('');
@@ -141,6 +155,8 @@ export class ContractFormComponent implements OnInit {
     this.searchTerm.set('');
   }
 
+  // Carrega nomes de pacientes e trata respostas alternativas para compatibilidade.
+  // Notifica erro caso a API não responda adequadamente.
   private loadPatients(): void {
     this.loadingService.track(this.patientService.getNames()).subscribe({
       next: (patients) => {
@@ -157,6 +173,8 @@ export class ContractFormComponent implements OnInit {
     });
   }
 
+  // Busca sedes disponíveis e garante que a lista esteja em formato de array.
+  // Exibe alerta amigável em caso de falha.
   private loadHeadquarters(): void {
     this.loadingService.track(this.headquarterService.getAll()).subscribe({
       next: (headquarters) => {
@@ -169,6 +187,8 @@ export class ContractFormComponent implements OnInit {
     });
   }
 
+  // Obtém planos disponíveis, aceitando formatos diferentes de resposta do backend.
+  // Notifica o usuário caso a lista não possa ser carregada.
   private loadPlans(): void {
     this.loadingService.track(this.plansService.getAll()).subscribe({
       next: (plans) => {
@@ -185,6 +205,8 @@ export class ContractFormComponent implements OnInit {
     });
   }
 
+  // Converte texto monetário em número normalizado para envio à API.
+  // Remove símbolos e separadores, garantindo valor numérico válido.
   private parseCurrency(value: string): number {
     const cleaned = value.replace(/[R$\s.]/g, '').replace(',', '.');
     return parseFloat(cleaned) || 0;

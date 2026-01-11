@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Headquarter, HeadquarterService } from '../../../shared/services/headquarter.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { NotificationHelperService } from '../../../shared/services/notification-helper.service';
-import { Headquarter, HeadquarterService } from '../../../shared/services/headquarter.service';
 import { UserCreatePayload, UserRole, UserService } from '../../../shared/services/user.service';
 
 type UserFormModel = {
@@ -51,6 +51,12 @@ export class UserFormComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.inicializarFormulario();
+  }
+
+  // Prepara o formulário: detecta edição pelo id da rota, carrega dados e sedes.
+  // Mantém o ngOnInit enxuto e centraliza a sequência de inicialização.
+  private inicializarFormulario(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       const parsedId = Number(idParam);
@@ -64,6 +70,8 @@ export class UserFormComponent implements OnInit {
     this.loadHeadquarters();
   }
 
+  // Busca usuário por id e preenche o formulário para edição.
+  // Em caso de erro, informa o usuário e retorna à lista.
   private loadUser(userId: number): void {
     this.loadingService.track(this.userService.getById(userId)).subscribe({
       next: (user) => {
@@ -83,6 +91,8 @@ export class UserFormComponent implements OnInit {
     });
   }
 
+  // Valida entradas, escolhe entre criar ou atualizar e executa a ação.
+  // Mostra mensagens claras para campos obrigatórios e senha.
   onSubmit(event: Event): void {
     event.preventDefault();
     this.submitted.set(true);
@@ -111,6 +121,8 @@ export class UserFormComponent implements OnInit {
     }
   }
 
+  // Cria novo usuário e navega para a lista em caso de sucesso.
+  // Exibe erros detalhados do backend quando necessário.
   private createUser(): void {
     const model = this.userModel();
     const payload: UserCreatePayload = {
@@ -133,6 +145,8 @@ export class UserFormComponent implements OnInit {
     });
   }
 
+  // Atualiza usuário existente usando o id em edição, permitindo alterar senha opcionalmente.
+  // Redireciona para a lista após sucesso e mostra erros quando a API falha.
   private updateUser(): void {
     const userId = this.editingUserId();
     if (!userId) return;
@@ -161,11 +175,15 @@ export class UserFormComponent implements OnInit {
     });
   }
 
+  // Atualiza campo específico do modelo com o valor do input/select correspondente.
+  // Mantém o estado reativo sincronizado com o formulário.
   updateField(field: keyof UserFormModel, event: Event): void {
     const target = event.target as HTMLInputElement | HTMLSelectElement;
     this.userModel.update((model) => ({ ...model, [field]: target.value }));
   }
 
+  // Carrega lista de sedes para popular a seleção de vínculo do usuário.
+  // Exibe mensagem amigável em caso de falha.
   private loadHeadquarters(): void {
     this.loadingService.track(this.headquarterService.getAll()).subscribe({
       next: (headquarters) => {
@@ -177,6 +195,8 @@ export class UserFormComponent implements OnInit {
     });
   }
 
+  // Navega de volta para a lista de usuários sem alterar estado adicional.
+  // Útil para cancelar a edição ou criação.
   goBack(): void {
     this.router.navigate(['/users/list']);
   }

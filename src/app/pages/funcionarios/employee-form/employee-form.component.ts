@@ -52,6 +52,12 @@ export class EmployeeFormComponent implements OnInit {
   employeeId?: number;
 
   ngOnInit(): void {
+    this.inicializarFormulario();
+  }
+
+  // Garante sedes carregadas, pré-seleciona sede atual e verifica se é edição.
+  // Mantém o ngOnInit enxuto e centraliza a preparação inicial do formulário.
+  private inicializarFormulario(): void {
     this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
       next: () => {
         const headquarterId = this.headquarterSelection.selectedHeadquarterId();
@@ -64,6 +70,8 @@ export class EmployeeFormComponent implements OnInit {
     });
   }
 
+  // Detecta modo de edição via rota e carrega dados do funcionário quando aplicável.
+  // Exibe erro amigável caso a busca pelo funcionário falhe.
   private checkIfEdit(): void {
     const id = this.route.snapshot.params['id'];
     if (id && id !== 'new') {
@@ -84,6 +92,8 @@ export class EmployeeFormComponent implements OnInit {
     }
   }
 
+  // Valida o formulário, monta payload e envia criação ou atualização.
+  // Fornece feedback claro ao usuário conforme o resultado da operação.
   onSubmit(): void {
     if (this.employeeForm.invalid) {
       this.notificationHelper.showError('Preencha todos os campos obrigatórios.');
@@ -126,6 +136,8 @@ export class EmployeeFormComponent implements OnInit {
     });
   }
 
+  // Converte data em string ISO para formato yyyy-MM-dd aceito pelo input date.
+  // Retorna vazio quando a data não é válida.
   private toInputDate(date: string): string {
     const parsed = new Date(date);
     if (Number.isNaN(parsed.getTime())) {
@@ -138,6 +150,8 @@ export class EmployeeFormComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
+  // Formata entrada de horas semanais no padrão HH:mm conforme usuário digita.
+  // Atualiza o form control sem disparar eventos adicionais.
   onWeeklyHoursInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     const digits = (input.value || '').replace(/\D/g, '').slice(0, 4);

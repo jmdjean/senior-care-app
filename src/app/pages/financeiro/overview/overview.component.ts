@@ -35,11 +35,19 @@ export class OverviewComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.inicializarCarregamentoDeSedes();
+  }
+
+  // Garante que as sedes estejam carregadas antes de acionar demais consultas financeiras.
+  // Mostra erro amigável caso a busca falhe, evitando chamadas subsequentes quebradas.
+  private inicializarCarregamentoDeSedes(): void {
     this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
       error: () => this.notificationHelper.showError('Não foi possível carregar as sedes.')
     });
   }
 
+  // Dispara todas as buscas do painel financeiro em paralelo, populando cada indicador.
+  // Cada requisição mostra um erro específico para facilitar o diagnóstico rápido.
   private loadOverview(): void {
     // Load all in parallel
     this.loadingService.track(this.financialOverviewService.getGeneralBalance()).subscribe({

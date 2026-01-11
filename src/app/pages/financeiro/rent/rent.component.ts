@@ -27,11 +27,19 @@ export class RentComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.inicializarCarregamentoDeSedes();
+  }
+
+  // Garante que a lista de sedes esteja disponível antes de buscar o aluguel vinculado.
+  // Exibe mensagem clara caso o carregamento falhe para evitar chamadas inválidas.
+  private inicializarCarregamentoDeSedes(): void {
     this.loadingService.track(this.headquarterSelection.ensureLoaded()).subscribe({
       error: () => this.notificationHelper.showError('Não foi possível carregar as sedes.')
     });
   }
 
+  // Busca o valor de aluguel configurado para a sede atual e formata para exibição.
+  // Atualiza o estado reativo e mostra erro amigável se a API falhar.
   private loadRent(): void {
     this.loadingService.track(this.rentService.get()).subscribe({
       next: (rent) => {
@@ -45,6 +53,8 @@ export class RentComponent implements OnInit {
     });
   }
 
+  // Converte um número para formato monetário pt-BR para ser exibido no card.
+  // Mantém consistência visual com demais valores financeiros da aplicação.
   private formatCurrency(value: number): string {
     return value.toLocaleString('pt-BR', {
       style: 'currency',

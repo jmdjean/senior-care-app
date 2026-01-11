@@ -48,10 +48,18 @@ export class PatientReportComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.inicializarFormulario();
+  }
+
+  // Prepara o formulário de relatório: limpa seleções e carrega lista de pacientes.
+  // Mantém o ngOnInit enxuto e reutilizável.
+  private inicializarFormulario(): void {
     this.resetForm();
     this.loadPatients();
   }
 
+  // Valida seleção de paciente e dispara geração do relatório, navegando para a resposta.
+  // Em caso de falha, mostra mensagens claras para o usuário.
   onSubmit(): void {
     if (!this.selectedPatientId()) {
       this.notificationHelper.showWarning('Selecione um paciente para gerar o relatório.');
@@ -78,11 +86,15 @@ export class PatientReportComponent implements OnInit {
       });
   }
 
+  // Limpa campos do formulário, removendo seleção e termo de busca.
+  // Útil para reiniciar o fluxo após envio ou carregamento inicial.
   private resetForm(): void {
     this.selectedPatientId.set('');
     this.searchTerm.set('');
   }
 
+  // Carrega nomes de pacientes para popular o select e filtro.
+  // Exibe erro amigável quando a consulta falha.
   private loadPatients(): void {
     this.loadingService.track(this.patientService.getNames()).subscribe({
       next: (patients) => {

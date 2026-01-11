@@ -38,11 +38,19 @@ export class MarketFormComponent implements OnInit {
   readonly hasFileSelected = computed(() => !!this.selectedFile());
 
   ngOnInit(): void {
+    this.inicializarFormulario();
+  }
+
+  // Prepara o formulário: limpa campos, carrega sedes e identifica se é edição.
+  // Centraliza a orquestração inicial para manter ngOnInit enxuto.
+  private inicializarFormulario(): void {
     this.resetForm();
     this.loadHeadquarters();
     this.checkIfEdit();
   }
 
+  // Verifica se a rota contém id válido para edição e preenche o formulário com dados existentes.
+  // Se falhar, mostra erro mantendo o formulário para nova tentativa ou revisão.
   private checkIfEdit(): void {
     const id = this.route.snapshot.params['id'];
     if (id && id !== 'new') {
@@ -67,17 +75,23 @@ export class MarketFormComponent implements OnInit {
     }
   }
 
+  // Guarda o arquivo selecionado no estado reativo para envio posterior.
+  // Limpa caso nenhum arquivo seja escolhido.
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
     this.selectedFile.set(file);
   }
 
+  // Atualiza o valor digitado no campo de valor mantendo-o como texto formatado.
+  // Evita acoplamento com parsing antecipado e mantém o binding reativo simples.
   onValueInput(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.value.set(target.value);
   }
 
+  // Valida entrada, monta payload de criação/edição e envia para API com feedback ao usuário.
+  // Reaproveita lógica para ambos os fluxos, mostrando mensagens adequadas de sucesso/erro.
   onSubmit(): void {
     if (!this.purchaseDate() || !this.purchaseTime() || (!this.selectedFile() && !this.isEdit())) {
       this.notificationHelper.showError('Preencha todos os campos obrigatórios.');
@@ -140,6 +154,8 @@ export class MarketFormComponent implements OnInit {
     });
   }
 
+  // Restaura o formulário para estado inicial com data/hora padrão e campos limpos.
+  // Facilita reutilização em criação ou após carregamento inicial.
   private resetForm(): void {
     const now = new Date();
     const date = [
@@ -156,6 +172,8 @@ export class MarketFormComponent implements OnInit {
     this.purchaseTime.set(time);
   }
 
+  // Carrega a lista de sedes disponíveis para vincular ao mercado.
+  // Exibe mensagem de erro caso a API não responda adequadamente.
   private loadHeadquarters(): void {
     this.loadingService.track(this.headquarterService.getAll()).subscribe({
       next: (headquarters) => {
@@ -167,6 +185,8 @@ export class MarketFormComponent implements OnInit {
     });
   }
 
+  // Formata um número para texto monetário pt-BR para exibir no input de valor.
+  // Ajuda a manter consistência de formatação ao preencher dados existentes.
   private formatCurrencyInput(value: number): string {
     return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }

@@ -32,6 +32,8 @@ export type PrescriptionsResponse = {
 export class MedicalPrescriptionService {
   private http = inject(HttpClient);
 
+  // Envia prescrição médica com observação e arquivo opcional.
+  // Serializa campos em FormData para suportar upload.
   create(payload: MedicalPrescriptionPayload): Observable<void> {
     const formData = new FormData();
     formData.append('patientId', payload.patientId.toString());
@@ -44,6 +46,8 @@ export class MedicalPrescriptionService {
     return this.http.post<void>(apiUrls.medicalPrescription, formData);
   }
 
+  // Lista prescrições do paciente e normaliza campos esperados.
+  // Mantém payload de IA conforme retornado pela API.
   getByPatientId(patientId: number): Observable<Prescription[]> {
     return this.http.get<PrescriptionsResponse>(apiUrls.medicalPrescriptionByPatient(patientId)).pipe(
       map((response) => {

@@ -60,18 +60,26 @@ export class PatientService {
 
   constructor(private http: HttpClient) {}
 
+  // Cria paciente com dados clínicos e vínculo de sede opcional.
+  // Encaminha payload direto em JSON.
   create(patient: PatientCreatePayload): Observable<Patient> {
     return this.http.post<Patient>(apiUrls.patients, patient);
   }
 
+  // Atualiza paciente existente mantendo estrutura do payload.
+  // Rota parametrizada pelo id do paciente.
   update(patientId: number, patient: PatientCreatePayload): Observable<Patient> {
     return this.http.put<Patient>(`${apiUrls.patients}/${patientId}`, patient);
   }
 
+  // Remove paciente pelo id.
+  // Retorna Observable vazio para encadear operações.
   delete(patientId: number): Observable<void> {
     return this.http.delete<void>(`${apiUrls.patients}/${patientId}`);
   }
 
+  // Busca paciente por id e normaliza campos snake/camel.
+  // Aceita resposta com wrapper `patient` ou objeto plano.
   getById(patientId: number): Observable<Patient> {
     return this.http.get<Record<string, unknown>>(`${apiUrls.patients}/${patientId}`).pipe(
       map((response) => {
@@ -82,6 +90,8 @@ export class PatientService {
     );
   }
 
+  // Lista pacientes aplicando filtro opcional de sede.
+  // Normaliza cada item para o modelo interno.
   getAll(): Observable<Patient[]> {
     const params = this.headquarterSelection.buildParams();
     return this.http.get<PatientsResponse | Patient[]>(apiUrls.patients, { params }).pipe(
@@ -92,6 +102,8 @@ export class PatientService {
     );
   }
 
+  // Recupera apenas ids e nomes de pacientes.
+  // Suporta resposta como array simples ou objeto com `patients`.
   getNames(): Observable<PatientName[]> {
     return this.http.get<PatientName[] | { patients?: PatientName[] }>(apiUrls.patientNames).pipe(
       map((response) => {
@@ -103,6 +115,8 @@ export class PatientService {
     );
   }
 
+  // Converte payloads diversos em `Patient` consistente.
+  // Ajusta números e alias para campos usados na aplicação.
   private normalizePatient(data: Record<string, unknown>): Patient {
     return {
       id: (data['id'] as number) ?? 0,

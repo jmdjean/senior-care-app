@@ -35,6 +35,8 @@ export class AuthService {
   private notificationHelper = inject(NotificationHelperService);
   private userService = inject(UserService);
 
+  // Efetua login via API, guarda o id do usuário e popula o usuário atual.
+  // Exibe mensagens de sucesso ou erro conforme a resposta do backend.
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http
       .post<LoginResponse>(apiUrls.login, { email, password })
@@ -64,6 +66,8 @@ export class AuthService {
       );
   }
 
+  // Cria uma nova conta de usuário usando a API pública.
+  // Retorna sucesso ou mostra erro amigável em caso de falha.
   createUser(payload: SignupPayload): Observable<void> {
     return this.http.post<void>(apiUrls.user, payload).pipe(
       tap({
@@ -74,22 +78,32 @@ export class AuthService {
     );
   }
 
+  // Recupera o id de usuário armazenado em sessão.
+  // Retorna null quando não existe sessão ativa.
   getUserId(): string | null {
     return sessionStorage.getItem(this.userIdKey);
   }
 
+  // Salva o id do usuário logado na sessão atual.
+  // Usa sessionStorage para escopo de aba.
   setUserId(userId: string): void {
     sessionStorage.setItem(this.userIdKey, userId);
   }
 
+  // Remove o id do usuário da sessão atual.
+  // Limpa somente a chave utilizada pelo serviço.
   clearUserId(): void {
     sessionStorage.removeItem(this.userIdKey);
   }
 
+  // Informa se há um usuário autenticado com id em sessão.
+  // Retorna booleano simples para uso em guards.
   isAuthenticated(): boolean {
     return !!this.getUserId();
   }
 
+  // Encerra a sessão local, limpa caches e remove usuário atual.
+  // Ideal para logout completo ou timeout de sessão.
   logout(): void {
     this.clearUserId();
     this.userService.clearCurrentUser();
@@ -105,6 +119,8 @@ export class AuthService {
     }
   }
 
+  // Inicializa usuário atual lendo dados persistidos na sessão.
+  // Deve ser chamado no bootstrap para restaurar contexto de login.
   initializeUser(): void {
     this.userService.loadUserFromStorage();
   }
