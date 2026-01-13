@@ -13,14 +13,14 @@
 }
 
 .dialog-content {
-  padding: 1.25rem 1.5rem 1.5rem;
+  padding: 1.5rem 1.75rem 1.5rem;
   max-height: 78vh;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .mat-mdc-dialog-content {
-  padding: 0;
+  padding: 0 1rem 1rem;
 }
 
 .dialog-content .row {
