@@ -1,0 +1,80 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Rastreabilidade</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">Rastreabilidade</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card table-card table-border-style">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5>Logs de ações</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th class="action-col text-center">Ações</th>
+                <th>Data e hora</th>
+                <th>Usuário</th>
+                <th>Sede</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (record of records(); track record.id) {
+                <tr>
+                  <td class="action-cell text-center">
+                    <button
+                      type="button"
+                      class="btn-icon"
+                      (click)="openRecord(record)"
+                      aria-label="Visualizar rastreabilidade"
+                    >
+                      <i class="feather icon-eye" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                  <td>{{ record.dataHoraAcao | date: 'dd/MM/yyyy HH:mm' }}</td>
+                  <td>{{ record.nomeUsuario }}</td>
+                  <td>
+                    <span class="badge badge-light text-dark">{{ record.sede || 'Não informado' }}</span>
+                  </td>
+                  <td>{{ record.acao }}</td>
+                </tr>
+              }
+              @if (records().length === 0) {
+                <tr>
+                  <td colspan="5" class="text-muted">Nenhum registro de rastreabilidade encontrado.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex align-items-center justify-content-between pagination-row">
+          <div class="text-muted small">
+            Mostrando {{ ((page() - 1) * pageSize) + (records().length ? 1 : 0) }}-
+            {{ ((page() - 1) * pageSize) + records().length }} de {{ total() }} registros
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-light" (click)="previousPage()" [disabled]="page() === 1">
+              Anterior
+            </button>
+            <span class="px-3 py-2">Página {{ page() }} de {{ totalPages() }}</span>
+            <button type="button" class="btn btn-light" (click)="nextPage()" [disabled]="page() >= totalPages()">
+              Próxima
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

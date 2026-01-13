@@ -1,0 +1,62 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Rastreabilidade</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/rastreabilidade">Rastreabilidade</a>
+      </li>
+      <li class="breadcrumb-item">Detalhes</li>
+    </ul>
+  </div>
+</section>
+
+@if (record()) {
+  <div class="row">
+    <div class="col-xl-8">
+      <div class="card mb-3">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <h5 class="mb-0">Informações</h5>
+          <a class="btn btn-link" routerLink="/rastreabilidade">
+            <i class="feather icon-chevron-left"></i>
+            Voltar
+          </a>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-item">
+              <small class="text-muted">Data e hora</small>
+              <div class="fw-semibold">{{ record()!.dataHoraAcao | date: 'dd/MM/yyyy HH:mm' }}</div>
+            </div>
+            <div class="info-item">
+              <small class="text-muted">Usuário</small>
+              <div class="fw-semibold">{{ record()!.nomeUsuario }}</div>
+            </div>
+            <div class="info-item">
+              <small class="text-muted">Sede</small>
+              <div class="badge badge-light text-dark">{{ record()!.sede || 'Não informada' }}</div>
+            </div>
+            <div class="info-item">
+              <small class="text-muted">Ação</small>
+              <div class="fw-semibold">{{ record()!.acao }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Requisição (JSON)</h5>
+        </div>
+        <div class="card-body">
+          <pre class="json-view"><code>{{ formattedJson() }}</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="text-center py-5 text-muted">Carregando rastreabilidade...</div>
+}

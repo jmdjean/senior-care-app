@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,7 +15,7 @@ import { CalendarFormDialogComponent, CalendarFormDialogData } from '../form/cal
 @Component({
   selector: 'app-calendar-commitments',
   standalone: true,
-  imports: [RouterLink, DatePipe, MatDialogModule, MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [RouterLink, DatePipe, NgClass, MatDialogModule, MatButtonModule, MatIconModule, MatMenuModule],
   templateUrl: './calendar-commitments.component.html',
   styleUrl: './calendar-commitments.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -129,5 +129,15 @@ export class CalendarCommitmentsComponent implements OnInit {
 
   getTypeDotClass(type: CalendarEntry['type']): string {
     return type === 'Visita' ? 'dot-green' : 'dot-red';
+  }
+
+  getHeadquarterBadgeClass(entry: CalendarEntry): string {
+    const id = entry.headquarterId;
+    const name = (entry.headquarterName ?? '').toLowerCase();
+
+    if (id === 1 || name === 'a1') return 'badge-hq-a1';
+    if (id === 2 || name === 'b2') return 'badge-hq-b2';
+
+    return 'badge-hq-default';
   }
 }

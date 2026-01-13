@@ -1,5 +1,6 @@
 ﻿import { Routes } from '@angular/router';
 import { LayoutComponent } from './shared/components/layout/layout.component';
+import { adminGuard } from './shared/guards/admin.guard';
 import { authGuard } from './shared/guards/auth.guard';
 
 export const routes: Routes = [
@@ -266,6 +267,32 @@ export const routes: Routes = [
         path: 'funcionarios/:id',
         loadComponent: () =>
           import('./pages/funcionarios/employee-form/employee-form.component').then((m) => m.EmployeeFormComponent)
+      },
+      {
+        path: 'logs',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./pages/logs/list/logs-list.component').then((m) => m.LogsListComponent)
+      },
+      {
+        path: 'logs/:id',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./pages/logs/detail/logs-detail.component').then((m) => m.LogsDetailComponent)
+      },
+      {
+        path: 'rastreabilidade',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./pages/traceability/list/traceability-list.component').then((m) => m.TraceabilityListComponent)
+      },
+      {
+        path: 'rastreabilidade/:id',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./pages/traceability/detail/traceability-detail.component').then(
+            (m) => m.TraceabilityDetailComponent
+          )
       }
     ]
   },

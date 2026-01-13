@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, map, of } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { headquarterMock } from '../mocks/headquarters.mocks';
 import { apiUrls } from '../urls';
 
 export type Headquarter = {
@@ -31,9 +33,13 @@ type HeadquartersResponse = {
 export class HeadquarterService {
   constructor(private http: HttpClient) {}
 
-  // Lista sedes disponíveis, aceitando resposta com wrapper ou array direto.
+  // Lista sedes disponiveis, aceitando resposta com wrapper ou array direto.
   // Normaliza campos antes de devolver.
   getAll(): Observable<Headquarter[]> {
+    if (environment.useHeadquarterMock) {
+      return of(headquarterMock.map((item) => this.normalizeHeadquarter(item)));
+    }
+
     return this.http.get<HeadquartersResponse | Headquarter[]>(apiUrls.headquarters).pipe(
       map((response) => {
         if (Array.isArray(response)) {
@@ -44,16 +50,16 @@ export class HeadquarterService {
     );
   }
 
-  // Cria nova sede e já normaliza dados retornados.
-  // Aceita valores numéricos em formato string.
+  // Cria nova sede e ja normaliza dados retornados.
+  // Aceita valores numericos em formato string.
   create(payload: HeadquarterCreatePayload): Observable<Headquarter> {
     return this.http
       .post<Headquarter>(apiUrls.headquarters, payload)
       .pipe(map((created) => this.normalizeHeadquarter(created)));
   }
 
-  // Converte payloads heterogêneos em `Headquarter` consistente.
-  // Lida com números em string e alias de nomes.
+  // Converte payloads heterogeneos em `Headquarter` consistente.
+  // Lida com numeros em string e alias de nomes.
   private normalizeHeadquarter(data: Partial<Headquarter>): Headquarter {
     const toNumber = (value: unknown): number | undefined => {
       if (typeof value === 'number') {

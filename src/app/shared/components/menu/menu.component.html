@@ -73,6 +73,24 @@
                 <span class="pcoded-mtext">Mercado</span>
               </a>
             </li>
+            @if (isAdmin()) {
+              <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link" routerLink="/logs">
+                  <span class="pcoded-micon">
+                    <i class="feather icon-alert-triangle"></i>
+                  </span>
+                  <span class="pcoded-mtext">Logs</span>
+                </a>
+              </li>
+              <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link" routerLink="/rastreabilidade">
+                  <span class="pcoded-micon">
+                    <i class="feather icon-activity"></i>
+                  </span>
+                  <span class="pcoded-mtext">Rastreabilidade</span>
+                </a>
+              </li>
+            }
             <li class="nav-item" routerLinkActive="active">
               <a class="nav-link" routerLink="/funcionarios">
                 <span class="pcoded-micon">

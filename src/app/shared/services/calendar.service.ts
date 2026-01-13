@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, map, of, throwError } from 'rxjs';
 import { apiUrls } from '../urls';
 import { HeadquarterSelectionService } from './headquarter-selection.service';
+import { environment } from '../../../environments/environment';
+import { calendarMockAvailability, calendarMockEntries } from '../mocks/calendar.mocks';
 
 export type CalendarType = 'Visita' | 'Horario fechado';
 
@@ -42,9 +44,17 @@ export type CalendarPayload = {
 export class CalendarService {
   private http = inject(HttpClient);
   private headquarterSelection = inject(HeadquarterSelectionService);
+  private mockEntries: CalendarEntry[] = calendarMockEntries.map((entry) => ({ ...entry }));
+  private mockAvailability: CalendarAvailabilitySlot[] = calendarMockAvailability.map((slot) => ({ ...slot }));
+  private nextMockId = this.mockEntries.length + 1;
 
   // Lista registros futuros do calendario, aplicando filtro de sede quando houver.
   getEntries(): Observable<CalendarEntry[]> {
+    if (environment.useCalendarMock) {
+      const entries = this.applyHeadquarterFilter(this.mockEntries);
+      return of(entries.map((entry) => ({ ...entry })));
+    }
+
     const params = this.headquarterSelection.buildParams();
     return this.http.get<CalendarEntry[] | { items: unknown[] }>(apiUrls.calendarEntries, { params }).pipe(
       map((response) => {
@@ -56,6 +66,10 @@ export class CalendarService {
 
   // Retorna janelas livres para auxiliar no agendamento.
   getAvailability(): Observable<CalendarAvailabilitySlot[]> {
+    if (environment.useCalendarMock) {
+      return of(this.mockAvailability.map((slot) => ({ ...slot })));
+    }
+
     const params = this.headquarterSelection.buildParams();
     return this.http
       .get<CalendarAvailabilitySlot[] | { slots: CalendarAvailabilitySlot[] }>(apiUrls.calendarAvailability, {
@@ -71,6 +85,14 @@ export class CalendarService {
 
   // Busca registro individual por id.
   getById(id: number): Observable<CalendarEntry> {
+    if (environment.useCalendarMock) {
+      const entry = this.mockEntries.find((item) => item.id === id);
+      if (entry) {
+        return of({ ...entry });
+      }
+      return throwError(() => new Error('Mock: compromisso nao encontrado.'));
+    }
+
     return this.http
       .get<Record<string, unknown>>(`${apiUrls.calendarEntries}/${id}`)
       .pipe(map((data) => this.normalizeEntry(data)));
@@ -78,6 +100,25 @@ export class CalendarService {
 
   // Cria novo registro.
   create(payload: CalendarPayload): Observable<CalendarEntry> {
+    if (environment.useCalendarMock) {
+      const newEntry: CalendarEntry = {
+        id: this.nextMockId++,
+        type: payload.type,
+        date: payload.date,
+        time: payload.allDay ? null : payload.time,
+        allDay: payload.allDay,
+        name: payload.name,
+        phone: payload.phone,
+        headquarterId: payload.headquarterId,
+        headquarterName: this.resolveHeadquarterName(payload.headquarterId),
+        observation: payload.observation,
+        createdAt: new Date().toISOString()
+      };
+
+      this.mockEntries = [...this.mockEntries, newEntry];
+      return of({ ...newEntry });
+    }
+
     return this.http
       .post<Record<string, unknown>>(apiUrls.calendarEntries, payload)
       .pipe(map((data) => this.normalizeEntry(data)));
@@ -85,9 +126,56 @@ export class CalendarService {
 
   // Atualiza registro existente.
   update(id: number, payload: CalendarPayload): Observable<CalendarEntry> {
+    if (environment.useCalendarMock) {
+      const index = this.mockEntries.findIndex((item) => item.id === id);
+      if (index === -1) {
+        return throwError(() => new Error('Mock: compromisso nao encontrado.'));
+      }
+
+      const previous = this.mockEntries[index];
+      const updated: CalendarEntry = {
+        ...previous,
+        ...payload,
+        time: payload.allDay ? null : payload.time,
+        headquarterId: payload.headquarterId,
+        headquarterName: this.resolveHeadquarterName(payload.headquarterId) ?? previous.headquarterName,
+        observation: payload.observation
+      };
+
+      this.mockEntries = [
+        ...this.mockEntries.slice(0, index),
+        updated,
+        ...this.mockEntries.slice(index + 1)
+      ];
+
+      return of({ ...updated });
+    }
+
     return this.http
       .put<Record<string, unknown>>(`${apiUrls.calendarEntries}/${id}`, payload)
       .pipe(map((data) => this.normalizeEntry(data)));
+  }
+
+  private applyHeadquarterFilter(entries: CalendarEntry[]): CalendarEntry[] {
+    const selectedHeadquarterId = this.headquarterSelection.selectedHeadquarterId();
+    if (selectedHeadquarterId === null) {
+      return [...entries];
+    }
+    return entries.filter((entry) => entry.headquarterId === selectedHeadquarterId);
+  }
+
+  private resolveHeadquarterName(headquarterId: number): string | undefined {
+    const headquarters = this.headquarterSelection.headquarters();
+    const match = headquarters.find((item) => item.id === headquarterId);
+    if (match) {
+      return match.name;
+    }
+
+    const selected = this.headquarterSelection.selectedHeadquarter();
+    if (selected?.id === headquarterId) {
+      return selected.name;
+    }
+    return undefined;
   }
 
   // Normaliza diferentes formatos vindos da API.

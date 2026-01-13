@@ -104,7 +104,7 @@ export class HeadquarterSelectionService {
   // Libera referência de loading quando concluir para permitir novas chamadas.
   private fetchAndApply(options: { preferStored: boolean }): Observable<Headquarter[]> {
     return this.headquarterService.getAll().pipe(
-      tap((headquarters) => {
+      tap((headquarters: Headquarter[]) => {
         this.headquartersList.set(headquarters);
 
         const storedId = options.preferStored ? this.getStoredHeadquarterId() : this.selectedHeadquarterIdSignal();

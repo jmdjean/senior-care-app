@@ -1,9 +1,10 @@
 ﻿import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
 import { apiUrls } from '../urls';
 import { NotificationHelperService } from './notification-helper.service';
 import { CurrentUser, UserRole, UserService } from './user.service';
+import { environment } from '../../../environments/environment';
 
 type LoginResponse = {
   userId?: number | string;
@@ -31,6 +32,12 @@ export type SignupPayload = {
 })
 export class AuthService {
   private readonly userIdKey = 'userId';
+  private readonly devUser: CurrentUser = {
+    id: 999,
+    name: 'Dev Admin',
+    email: 'dev@seniors-care.test',
+    role: 'Admin'
+  };
   private http = inject(HttpClient);
   private notificationHelper = inject(NotificationHelperService);
   private userService = inject(UserService);
@@ -38,6 +45,12 @@ export class AuthService {
   // Efetua login via API, guarda o id do usuário e popula o usuário atual.
   // Exibe mensagens de sucesso ou erro conforme a resposta do backend.
   login(email: string, password: string): Observable<LoginResponse> {
+    if (environment.disableAuth) {
+      this.ensureDevSession();
+      this.notificationHelper.showSuccess('Login liberado no modo de desenvolvimento.');
+      return of({ userId: this.getUserId() ?? this.devUser.id, user: this.devUser });
+    }
+
     return this.http
       .post<LoginResponse>(apiUrls.login, { email, password })
       .pipe(
@@ -99,7 +112,21 @@ export class AuthService {
   // Informa se há um usuário autenticado com id em sessão.
   // Retorna booleano simples para uso em guards.
   isAuthenticated(): boolean {
+    if (environment.disableAuth) {
+      this.ensureDevSession();
+      return true;
+    }
     return !!this.getUserId();
+  }
+
+  private ensureDevSession(): void {
+    if (this.getUserId() === null) {
+      this.setUserId(String(this.devUser.id));
+    }
+
+    if (!this.userService.user()) {
+      this.userService.setCurrentUser(this.devUser);
+    }
   }
 
   // Encerra a sessão local, limpa caches e remove usuário atual.
@@ -122,6 +149,10 @@ export class AuthService {
   // Inicializa usuário atual lendo dados persistidos na sessão.
   // Deve ser chamado no bootstrap para restaurar contexto de login.
   initializeUser(): void {
+    if (environment.disableAuth) {
+      this.ensureDevSession();
+      return;
+    }
     this.userService.loadUserFromStorage();
   }
 }

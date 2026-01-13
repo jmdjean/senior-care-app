@@ -6,6 +6,10 @@
   width: 120px;
 }
 
+.action-cell {
+  width: 60px;
+}
+
 .type-badge {
   display: inline-block;
   min-width: 110px;
@@ -55,6 +59,31 @@
 
 .headquarter-cell {
   min-width: 140px;
+}
+
+.headquarter-badge {
+  display: inline-block;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.badge-hq-a1 {
+  background: #e7f5ff;
+  color: #0b7285;
+}
+
+.badge-hq-b2 {
+  background: #fff4e6;
+  color: #d9480f;
+}
+
+.badge-hq-default {
+  background: #f1f3f5;
+  color: #343a40;
 }
 
 .status-cell {

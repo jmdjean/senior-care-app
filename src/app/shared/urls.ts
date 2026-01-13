@@ -31,5 +31,7 @@ export const apiUrls = {
     `${baseUrl}/api/financial/overview/employees/${encodeURIComponent(type)}`,
   employees: `${baseUrl}/api/employees`,
   calendarEntries: `${baseUrl}/api/calendar`,
-  calendarAvailability: `${baseUrl}/api/calendar/availability`
+  calendarAvailability: `${baseUrl}/api/calendar/availability`,
+  traceabilities: `${baseUrl}/api/traceability`,
+  errorLogs: `${baseUrl}/api/logs`
 };
