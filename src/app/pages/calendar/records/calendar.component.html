@@ -1,0 +1,130 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Calendário</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/calendario">Calendário</a>
+      </li>
+      <li class="breadcrumb-item">Registros</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card table-card table-border-style">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <div>
+          <h5 class="mb-1">Registros do calendário</h5>
+          @if (selectedHeadquarter()) {
+            <small class="text-muted">Sede selecionada: {{ selectedHeadquarter()?.name }}</small>
+          }
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="refresh()">
+            <i class="feather icon-rotate-ccw" aria-hidden="true"></i>
+            Recarregar
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" (click)="addEntry()">
+            <i class="feather icon-plus" aria-hidden="true"></i>
+            Adicionar
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Ações</th>
+                <th>Tipo</th>
+                <th>Data e hora</th>
+                <th>Nome</th>
+                <th>Sede</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of entries(); track entry.id) {
+                <tr>
+                  <td class="action-cell">
+                    <div class="row-actions">
+                      <button
+                        type="button"
+                        class="btn-icon"
+                        (click)="toggleMenu(entry.id, $event)"
+                        [attr.aria-expanded]="openMenuId() === entry.id"
+                        aria-haspopup="true"
+                        [attr.aria-label]="'Abrir menu de ações para ' + (entry.name || 'registro')"
+                      >
+                        <i class="feather icon-more-horizontal" aria-hidden="true"></i>
+                      </button>
+                      @if (openMenuId() === entry.id) {
+                        <div class="action-dropdown" role="menu">
+                          <button
+                            type="button"
+                            class="dropdown-item"
+                            role="menuitem"
+                            (click)="editEntry(entry)"
+                          >
+                            <i class="feather icon-edit-2" aria-hidden="true"></i>
+                            Editar
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  </td>
+                  <td>
+                    <span
+                      class="badge"
+                      [class.badge-visit]="entry.type === 'Visita'"
+                      [class.badge-blocked]="entry.type === 'Horario fechado'"
+                    >
+                      {{ entry.type }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-column">
+                      <span>{{ entry.date | date: 'dd/MM/yyyy' }}</span>
+                      <small class="text-muted">
+                        {{ entry.allDay ? 'Dia todo' : (entry.time ? entry.time.slice(0, 5) : '-') }}
+                      </small>
+                    </div>
+                  </td>
+                  <td>{{ entry.name || '-' }}</td>
+                  <td>
+                    @if (entry.headquarterName) {
+                      <span class="badge badge-light text-dark">{{ entry.headquarterName }}</span>
+                    } @else {
+                      -
+                    }
+                  </td>
+                </tr>
+              }
+              @if (entries().length === 0) {
+                <tr>
+                  <td colspan="5" class="text-muted">Nenhum registro encontrado.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+@if (openMenuId() !== null) {
+  <button
+    type="button"
+    class="action-menu-backdrop"
+    (click)="closeMenu()"
+    (keydown.escape)="closeMenu()"
+    aria-label="Fechar menu"
+  ></button>
+}

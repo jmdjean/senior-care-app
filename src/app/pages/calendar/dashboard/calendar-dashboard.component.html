@@ -1,0 +1,33 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Calendário</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">Calendário</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-12">
+    <div class="config-cards">
+      <a class="config-card" (click)="goToRegistros()" role="button" aria-label="Abrir registros do calendário">
+        <div class="card-icon">
+          <i class="feather icon-list" aria-hidden="true"></i>
+        </div>
+        <div class="card-title">Registros</div>
+      </a>
+
+      <a class="config-card" (click)="goToCompromissos()" role="button" aria-label="Abrir compromissos do calendário">
+        <div class="card-icon">
+          <i class="feather icon-calendar" aria-hidden="true"></i>
+        </div>
+        <div class="card-title">Compromissos</div>
+      </a>
+    </div>
+  </div>
+</div>

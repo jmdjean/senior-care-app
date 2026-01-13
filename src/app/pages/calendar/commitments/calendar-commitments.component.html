@@ -1,0 +1,130 @@
+<section class="page-header">
+  <div class="page-header-title">
+    <h5>Calendario</h5>
+  </div>
+  <div class="page-header-breadcrumb">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a routerLink="/home"><i class="feather icon-home"></i></a>
+      </li>
+      <li class="breadcrumb-item">
+        <a routerLink="/calendario">Calendario</a>
+      </li>
+      <li class="breadcrumb-item">Compromissos</li>
+    </ul>
+  </div>
+</section>
+
+<div class="row g-4">
+  <div class="col-xl-8">
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <div>
+          <h5 class="mb-1">Compromissos</h5>
+          @if (selectedHeadquarter()) {
+            <small class="text-muted">Sede selecionada: {{ selectedHeadquarter()?.name }}</small>
+          }
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+          <button type="button" class="btn btn-primary btn-sm" (click)="openCreate()">
+            <i class="feather icon-plus" aria-hidden="true"></i>
+            Adicionar
+          </button>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle recent-users-table mb-0">
+            <thead>
+              <tr>
+                <th class="type-col">Tipo</th>
+                <th>Nome</th>
+                <th>Sede</th>
+                <th>Data</th>
+                <th class="action-col text-end">Acoes</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of entries(); track entry.id) {
+                <tr>
+                  <td class="type-col">
+                    <span
+                      class="badge type-badge"
+                      [class.badge-visit]="entry.type === 'Visita'"
+                      [class.badge-gray]="entry.type === 'Horario fechado'"
+                    >
+                      {{ entry.type }}
+                    </span>
+                  </td>
+                  <td class="user-info">
+                    <div class="avatar-wrapper">
+                      <div class="avatar-initial">{{ getInitials(entry.name) }}</div>
+                    </div>
+                    <div class="user-text">
+                      <div class="fw-semibold">{{ entry.name || 'Sem nome' }}</div>
+                      <div class="text-muted small">{{ entry.phone || 'Sem telefone' }}</div>
+                    </div>
+                  </td>
+                  <td class="headquarter-cell">
+                    {{ entry.headquarterName || 'Sede nao informada' }}
+                  </td>
+                  <td class="status-cell">
+                    <span class="text-muted">{{ entry.date | date: 'dd MMM' }}</span>
+                    <div class="text-muted small">{{ entry.allDay ? 'Dia todo' : (entry.time ? entry.time.slice(0, 5) : '-') }}</div>
+                  </td>
+                  <td class="text-end">
+                    <button
+                      type="button"
+                      mat-icon-button
+                      [matMenuTriggerFor]="actionMenu"
+                      [matMenuTriggerData]="{ entry: entry }"
+                      aria-label="Acoes do compromisso"
+                    >
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                  </td>
+                </tr>
+              }
+              @if (entries().length === 0) {
+                <tr>
+                  <td colspan="5" class="text-muted text-center py-4">Nenhum compromisso encontrado.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="mb-0">Horarios livres para as proximas tres semanas</h5>
+      </div>
+      <div class="card-body availability">
+        @if (availability().length > 0) {
+          <ul class="list-unstyled mb-0">
+            @for (slot of availability(); track slot.date + slot.time) {
+              <li class="availability-item" (click)="openFromAvailability(slot)" role="button" tabindex="0">
+                <div class="fw-semibold">{{ slot.date | date: 'dd/MM/yyyy' }}</div>
+                <small class="text-muted">{{ slot.time }}</small>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="text-muted mb-0">Nenhum horario livre retornado.</p>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<mat-menu #actionMenu="matMenu">
+  <ng-template matMenuContent let-entry="entry">
+    <button mat-menu-item type="button" (click)="openEdit(entry.id)">
+      <mat-icon>edit</mat-icon>
+      <span>Alterar</span>
+    </button>
+  </ng-template>
+</mat-menu>

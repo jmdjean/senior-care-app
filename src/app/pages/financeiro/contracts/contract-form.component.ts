@@ -6,7 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { CurrencyBrlPipe } from '../../../shared/pipes/currency-brl.pipe';
 import { ContractCreatePayload, ContractService, ContractUpdatePayload } from '../../../shared/services/contract.service';
 import { Headquarter, HeadquarterService } from '../../../shared/services/headquarter.service';
 import { LoadingService } from '../../../shared/services/loading.service';
@@ -16,7 +15,7 @@ import { Plan, PlansService } from '../../../shared/services/plans.service';
 
 @Component({
   selector: 'app-contract-form',
-  imports: [RouterLink, FormsModule, MatSelectModule, MatFormFieldModule, MatInputModule, MatIconModule, CommonModule, CurrencyBrlPipe],
+  imports: [RouterLink, FormsModule, MatSelectModule, MatFormFieldModule, MatInputModule, MatIconModule, CommonModule],
   templateUrl: './contract-form.component.html',
   styleUrl: './contract-form.component.scss',
   standalone: true,

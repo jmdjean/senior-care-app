@@ -1,0 +1,106 @@
+<ng-template #formContent>
+  <div class="tab-header mb-3">
+    <button type="button" class="tab-btn" [class.active]="activeTab() === 'Visita'" (click)="changeTab('Visita')">
+      Visita
+    </button>
+    <button type="button" class="tab-btn" [class.active]="activeTab() === 'Horario fechado'" (click)="changeTab('Horario fechado')">
+      Horario fechado
+    </button>
+  </div>
+
+  <form class="needs-validation" novalidate (submit)="onSubmit($event)">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Nome</label>
+        <input type="text" class="form-control" [value]="calendarModel().name" (input)="onNameInput($event)" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Celular</label>
+        <input type="tel" class="form-control" [value]="calendarModel().phone" (input)="onPhoneInput($event)" />
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label">Sede *</label>
+        <select
+          class="form-select"
+          [class.is-invalid]="submitted() && calendarForm.headquarterId().invalid()"
+          [value]="calendarModel().headquarterId"
+          (change)="onHeadquarterChange($event)"
+          required
+        >
+          <option value="">Selecione</option>
+          @for (hq of headquarters(); track hq.id) {
+            <option [value]="hq.id">{{ hq.name }}</option>
+          }
+        </select>
+        @if (submitted() && calendarForm.headquarterId().invalid()) {
+          <div class="invalid-feedback">Selecione uma sede.</div>
+        }
+      </div>
+      <div class="col-12 col-md-6 d-flex align-items-center">
+        <div class="form-check d-flex align-items-center gap-2 mb-0">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [checked]="calendarModel().allDay"
+            (change)="onAllDayToggle($event)"
+            id="allDay"
+          />
+          <label class="form-check-label" for="allDay">Dia todo</label>
+        </div>
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label">Data</label>
+        <input type="date" class="form-control" [attr.min]="minDate" [value]="calendarModel().date" (change)="onDateChange($event)" />
+      </div>
+      @if (!calendarModel().allDay) {
+        <div class="col-12 col-md-6">
+          <label class="form-label">Horario</label>
+          <input type="time" class="form-control" [value]="calendarModel().time" (change)="onTimeChange($event)" />
+        </div>
+      }
+      <div class="col-12">
+        <label class="form-label">Observacoes</label>
+        <textarea class="form-control" rows="3" [value]="calendarModel().observation" (input)="onObservationInput($event)"></textarea>
+      </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Salvar</button>
+      <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">Cancelar</button>
+    </div>
+  </form>
+</ng-template>
+
+@if (!inModal) {
+  <section class="page-header">
+    <div class="page-header-title">
+      <h5>{{ pageTitle() }}</h5>
+    </div>
+    <div class="page-header-breadcrumb">
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a routerLink="/home"><i class="feather icon-home"></i></a>
+        </li>
+        <li class="breadcrumb-item">
+          <a routerLink="/calendario">Calendario</a>
+        </li>
+        <li class="breadcrumb-item">{{ pageTitle() }}</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="card">
+    <div class="card-header d-flex align-items-center justify-content-between">
+      <h5 class="mb-0">{{ pageTitle() }}</h5>
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="onCancel()">
+        <i class="feather icon-chevron-left" aria-hidden="true"></i>
+        Voltar
+      </button>
+    </div>
+    <div class="card-body">
+      <ng-container [ngTemplateOutlet]="formContent"></ng-container>
+    </div>
+  </div>
+} @else {
+  <ng-container [ngTemplateOutlet]="formContent"></ng-container>
+}

@@ -1,0 +1,10 @@
+<div class="dialog-title" mat-dialog-title>
+  <h5 class="mb-0">{{ data.initialData?.id ? 'Editar compromisso' : 'Novo compromisso' }}</h5>
+  <button mat-icon-button type="button" aria-label="Fechar" (click)="onClose()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content class="dialog-content">
+  <app-calendar-form [inModal]="true" [initialData]="data.initialData" (saved)="onSaved()" (closed)="onClose()"></app-calendar-form>
+</mat-dialog-content>

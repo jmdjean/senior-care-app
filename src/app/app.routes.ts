@@ -19,6 +19,33 @@ export const routes: Routes = [
           import('./pages/home/home.component').then((m) => m.HomeComponent)
       },
       {
+        path: 'calendario',
+        loadComponent: () =>
+          import('./pages/calendar/dashboard/calendar-dashboard.component').then((m) => m.CalendarDashboardComponent)
+      },
+      {
+        path: 'calendario/registros',
+        loadComponent: () =>
+          import('./pages/calendar/records/calendar.component').then((m) => m.CalendarComponent)
+      },
+      {
+        path: 'calendario/compromissos',
+        loadComponent: () =>
+          import('./pages/calendar/commitments/calendar-commitments.component').then(
+            (m) => m.CalendarCommitmentsComponent
+          )
+      },
+      {
+        path: 'calendario/novo',
+        loadComponent: () =>
+          import('./pages/calendar/form/calendar-form.component').then((m) => m.CalendarFormComponent)
+      },
+      {
+        path: 'calendario/:id',
+        loadComponent: () =>
+          import('./pages/calendar/form/calendar-form.component').then((m) => m.CalendarFormComponent)
+      },
+      {
         path: 'users',
         loadComponent: () =>
           import('./pages/users/users-configurator/users-configurator.component').then(
